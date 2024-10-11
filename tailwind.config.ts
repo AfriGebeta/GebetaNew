@@ -1,6 +1,16 @@
 import type { Config } from "tailwindcss";
 
-const config: Config = {
+const config: {
+  plugins: any[];
+  theme: {
+    extend: {
+      letterSpacing: { 20: string };
+      lineHeight: { 25: string; 15: string; 60: string; 50: string };
+      colors: { background: string; foreground: string }
+    }
+  };
+  content: string[]
+} = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,6 +22,15 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      letterSpacing: {
+        20: "0.2em",
+      },
+      lineHeight:{
+        25: "25.2px",
+        50: "50.4px",
+        60: "60.48px",
+        15:"15.12px"
+      }
     },
   },
   plugins: [],
