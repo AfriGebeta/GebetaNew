@@ -4,6 +4,7 @@ const config: {
   plugins: any[];
   theme: {
     extend: {
+      dropShadow: { custom: string };
       letterSpacing: { 20: string };
       lineHeight: { 25: string; 15: string; 60: string; 50: string };
       colors: { background: string; foreground: string }
@@ -30,6 +31,9 @@ const config: {
         50: "50.4px",
         60: "60.48px",
         15:"15.12px"
+      },
+      dropShadow: {
+        'custom': '0 8px 16px rgba(255, 165, 0, 0.15)',
       }
     },
   },
