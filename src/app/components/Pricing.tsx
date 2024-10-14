@@ -28,7 +28,7 @@ export default function Pricing() {
                 <div className="flex mt-[45px]">
                     {
                         pricing.map((item, index) => (
-                            <div className="flex flex-col justify-between p-[32px] relative isolate" key={index}>
+                            <div className="w-full border-red-500 flex flex-col justify-between p-[32px] relative isolate" key={index}>
 
                                 {item.title === "Business" && (<div
                                     className="absolute inset-0 -z-10 rounded-[16px] shadow-[0_8px_16px_rgba(255,165,0,0.15)]"></div>)}
@@ -37,6 +37,7 @@ export default function Pricing() {
 
                                     <div className="flex justify-between items-center">
                                         <h5 className="text-[#2E384E] text-[20px] font-semibold">Individual</h5>
+
                                         {item.title === "Business" &&
                                             <div
                                                 className="flex items-center gap-[4px] rounded-[48px] px-[10px] py-[5px] bg-[#E5DFBC] text-[9px] text-[#969173] font-extrabold">
@@ -45,9 +46,12 @@ export default function Pricing() {
                                             </div>}
                                     </div>
 
-                                    <h3 className="text-[#2E384E] text-[44px] font-medium mt-[8px]">{item.price}<span
-                                        className="text-[14px]">/month</span></h3>
-                                    <p className="text-[#62677F] text-[14px] mt-[20px]">{item.subtitle}</p>
+                                    <h3 className="text-[#2E384E] text-[44px] font-medium mt-[8px]">
+                                        {item.price}{ item.title !=="Enterprise" && (<span
+                                                className="text-[14px]">/month</span>
+                                            ) }
+                                    </h3>
+                                    <p className="text-wrap text-[#62677F] text-[14px] mt-[20px]">{item.subtitle}</p>
 
                                     <ul className="text-[#62677F] text-[14px] font-semibold mt-[30px] mb-[30px] space-y-[12px]">
                                         {
