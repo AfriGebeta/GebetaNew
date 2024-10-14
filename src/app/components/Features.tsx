@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Features() {
     return (
-        <div className="overflow-hidden">
+        <div className="overflow-hidden pb-[200px]">
             {
                 features.map((feature, index) => (
                     <div className={`relative ${(index === 0 ) ?"mt-[100px]" : "mt-[300px]"}`} key={index}>
@@ -27,8 +27,8 @@ export default function Features() {
                                         <Image
                                             className="group-hover:translate-x-1 transition-all duration-400"
                                             src="/assets/right-arrow.svg"
-                                            width={16}
-                                            height={16}
+                                            width={8}
+                                            height={8}
                                             alt="right arrow icon"/>
                                     </div>
                                 </div>
