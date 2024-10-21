@@ -55,8 +55,8 @@ export default function Showcase() {
                             showcases.map((showcase, index) => (
                                 <div key={index}
                                      className={`absolute top-0 left-0 w-full transition-opacity duration-300 ${activeTab === index ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${isChanging ? 'pointer-events-none' : ''}`}>
-                                    <div className="flex flex-col md:flex-row gap-[44px] bg-white">
-                                        <div className="bg-[#FFF7E8] flex justify-center items-center px-[100px] py-[50px] rounded-[16px]">
+                                    <div className="flex flex-col md:flex-row gap-[44px]">
+                                        <div className="bg-[#FFF7E8] dark:bg-zinc-900 flex justify-center items-center px-[100px] py-[50px] rounded-[16px]">
                                             <Image
                                                 src={showcase.showcasePicture}
                                                 className="object-contain"
@@ -65,7 +65,7 @@ export default function Showcase() {
                                                 alt={showcase.title}
                                             />
                                         </div>
-                                        <div className="w-full md:w-2/5 pt-[40px]">
+                                        <div className="w-full pt-4 md:w-2/5 md:pt-[120px]">
                                             <Image
                                                 src={showcase.companyLogo}
                                                 alt="zayride logo"
