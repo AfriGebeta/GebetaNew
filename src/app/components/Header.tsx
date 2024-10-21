@@ -18,7 +18,7 @@ export default function Header() {
                         for free</Link>
                     <Link
                         href="/auth/sign-in"
-                        className="px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 rounded-[8px] font-medium text-[#2E384E]"
+                        className="px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 rounded-[8px] font-medium text-[#2E384E] dark:text-white"
                     >Contact sales</Link>
                 </div>
             </div>

@@ -18,7 +18,7 @@ export default function Highlight() {
                             className="w-[72px] h-[72px] flex justify-center items-center bg-[#FFF7E8] dark:bg-zinc-900 rounded-[16px]">
                             <Image src="/assets/speed.svg" alt="speed icon" width={42} height={20}/>
                         </div>
-                        <h5 className="text-[#373D48] text-[16px] font-bold">High-performance</h5>
+                        <h5 className="text-[#373D48] dark:text-white text-[16px] font-bold">High-performance</h5>
                     </div>
                     <div className="flex items-center gap-[16px]">
                         <div
@@ -26,14 +26,14 @@ export default function Highlight() {
                             <Image src="/assets/user-male.svg" alt="user expressing love icon" width={30}
                                    height={35}/>
                         </div>
-                        <h5 className="text-[#373D48] text-[16px] font-bold">Easy to implement</h5>
+                        <h5 className="text-[#373D48] dark:text-white text-[16px] font-bold">Easy to implement</h5>
                     </div>
                     <div className="flex items-center gap-[16px]">
                         <div
                             className="w-[72px] h-[72px] flex justify-center items-center bg-[#FFF7E8] dark:bg-zinc-900 rounded-[16px]">
                             <Image src="/assets/toolbox.svg" alt="toolbox icon" width={49} height={30}/>
                         </div>
-                        <h5 className="text-[#373D48] text-[16px] font-extrabold">Feature-rich API</h5>
+                        <h5 className="text-[#373D48] dark:text-white text-[16px] font-extrabold">Feature-rich API</h5>
                     </div>
                 </div>
             </div>

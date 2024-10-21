@@ -68,14 +68,14 @@ export default function Pricing() {
                                             </div>}
                                     </div>
 
-                                    <h3 className="text-[#2E384E] text-[44px] font-medium mt-[8px]">
+                                    <h3 className="text-[#2E384E] dark:text-white text-[44px] font-medium mt-[8px]">
                                         {item.price}{item.title !== "Enterprise" && (<span
                                             className="text-[14px]">/month</span>
                                     )}
                                     </h3>
-                                    <p className="text-wrap text-[#62677F] text-[14px] leading-17 mt-[20px]">{item.subtitle}</p>
+                                    <p className="text-wrap text-[#62677F] dark:text-white text-[14px] leading-17 mt-[20px]">{item.subtitle}</p>
 
-                                    <ul className="relative text-[#62677F] text-[14px] font-semibold leading-17 mt-[30px] mb-[30px] space-y-[12px]">
+                                    <ul className="relative text-[#62677F] dark:text-white text-[14px] font-semibold leading-17 mt-[30px] mb-[30px] space-y-[12px]">
                                         {
                                             item.features.map((feature, featureIndex) => (
                                                 <div className="relative flex items-center gap-[12px]" key={featureIndex}>
@@ -111,7 +111,7 @@ export default function Pricing() {
                                     </ul>
                                 </div>
                                 <div
-                                    className={`w-fit flex items-center gap-[8px] px-[30px] py-[15px] rounded-[8px] ${getButtonColor(item.title)}`}>
+                                    className={`group relative w-fit flex items-center gap-[8px] px-[30px] py-[15px] rounded-[8px] ${getButtonColor(item.title)}`}>
 
                                     {
                                         item.title === "Enterprise" && <Image
@@ -129,6 +129,7 @@ export default function Pricing() {
 
                                     {
                                         item.title !== "Enterprise" && <Image
+                                            className="group-hover:translate-x-1 transition-transform duration-400"
                                             src="/assets/right-arrow-white.svg"
                                             alt="right arrow icon"
                                             width={7}

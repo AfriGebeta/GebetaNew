@@ -17,12 +17,12 @@ export default function Features() {
                                         className="w-fit px-[30px] py-[15px] bg-[#FFF7E8] dark:bg-zinc-900 rounded-[16px] text-[12px] text-[#FFA500] font-extrabold tracking-20 uppercase">
                                         {feature.subtitle}</h5>
                                     <h2 className="text-[40px] text-[#1B1E2B] dark:text-white mt-[12px]">{feature.title}</h2>
-                                    <p className="max-w-xl text-[20px] text-[#62677F] leading-25 mt-[32px]"><span
+                                    <p className="max-w-xl text-[20px] text-[#62677F] dark:text-white/70 leading-25 mt-[32px]"><span
                                         className="font-bold">GebetaMaps</span> {feature.description}</p>
                                     <div className="w-fit flex items-center gap-[8px] group mt-[16px]">
                                         <Link
                                             href="/"
-                                            className="text-[14px] text-[#1B1E2B] dark:text-white font-medium">
+                                            className="text-[14px] text-[#1B1E2B]/70 hover:text-[#1B1E2B]/30 dark:text-white dark:hover:text-[#FFA500] font-medium">
                                             Read more</Link>
                                         <Image
                                             className="group-hover:translate-x-1 transition-all duration-400"

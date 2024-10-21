@@ -75,7 +75,7 @@ export default function Navbar() {
                                 width={24}
                                 height={24}/>
                             <Link
-                                className="font-medium"
+                                className="font-medium  hover:text-[#FFA500] transition-all duration-400"
                                 href="/auth/sign-in"
                             >Sign In</Link>
                         </div>
@@ -105,7 +105,7 @@ export default function Navbar() {
                                     {item.submenu && activeMobileSubmenu === item.title && (
                                         <ul className="pl-4 mt-2 space-y-2">
                                             {item.submenu.map((subItem, subIndex) => (
-                                                <Link href={subItem.link} key={subIndex} className="text-sm p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
+                                                <Link href={subItem.link} key={subIndex} className="text-sm p-2 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md">
                                                     {subItem.title}
                                                 </Link>
                                             ))}
@@ -149,8 +149,9 @@ export default function Navbar() {
                             {menuItems.find((item) => item.title === activeMenu).submenu.map((subItem, index) => (
                                 <Link
                                      href={subItem.link}
+                                     onClick={handleMouseLeave}
                                      key={index}
-                                     className="block space-y-2 p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                                     className="block space-y-2 p-3 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md">
                                     <h3 className="text-[14px] font-semibold">{subItem.title}</h3>
                                     <p className="text-[12px] text-gray-600 dark:text-gray-400">{subItem.description}</p>
                                 </Link>

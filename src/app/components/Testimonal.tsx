@@ -6,7 +6,7 @@ export default function Testimonial() {
     return (
         <div className="mt-[140px] h-[600px] bg-custom">
             <Container>
-                <h2 className="text-center pt-[88px] text-[#1B1E2B] text-[40px] leading-50">What people say</h2>
+                <h2 className="text-center pt-[88px] text-[#1B1E2B] dark:text-white text-[40px] leading-50">What people say</h2>
                 <p className="text-center mt-[42px] text-[#62677F] text-[20px] leading-25">Our customers are our top priority.
                     lets hear
                     what they have to say.</p>

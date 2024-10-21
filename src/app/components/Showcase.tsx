@@ -30,7 +30,7 @@ export default function Showcase() {
             <div className="mt-[360px]">
                 <h4 className="text-[#979BAA] text-[12px] text-center font-bold tracking-20 uppercase ">We love to
                     see you grow</h4>
-                <h2 className="text-[#1B1E2B] text-[40px] text-center mt-[10px]">Success stories</h2>
+                <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center mt-[10px]">Success stories</h2>
                 <p className="text-[#62677F] text-[20px] text-center mt-[42px]">Businesses, from startups to
                     enterprises, power their location intelligence with GebetaMaps.</p>
 
@@ -77,7 +77,7 @@ export default function Showcase() {
 
                                             <div className="mt-[60px] flex gap-[32px] items-center">
                                                 <button
-                                                    className="flex gap-[4px] border border-[#99AFCC] px-[30px] py-[12px] text-[#2E384E] text-[14px] whitespace-nowrap font-medium">
+                                                    className="flex gap-[4px] transition-all border border-[#99AFCC] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 px-[30px] py-[12px] text-[#2E384E] dark:text-white text-[14px] whitespace-nowrap font-medium">
                                                     <Image
                                                         src="/assets/play.svg"
                                                         width={24}
@@ -88,7 +88,7 @@ export default function Showcase() {
                                                 </button>
                                                 <Link
                                                     href="/stories"
-                                                    className="text-[#1B1E2B] text-[14px] font-bold whitespace-nowrap">
+                                                    className="text-[#1B1E2B] dark:text-white hover:text-[#FFA500] hover:underline text-[14px] font-bold whitespace-nowrap">
                                                     See all success stories
                                                 </Link>
                                             </div>
