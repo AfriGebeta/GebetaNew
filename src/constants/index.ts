@@ -323,5 +323,6 @@ export const teamMembers = [
     {name: "Deborah Terefe", role: "Legal Advisor", img: "/assets/debora.png"},
     {name: "Bereket Terefe", role: "Senior Software Engineer", img: "/assets/bereket.png"},
     {name: "Daniel Tsegaw", role: "Senior Software Engineer", img: "/assets/dani.png"},
+    {name: "Zubeyr Anwar", role: "Frontend Developer", img: "/assets/zubeyr.jpg"},
     {name: "Tsegaw Tesfaye", role: "Graphic Designer", img: "/assets/tsegaw.png"},
 ]
