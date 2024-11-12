@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { ScaleLoader } from "react-spinners";
+import React, {useEffect, useState} from "react";
+import {Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {ScaleLoader} from "react-spinners";
 
 function APIUsage({ graphData, isLoading }) {
     const [chartData, setChartData] = useState([]);

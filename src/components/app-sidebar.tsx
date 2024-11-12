@@ -1,26 +1,15 @@
 "use client"
 
 import * as React from "react"
-import {
-    BadgeCheckIcon,
-    BookOpen,
-    Bot,
-    CreditCard,
-    GalleryVerticalEnd,
-    KeyIcon,
-    Settings2,
-    SquareTerminal,
-    LockKeyhole,
-} from "lucide-react"
+import {useContext} from "react"
+import {BookOpen, CreditCard, LockKeyhole, Settings2, SquareTerminal,} from "lucide-react"
 
 import {NavMain} from "@/components/nav-main"
 import {NavUser} from "@/components/nav-user"
 import {Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail,} from "@/components/ui/sidebar"
 import Image from "next/image";
-import useLocalStorage from "@/hooks/use-local-storage";
 import {HomeIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
-import {useContext} from "react";
 import {AuthContext} from "@/providers/AuthProvider";
 
 // This is sample data.

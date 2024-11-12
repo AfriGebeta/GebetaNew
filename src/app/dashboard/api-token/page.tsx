@@ -1,6 +1,6 @@
 "use client"
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {Button} from "@/components/ui/button";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {
     Dialog,
     DialogClose,
@@ -12,10 +12,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"; // Import the Dialog components
 import React, {useContext, useState} from "react";
-import { setToken } from "@/service/apis";
-import useLocalStorage from "@/hooks/use-local-storage";
+import {setToken} from "@/service/apis";
 import toast from "react-hot-toast";
-import { CopyIcon, EyeIcon } from "lucide-react";
+import {CopyIcon, EyeIcon} from "lucide-react";
 import {AuthContext} from "@/providers/AuthProvider";
 
 export default function APIToken() {

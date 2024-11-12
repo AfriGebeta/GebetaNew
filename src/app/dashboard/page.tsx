@@ -1,10 +1,8 @@
 "use client";
 import {getUserUsage} from "@/service/apis";
-import useLocalStorage from "@/hooks/use-local-storage";
 import {useQuery} from "@tanstack/react-query";
 import {useContext, useMemo} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Skeleton} from "@/components/ui/skeleton"
 import {AuthContext} from "@/providers/AuthProvider";
 
 export default function Page() {

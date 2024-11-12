@@ -1,6 +1,6 @@
 "use client"
 
-import {BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Moon, Sparkles, Sun,} from "lucide-react"
+import {BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Moon, Sun,} from "lucide-react"
 
 import {Avatar, AvatarFallback,} from "@/components/ui/avatar"
 import {

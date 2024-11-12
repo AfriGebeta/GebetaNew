@@ -1,29 +1,17 @@
 "use client";
-import useLocalStorage from "@/hooks/use-local-storage";
-import { useQuery } from "@tanstack/react-query";
-import { useContext, useEffect, useState } from "react";
-import { getUserUsage, getUserUsageForGraph } from "@/service/apis";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {useQuery} from "@tanstack/react-query";
+import {useContext, useEffect, useState} from "react";
+import {getUserUsage, getUserUsageForGraph} from "@/service/apis";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import APIUsage from "./APIUsage";
-import { KeyIcon, CalendarIcon } from "lucide-react";
-import { AuthContext } from "@/providers/AuthProvider";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import {CalendarIcon, KeyIcon} from "lucide-react";
+import {AuthContext} from "@/providers/AuthProvider";
+import {format} from "date-fns";
+import {cn} from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {Calendar} from "@/components/ui/calendar";
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
 
 export default function Usage() {
     const { currentUser } = useContext(AuthContext);
