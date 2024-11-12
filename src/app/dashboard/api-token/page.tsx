@@ -79,7 +79,7 @@ export default function APIToken() {
                                         onClick={() => copyToClipboard(token)}
                                         className="flex items-center"
                                     >
-                                        <CopyIcon className="mr-1" /> Copy
+                                        <CopyIcon className="" />
                                     </Button>
                                     <Dialog>
                                         <DialogTrigger asChild>
@@ -87,7 +87,7 @@ export default function APIToken() {
                                                 variant="link"
                                                 onClick={() => handleShowToken(token)}
                                             >
-                                                <EyeIcon /> Show
+                                                <EyeIcon />
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-md">

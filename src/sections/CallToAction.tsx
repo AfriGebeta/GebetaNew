@@ -12,12 +12,12 @@ export default function CallToAction() {
 
                 <div className="flex justify-center items-center gap-[32px] mt-[60px]">
                     <Link
-                        href="/auth/sign-up"
+                        href="/auth/register"
                         className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Sign
                         up
                         for free</Link>
                     <Link
-                        href="/auth/sign-in"
+                        href="/contact"
                         className="px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 rounded-[8px] font-medium text-[#2E384E] dark:text-white whitespace-nowrap"
                     >Contact sales</Link>
                 </div>

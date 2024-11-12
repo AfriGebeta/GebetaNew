@@ -6,7 +6,7 @@ import {teamMembers} from "../../../constants";
 export default function Company() {
     return (
         <Container>
-            <div className="mt-[80px]">
+            <div className="mt-[10px]">
                 <h1 className="text-[48px] text-center text-[#1B1E2B] dark:text-white leading-60 mb-[40px]">
                     About Us
                 </h1>

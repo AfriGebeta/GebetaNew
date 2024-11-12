@@ -118,10 +118,10 @@ export default function Testimonial() {
 
                 {/* Gradient Overlays */}
                 <div
-                    className="absolute top-0 left-0 h-full w-24 bg-gradient-to-r from-white dark:from-gray-900 pointer-events-none"
+                    className="absolute top-0 left-0 h-full w-24 bg-gradient-to-r from-white dark:from-gray-900 pointer-events-none dark:hidden"
                 ></div>
                 <div
-                    className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-white dark:from-gray-900 pointer-events-none"
+                    className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-white dark:from-gray-900 pointer-events-none dark:hidden"
                 ></div>
             </div>
         </section>

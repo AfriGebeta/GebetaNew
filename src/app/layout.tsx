@@ -20,22 +20,26 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
         <body
-            className={`${plusJakarta.className} w-full antialiased pt-20 flex flex-col min-h-screen`}
+            className={`${plusJakarta.className}`}
         >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
-            <AuthProvider>
-                <QueryProvider>
-                    {children}
-                </QueryProvider>
-            </AuthProvider>
-        </ThemeProvider>
+        <div className={
+            'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] pt-8 flex flex-col min-h-screen'
+        }>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+            >
+                <AuthProvider>
+                    <QueryProvider>
+                        {children}
+                    </QueryProvider>
+                </AuthProvider>
+            </ThemeProvider>
+        </div>
         </body>
         </html>
     );

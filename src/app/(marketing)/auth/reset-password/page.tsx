@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/service/apiClient";
 import { useRouter } from 'next/navigation';
+import {BarLoader} from "react-spinners";
 
 const ResetPassword: React.FC = () => {
     const router = useRouter();
@@ -139,7 +140,7 @@ const ResetPassword: React.FC = () => {
                         disabled={requestOtpMutation.isPending}
                         className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
                     >
-                        {requestOtpMutation.isPending ? 'Sending OTP...' : 'Continue'}
+                        {requestOtpMutation.isPending ? <BarLoader /> : 'Continue'}
                     </button>
                 </form>
             )}
@@ -195,7 +196,7 @@ const ResetPassword: React.FC = () => {
                         disabled={changePasswordMutation.isPending}
                         className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
                     >
-                        {changePasswordMutation.isPending ? 'Changing Password...' : 'Change Password'}
+                        {changePasswordMutation.isPending ? <BarLoader /> : 'Change Password'}
                     </button>
                 </form>
             )}

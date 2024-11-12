@@ -10,6 +10,7 @@ import {
     KeyIcon,
     Settings2,
     SquareTerminal,
+    LockKeyhole,
 } from "lucide-react"
 
 import {NavMain} from "@/components/nav-main"
@@ -38,7 +39,7 @@ const data = {
         {
             title: "API keys",
             url: "/dashboard/api-token",
-            icon: KeyIcon,
+            icon: LockKeyhole,
         },
         {
             title: "Billing",
@@ -69,7 +70,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
             <SidebarHeader>
                 <div className="flex gap-[4px] items-center">
                     <Link href="/">
-                        <Image src="/assets/logo.svg" width={30} height={30} alt="logo" className="ml-2" />
+                        <Image src="/assets/logo.svg" width={30} height={30} alt="logo" className="ml-[2px]" />
                     </Link>
                     {/*<h1>GebetaMaps</h1>*/}
                 </div>

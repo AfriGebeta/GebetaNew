@@ -10,7 +10,7 @@ export default function AuthLayout({
     return (
         <Container>
             <div className="flex flex-col items-center mt-[40px] mt-[40px]">
-                <div className="bg-white dark:bg-zinc-800 shadow rounded-lg px-8 py-6 w-full max-w-md">
+                <div className="shadow rounded-lg px-8 py-6 w-full max-w-md">
                     {children}
                 </div>
             </div>

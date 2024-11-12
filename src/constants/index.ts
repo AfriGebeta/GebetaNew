@@ -123,7 +123,7 @@ export const features: Array<Features> = [
         subtitle: "Geocoding",
         description: "makes it effortless to access and integrate detailed local data. Whether for web or mobile platforms, we empower you to customize and include all the data you need, ensuring your users get the most relevant and up-to-date information.",
         image: {
-            source: "/assets/geocoding.webp",
+            source: "/assets/gc.gif",
             alt: "searching places",
             width: 586,
             height: 494
@@ -134,29 +134,29 @@ export const features: Array<Features> = [
         subtitle: "Route Optimization",
         description: "API provides your users with the most optimal routes, making navigation easy. Whether you're developing for web or mobile, we ensure streamlined navigation, helping users save time and reach their destinations faster.",
         image: {
-            source: "/assets/geocoding.webp",
+            source: "/assets/ro.gif",
             alt: "searching places",
             width: 586,
             height: 494
         }
     },
-    {
-        title: "Optimized Navigation Routes",
-        subtitle: "Direction",
-        description: "API ensures seamless routing, offering the fastest and most efficient paths. Whether for web or mobile applications, we simplify navigation, so users can reach their destinations swiftly and hassle-free, every time.",
-        image: {
-            source: "/assets/geocoding.webp",
-            alt: "searching places",
-            width: 586,
-            height: 494
-        }
-    },
+    // {
+    //     title: "Optimized Navigation Routes",
+    //     subtitle: "Direction",
+    //     description: "API ensures seamless routing, offering the fastest and most efficient paths. Whether for web or mobile applications, we simplify navigation, so users can reach their destinations swiftly and hassle-free, every time.",
+    //     image: {
+    //         source: "/assets/geocoding.webp",
+    //         alt: "searching places",
+    //         width: 586,
+    //         height: 494
+    //     }
+    // },
     {
         title: "Map Multiple Routes",
         subtitle: "ONM",
         description: "API one-to-many routing feature allows you to easily generate optimized routes from a single point to multiple destinations. Whether managing deliveries, planning logistics, or mapping out multiple stops, our API ensures that your users receive the most efficient paths to all their endpoints in one go",
         image: {
-            source: "/assets/geocoding.webp",
+            source: "/assets/onm.gif",
             alt: "searching places",
             width: 586,
             height: 494
@@ -291,7 +291,7 @@ export const showcases: Array<Showcase> = [
         title: "NID",
         companyLogo: "/assets/nid.svg",
         companyLogoSize: {width: 58, height: 59},
-        showcasePicture: "/assets/nid-showcase.png",
+        showcasePicture: "/assets/nid-showcase.svg",
         description: "See how our friends at zayride used our ai tools to optimize their routes to reach new customers and explode their reach  in this year.",
         interviewed: "Habtamu Tadesse"
     },
@@ -299,7 +299,7 @@ export const showcases: Array<Showcase> = [
         title: "Adika",
         companyLogo: "/assets/adika.svg",
         companyLogoSize: {width: 60, height: 60},
-        showcasePicture: "/assets/zayride-showcase.png",
+        showcasePicture: "/assets/adika-showcase.png",
         description: "See how our friends at zayride used our ai tools to optimize their routes to reach new customers and explode their reach  in this year.",
         interviewed: "Habtamu Tadesse"
     },

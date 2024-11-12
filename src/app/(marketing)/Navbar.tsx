@@ -20,7 +20,7 @@ export default function Navbar() {
 
     return (
         <div
-            className={`fixed top-0 left-0 right-0 z-[1000] bg-white dark:bg-gray-800 transition-shadow duration-300 ${isScrolled ? "shadow-md" : ""}`}
+            className={`fixed top-0 left-0 right-0 z-[1000] bg-white dark:bg-[#05050a] transition-shadow duration-300 ${isScrolled ? "shadow-md" : ""}`}
         >
             <Container>
                 <nav className="flex justify-between items-center py-4">
@@ -90,7 +90,7 @@ export default function Navbar() {
                 </nav>
 
                 {isMobileMenuOpen && (
-                    <div className="sm:hidden bg-white dark:bg-gray-800 pb-4">
+                    <div className="sm:hidden bg-white dark:bg-[#05050a] pb-4">
                         <ul className="text-[#2E384E] dark:text-white text-[14px] font-medium">
                             {menuItems.map((item, index) => (
                                 <li key={index} className="px-4 py-2">

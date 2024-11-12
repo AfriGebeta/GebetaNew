@@ -42,7 +42,7 @@ export default function Pricing() {
         <Container>
             <div className="w-full pb-[40px]">
                 <div className="flex justify-center mt-12 mb-8">
-                    <div className="bg-[#FFA500]/60 p-1 rounded-full inline-flex">
+                    <div className="bg-[#FFA500]/20 dark:bg-[#05050a] p-1 rounded-full inline-flex">
                         <div className="relative">
                             <div className="absolute inset-0 flex" aria-hidden="true">
                                 <div
@@ -216,7 +216,7 @@ function Plan({data, index}) {
                                             />
                                             {tooltips[index][featureIndex] && (
                                                 <div
-                                                    className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 w-24 p-2 bg-red-100 text-xs rounded dark:bg-gray-800 dark:text-white">
+                                                    className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 w-24 p-2 bg-red-100 text-xs rounded dark:bg-[#05050a] dark:text-white">
                                                     {feature.toolTip}
                                                 </div>
                                             )}

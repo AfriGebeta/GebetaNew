@@ -1,6 +1,6 @@
 // context/AuthContext.js
 "use client";
-import React, {createContext, useState} from 'react';
+import React, {createContext, useEffect, useState} from 'react';
 import useLocalStorage from "../hooks/use-local-storage";
 import {useRouter} from "next/navigation";
 
@@ -9,22 +9,29 @@ export const AuthContext = createContext();
 export const AuthProvider = ({children}) => {
     const router = useRouter();
     const [currentUser, setCurrentUser] = useLocalStorage('currentUser', null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        return JSON.parse(localStorage.getItem('isAuthenticated')) || false;
-    });
+    useEffect(() => {
+        setIsAuthenticated(JSON.parse(localStorage.getItem('isAuthenticated')))
+    }, []);
+
 
     const login = (user) => {
         setIsAuthenticated(true);
         setCurrentUser(user); // Set the user data when logging in
-        localStorage.setItem('isAuthenticated', JSON.stringify(true));
+        if(typeof window !== 'undefined'){
+            localStorage.setItem('isAuthenticated', JSON.stringify(true));
+        }
+        console.log("login is bein called")
     };
 
     const logout = () => {
         setIsAuthenticated(false);
         setCurrentUser(null);
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('currentUser');
+        if(typeof window !== 'undefined'){
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('currentUser');
+        }
         router.push("/");
     };
 

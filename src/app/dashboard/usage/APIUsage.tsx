@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { ScaleLoader } from "react-spinners";
 
 function APIUsage({ graphData, isLoading }) {
@@ -8,18 +8,13 @@ function APIUsage({ graphData, isLoading }) {
 
     useEffect(() => {
         if (graphData && !graphData.error) {
-            // Let's log the structure to understand what we're working with
             console.log("Original Graph Data:", graphData);
-
-            // Assuming graphData.data.data.data is your data object
-            // First, convert the data into an array format that Recharts can understand
             try {
                 const dataArray = Object.entries(graphData.data.data.data).map(([key, value]) => ({
-                    date: new Date(value.Day).toISOString(), // Ensure proper date format
-                    total: parseInt(value.Total) || 0 // Ensure numeric values
+                    date: new Date(value.Day).toISOString(),
+                    total: parseInt(value.Total) || 0
                 }));
 
-                // Sort the data by date
                 const sortedData = dataArray.sort((a, b) => new Date(a.date) - new Date(b.date));
 
                 console.log("Formatted Chart Data:", sortedData);
@@ -51,7 +46,6 @@ function APIUsage({ graphData, isLoading }) {
         return null;
     };
 
-    // Debug render - let's see what data we're working with
     console.log("Current chartData:", chartData);
 
     return (
@@ -75,7 +69,7 @@ function APIUsage({ graphData, isLoading }) {
                                 margin={{
                                     top: 20,
                                     right: 30,
-                                    left: 20,
+                                    left: 40,
                                     bottom: 5
                                 }}
                             >
@@ -96,6 +90,19 @@ function APIUsage({ graphData, isLoading }) {
                                             month: "short",
                                             day: "numeric"
                                         });
+                                    }}
+                                />
+                                <YAxis
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    tick={{ fill: 'currentColor' }}
+                                    // Format large numbers with K (thousands)
+                                    tickFormatter={(value) => {
+                                        if (value >= 1000) {
+                                            return `${(value / 1000).toFixed(1)}K`;
+                                        }
+                                        return value;
                                     }}
                                 />
                                 <Tooltip content={<CustomTooltip />} />
