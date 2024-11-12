@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {ChevronRight, type LucideIcon} from "lucide-react";
+import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -13,6 +13,7 @@ import {
     SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import {ArrowTopRightIcon} from "@radix-ui/react-icons";
 
 export function NavMain({
                             items,
@@ -30,7 +31,7 @@ export function NavMain({
 }) {
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>GebetaMaps</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <Collapsible
@@ -42,8 +43,9 @@ export function NavMain({
                         <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
                                 <SidebarMenuButton tooltip={item.title}>
-                                    {item.icon && <item.icon className="mr-2" />}
-                                    <Link href={item.url} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                    {item.icon && <item.icon className="mr-2"/>}
+                                    <Link href={item.url}
+                                          style={{display: 'flex', alignItems: 'center', width: '100%'}}>
                                         {item.title}
                                     </Link>
                                     {item.items && (
@@ -51,6 +53,12 @@ export function NavMain({
                                             className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
                                         />
                                     )}
+
+                                    {
+                                        item.title === "Documentation" && (
+                                            <ArrowTopRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"/>
+                                        )
+                                    }
                                 </SidebarMenuButton>
                             </CollapsibleTrigger>
                             {item.items && (
@@ -61,7 +69,7 @@ export function NavMain({
                                                 <SidebarMenuSubButton asChild>
                                                     <Link href={subItem.url}>
                                                         <span className="flex items-center">
-                                                            {subItem.icon && <subItem.icon className="mr-2" />}
+                                                            {subItem.icon && <subItem.icon className="mr-2"/>}
                                                             {subItem.title}
                                                         </span>
                                                     </Link>

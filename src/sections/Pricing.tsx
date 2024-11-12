@@ -3,13 +3,15 @@ import {pricing} from "../constants";
 import Image from "next/image";
 import Link from "next/link";
 import Container from "@/sections/Container";
-import {useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import useLocalStorage from "@/hooks/use-local-storage";
 import {useQuery} from "@tanstack/react-query";
 import {buyCredit, getAllCredits} from "@/service/apis";
 import {useRouter} from "next/navigation";
 import {queryClient} from "@/providers/QueryProvider";
 import {Button} from "@/components/ui/button";
+import {AuthContext} from "@/providers/AuthProvider";
+
 
 
 export default function Pricing() {
@@ -39,7 +41,7 @@ export default function Pricing() {
 
     return (
         <Container>
-            <div className="w-full mt-[180px] pb-[40px]">
+            <div className="w-full pb-[40px]">
                 <h4 className="text-[#979BAA] text-[12px] text-center font-bold tracking-20 uppercase">Scale with
                     us</h4>
                 <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center mt-[10px]">Pricing</h2>
@@ -96,12 +98,13 @@ export default function Pricing() {
     )
 }
 
-function Plan({data, index}) {
-    const [currentUser, _] = useLocalStorage({
-        key: 'currentUser',
-        defaultValue: null,
-    })
-    const isLogin = localStorage.getItem('isAuthenticated')
+export  function Plan({data, index}) {
+    const {currentUser} = useContext(AuthContext);
+    const [isLogin, setIsLogin] = useState(false)
+
+    useEffect(() => {
+        setIsLogin(JSON.parse(localStorage.getItem('isAuthenticated')))
+    },[])
 
     const router = useRouter();
 
@@ -174,7 +177,7 @@ function Plan({data, index}) {
             >
 
                 {data.name === "Start up" && (<div
-                    className="absolute inset-0 -z-10 rounded-[16px] shadow-[0_8px_16px_rgba(255,165,0,0.15)]"></div>)}
+                    className="absolute inset-0 -z-10 rounded-[16px] shadow-[0_8px_16px_rgba(255,165,0,0.15)] dark:shadow-[0_8px_16px_rgba(128,128,128,0.7)]"></div>)}
 
                 <div>
                     <div className="flex justify-between items-center">
@@ -191,7 +194,7 @@ function Plan({data, index}) {
                     <h3 className="text-[#2E384E] dark:text-white text-[44px] font-medium mt-[8px]">
                         {data.name !== "Custom" ? (
                             (<>
-                                {data.price}<span className="text-[14px]">/month</span>
+                                {data.price} Birr<span className="text-[14px]">/month</span>
 
                             </> ) ): "Let's talk"}
                     </h3>

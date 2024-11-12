@@ -5,6 +5,7 @@ import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
 import {useRouter} from 'next/navigation';
 import {AuthContext} from "@/providers/AuthProvider";
+import {BarLoader} from "react-spinners";
 
 interface RegistrationData {
     firstname?: string;
@@ -340,10 +341,7 @@ const Register: React.FC = () => {
 
     const renderOtpStep = () => (
         <div className="space-y-6">
-            <h3 className="text-2xl font-semibold text-center text-gray-800 dark:text-white">
-                Enter Verification Code
-            </h3>
-            <p className="text-center text-gray-600 dark:text-gray-300">
+            <p className="text-center text-gray-600 dark:text-gray-300 mt-[20px]">
                 We've sent a verification code to {registrationData.email}
             </p>
             <form onSubmit={handleRegistration} className="space-y-6">
@@ -367,10 +365,10 @@ const Register: React.FC = () => {
                 <button
                     type="submit"
                     disabled={registerMutation.isPending}
-                    className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md
+                    className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md
                              hover:opacity-75 disabled:opacity-50"
                 >
-                    {registerMutation.isPending ? 'Creating Account...' : 'Create Account'}
+                    {registerMutation.isPending ? <BarLoader color="white"/> : 'Create Account'}
                 </button>
             </form>
         </div>
@@ -426,9 +424,9 @@ const Register: React.FC = () => {
                     <button
                         type="submit"
                         disabled={requestOtpMutation.isPending}
-                        className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
+                        className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
                     >
-                        {requestOtpMutation.isPending ? 'Sending Code...' : 'Continue'}
+                        {requestOtpMutation.isPending ? <BarLoader color="white"/> : 'Continue'}
                     </button>
 
                     <p className="text-center text-sm text-gray-600 dark:text-gray-300">

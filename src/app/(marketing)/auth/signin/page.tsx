@@ -5,7 +5,7 @@ import {useRouter} from 'next/navigation';
 import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
 import {AuthContext} from "@/providers/AuthProvider";
-import useLocalStorage from "@/hooks/use-local-storage";
+import {BarLoader} from "react-spinners";
 
 const SignIn: React.FC = () => {
     const {login, setCurrentUser} = useContext(AuthContext);
@@ -101,8 +101,8 @@ const SignIn: React.FC = () => {
                     <p className="text-red-500 text-sm text-center">{error}</p>
                 )}
                 <button type="submit"
-                        className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75">
-                    Sign In
+                        className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75">
+                    {signInMutation.isPending ? <BarLoader color="white"/> : "Sign In"}
                 </button>
                 <p className="text-[12px] text-gray-600 dark:text-gray-300">
                     Don't have an account? <Link href="/auth/register"

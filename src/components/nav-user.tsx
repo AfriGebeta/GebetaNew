@@ -70,22 +70,26 @@ export function NavUser({
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator/>
+                        {/*<DropdownMenuGroup>*/}
+                        {/*    <DropdownMenuItem>*/}
+                        {/*        <Sparkles className="mr-2 h-4 w-4"/>*/}
+                        {/*        Upgrade to Business*/}
+                        {/*    </DropdownMenuItem>*/}
+                        {/*</DropdownMenuGroup>*/}
+                        {/*<DropdownMenuSeparator/>*/}
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <Sparkles className="mr-2 h-4 w-4"/>
-                                Upgrade to Business
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <BadgeCheck className="mr-2 h-4 w-4"/>
-                                Account
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCard className="mr-2 h-4 w-4"/>
-                                <Link href="/dashboard/billing">Billing</Link>
-                            </DropdownMenuItem>
+                            <Link href="/dashboard/account">
+                                <DropdownMenuItem>
+                                    <BadgeCheck className="mr-2 h-4 w-4"/>
+                                    Account
+                                </DropdownMenuItem>
+                            </Link>
+                            <Link href="/dashboard/billing">
+                                <DropdownMenuItem>
+                                    <CreditCard className="mr-2 h-4 w-4"/>
+                                    Billing
+                                </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
                                 {theme === 'light' ? (
                                     <Moon className="mr-2 h-4 w-4"/>

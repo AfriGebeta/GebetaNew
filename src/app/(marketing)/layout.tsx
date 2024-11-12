@@ -9,7 +9,7 @@ export default function RootLayout({
 }>) {
     return (
         <div
-            className="w-full antialiased pt-20 flex flex-col min-h-screen"
+            className="w-full antialiased pt-32 flex flex-col min-h-screen dark:bg-[#05050a]"
         >
             <Navbar/>
             <div className="flex-1">

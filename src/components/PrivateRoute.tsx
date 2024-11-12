@@ -1,22 +1,27 @@
 "use client"
-import React, {useContext, useEffect} from 'react';
-import {useRouter} from 'next/navigation';
-import useLocalStorage from "@/hooks/use-local-storage";
-import {AuthContext} from "@/providers/AuthProvider"; // Import your custom hook
+import React, { useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { AuthContext } from "@/providers/AuthProvider";
 
 const ProtectedRoute = ({children}) => {
     const router = useRouter();
-    const {currentUser} = useContext(AuthContext)
+    const { currentUser } = useContext(AuthContext);
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
+        setIsClient(true);
         if (!currentUser) {
-            // Redirect to the login page if user is not authenticated
-            router.push('/auth/signin'); // Adjust the path as necessary
+            router.push('/auth/signin');
         }
     }, [currentUser, router]);
 
+    // Return null during server-side rendering and initial client render
+    if (!isClient) {
+        return null;
+    }
+
+    // Show loading state only on client-side when not authenticated
     if (!currentUser) {
-        // Optionally render a loading state while redirecting
         return <div>Loading...</div>;
     }
 
