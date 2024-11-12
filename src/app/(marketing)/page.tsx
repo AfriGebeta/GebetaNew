@@ -1,4 +1,3 @@
-import VideoCarousel from "@/sections/VideoCarousel";
 import Highlight from "@/sections/Highlight";
 import Features from "@/sections/Features";
 import Header from "@/sections/Header";

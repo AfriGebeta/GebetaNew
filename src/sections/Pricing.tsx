@@ -1,17 +1,13 @@
 "use client"
 import {pricing} from "../constants";
 import Image from "next/image";
-import Link from "next/link";
 import Container from "@/sections/Container";
 import {useContext, useEffect, useState} from "react";
-import useLocalStorage from "@/hooks/use-local-storage";
 import {useQuery} from "@tanstack/react-query";
 import {buyCredit, getAllCredits} from "@/service/apis";
 import {useRouter} from "next/navigation";
 import {queryClient} from "@/providers/QueryProvider";
-import {Button} from "@/components/ui/button";
 import {AuthContext} from "@/providers/AuthProvider";
-
 
 
 export default function Pricing() {

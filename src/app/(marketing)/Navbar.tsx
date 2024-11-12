@@ -4,7 +4,6 @@ import Link from "next/link";
 import Container from "@/sections/Container";
 import {menuItems} from "../../constants";
 import {useNavbarLogic} from "@/utils/useNavbarLogic";
-import useLocalStorage from "@/hooks/use-local-storage";
 
 export default function Navbar() {
     const {

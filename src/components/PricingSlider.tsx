@@ -1,7 +1,7 @@
 "use client";
-import { useState } from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
-import { ArrowRightIcon } from "@radix-ui/react-icons";
+import {ArrowRightIcon} from "@radix-ui/react-icons";
 
 const PricingSlider = () => {
     const gebetaRate = 0.02;

@@ -1,11 +1,11 @@
 // pages/auth/reset-password.tsx
 
 "use client";
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Link from "next/link";
-import { useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/service/apiClient";
-import { useRouter } from 'next/navigation';
+import {useMutation} from "@tanstack/react-query";
+import {apiClient} from "@/service/apiClient";
+import {useRouter} from 'next/navigation';
 import {BarLoader} from "react-spinners";
 
 const ResetPassword: React.FC = () => {

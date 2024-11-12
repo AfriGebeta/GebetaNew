@@ -1,8 +1,7 @@
 "use client";
-import React, { useContext, useState } from 'react';
-import { useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/service/apiClient";
-import useLocalStorage from "@/hooks/use-local-storage";
+import React, {useContext, useState} from 'react';
+import {useMutation} from "@tanstack/react-query";
+import {apiClient} from "@/service/apiClient";
 import {AuthContext} from "@/providers/AuthProvider";
 
 export default function Account() {

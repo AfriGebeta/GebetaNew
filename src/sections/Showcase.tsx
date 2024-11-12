@@ -2,9 +2,8 @@
 
 import {showcases} from "../constants";
 import Image from "next/image";
-import Link from "next/link";
 import Container from "@/sections/Container";
-import {useState, useEffect} from "react";
+import {useEffect, useState} from "react";
 
 export default function Showcase() {
     const [activeTab, setActiveTab] = useState(0);

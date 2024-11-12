@@ -2,20 +2,11 @@
 import React, {useContext, useState} from "react";
 import {getAllBilling, getUser, verifyPayment} from "@/service/apis";
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
-import useLocalStorage from "@/hooks/use-local-storage";
-import { queryClient } from "@/providers/QueryProvider";
+import {useQuery} from "@tanstack/react-query";
+import {queryClient} from "@/providers/QueryProvider";
 import toast from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import Pricing from "./pricing";
+import {Button} from "@/components/ui/button";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
 import {AuthContext} from "@/providers/AuthProvider";
 
 export default function BillingHistory() {

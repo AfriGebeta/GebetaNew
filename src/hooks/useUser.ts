@@ -1,8 +1,8 @@
 // hooks/useUser.ts
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/service/apiClient";
+import {useQuery} from "@tanstack/react-query";
+import {apiClient} from "@/service/apiClient";
 import useLocalStorage from "@/hooks/use-local-storage";
-import { User } from "@/types/user";
+import {User} from "@/types/user";
 
 export const useUser = () => {
     const [authToken] = useLocalStorage({

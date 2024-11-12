@@ -1,7 +1,7 @@
 "use client"
-import React, { useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { AuthContext } from "@/providers/AuthProvider";
+import React, {useContext, useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {AuthContext} from "@/providers/AuthProvider";
 
 const ProtectedRoute = ({children}) => {
     const router = useRouter();
