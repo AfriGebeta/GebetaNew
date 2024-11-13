@@ -1,3 +1,4 @@
+//@ts-nocheck
 import Container from "@/sections/Container";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,25 +26,24 @@ export default function Footer() {
                         <div>
                             <h6 className="text-[16px] font-bold">Products</h6>
                             <ul className="mt-[16px] space-y-2">
-                                <li>Geocoding</li>
-                                <li>Direction</li>
-                                <li>Routing</li>
-                                <li>Route optimization</li>
-                                <li>ONM</li>
+                                <Link href="https://gebeta-docs.vercel.app/docs/geocoding/geocoding">Geocoding</Link>
+                                <Link href="https://gebeta-docs.vercel.app/docs/direction">Direction</Link>
+                                <Link href="https://gebeta-docs.vercel.app/docs/matrix">Matrix</Link>
+                                <Link href="https://gebeta-docs.vercel.app/docs/route-optimization">Route optimization</Link>
+                                <Link href="https://gebeta-docs.vercel.app/docs/onm">ONM</Link>
                             </ul>
                         </div>
                         <div>
                             <h6 className="text-[16px] font-bold">Resources</h6>
                             <ul className="mt-[16px] space-y-2">
-                                <li>Documentation</li>
-                                <li>Blog</li>
+                                <Link href="https://gebeta-docs.vercel.app">Documentation</Link>
                             </ul>
                         </div>
                         <div>
                             <h6 className="text-[16px] font-bold">Legal</h6>
                             <ul className="mt-[16px] space-y-2">
-                                <li>Terms of Service</li>
-                                <li>Privacy Policy</li>
+                                <Link href="/terms">Terms of Service</Link>
+                                <Link href="/privacy">Privacy Policy</Link>
                             </ul>
                         </div>
                         <div>

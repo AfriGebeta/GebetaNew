@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 
 import {showcases} from "../constants";

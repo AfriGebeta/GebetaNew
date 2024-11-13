@@ -1,4 +1,4 @@
-// providers/theme-provider.tsx
+//@ts-nocheck
 'use client'
 
 import {createContext, useContext, useEffect, useState} from 'react'

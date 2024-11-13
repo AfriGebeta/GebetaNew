@@ -69,22 +69,22 @@ export const menuItems: Array<MegaMenu> = [
         submenu: [
             {
                 title: "Geocoding",
-                link: "/products/geocoding",
+                link: "https://gebeta-docs.vercel.app/docs/geocoding/geocoding",
                 description: "Convert addresses to coordinates and vice versa"
             },
             {
                 title: "Route Optimization",
-                link: "/products/tss",
+                link: "https://gebeta-docs.vercel.app/docs/route-optimization",
                 description: "Find the most efficient routes for multiple stops"
             },
             {
                 title: "Directions",
-                link: "/products/direction",
+                link: "https://gebeta-docs.vercel.app/docs/direction",
                 description: "Get turn-by-turn navigation for various transportation modes"
             },
             {
                 title: "Matrix",
-                link: "/products/matrix",
+                link: "https://gebeta-docs.vercel.app/docs/matrix",
                 description: "Calculate travel times and distances between multiple origins and destinations"
             },
         ],
@@ -110,7 +110,7 @@ export const menuItems: Array<MegaMenu> = [
     //     ],
     // },
     {title: "Company", link: "/company"},
-    {title: "Documentation", link: "https://www.docs.gebetamaps.app"},
+    {title: "Documentation", link: "https://gebeta-docs.vercel.app"},
     // {title: "Blog", link: "/blog"},
     {title: "Pricing", link: "/pricing"},
 ];
