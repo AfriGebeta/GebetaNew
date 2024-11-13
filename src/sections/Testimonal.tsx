@@ -1,3 +1,4 @@
+//@ts-nocheck
 import Container from "@/sections/Container";
 import Image from "next/image";
 

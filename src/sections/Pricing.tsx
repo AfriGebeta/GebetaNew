@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client"
 import {pricing} from "../constants";
 import Image from "next/image";

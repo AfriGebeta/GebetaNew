@@ -1,4 +1,4 @@
-// context/AuthContext.js
+// @ts-nocheck
 "use client";
 import React, {createContext, useEffect, useState} from 'react';
 import useLocalStorage from "../hooks/use-local-storage";

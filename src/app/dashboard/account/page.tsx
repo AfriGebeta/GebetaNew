@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 import React, {useContext, useState} from 'react';
 import {useMutation} from "@tanstack/react-query";

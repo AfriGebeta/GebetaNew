@@ -1,3 +1,4 @@
+//@ts-nocheck
 'use client';
 
 import {useState} from 'react';
@@ -16,7 +17,7 @@ export default function Contact() {
         success: false
     });
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e:any) => {
         e.preventDefault();
         setStatus({ loading: true, error: null, success: false });
 

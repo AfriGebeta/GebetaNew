@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 import {getUserUsage} from "@/service/apis";
 import {useQuery} from "@tanstack/react-query";

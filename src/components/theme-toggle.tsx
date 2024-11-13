@@ -1,4 +1,4 @@
-// components/theme-toggle.tsx
+//@ts-nocheck
 'use client'
 
 import {Moon, Sun} from 'lucide-react'

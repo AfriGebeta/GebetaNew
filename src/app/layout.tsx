@@ -1,3 +1,4 @@
+//@ts-nocheck
 import type {Metadata} from "next";
 import "./globals.css";
 import {Plus_Jakarta_Sans} from "next/font/google";

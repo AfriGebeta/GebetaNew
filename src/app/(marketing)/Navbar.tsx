@@ -146,12 +146,13 @@ export default function Navbar() {
                 >
                     <Container>
                         <div className="py-8 grid grid-cols-4 gap-8">
-                            {menuItems.find((item) => item.title === activeMenu).submenu.map((subItem, index) => (
+                            {(menuItems?.find((item) => item.title === activeMenu)?.submenu || []).map((subItem, index) => (
                                 <Link
-                                     href={subItem.link}
-                                     onClick={handleMouseLeave}
-                                     key={index}
-                                     className="block space-y-2 p-3 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md">
+                                    href={subItem.link}
+                                    onClick={handleMouseLeave}
+                                    key={index}
+                                    className="block space-y-2 p-3 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md"
+                                >
                                     <h3 className="text-[14px] font-semibold">{subItem.title}</h3>
                                     <p className="text-[12px] text-gray-600 dark:text-gray-400">{subItem.description}</p>
                                 </Link>
