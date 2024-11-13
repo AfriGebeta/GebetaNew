@@ -5,5 +5,5 @@ export const TEST_URL = "https://apitest.gebeta.app/api";
 
 
 export const apiClient = axios.create({
-    baseURL: TEST_URL,
+    baseURL: BASE_URL,
 });
