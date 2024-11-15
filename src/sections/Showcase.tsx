@@ -27,7 +27,7 @@ export default function Showcase() {
 
     return (
         <Container>
-            <div className="mt-[180px] pb-[200px]">
+            <div className="mt-[80px] md:mt-[104px] pb-[200px]">
                 <h4 className="text-[#979BAA] text-[12px] text-center font-bold tracking-20 uppercase ">We love to
                     see you grow</h4>
                 <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center mt-[10px]">Showcase</h2>
