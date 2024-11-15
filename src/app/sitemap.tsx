@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { MetadataRoute } from 'next'
+import {MetadataRoute} from 'next'
 import {menuItems} from "@/constants";
 
 export default function sitemap(): MetadataRoute.Sitemap {

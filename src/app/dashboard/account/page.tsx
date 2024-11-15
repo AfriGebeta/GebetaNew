@@ -1,26 +1,14 @@
 //@ts-nocheck
 "use client";
 import React, {useContext, useEffect, useState} from 'react';
-import { useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/service/apiClient";
-import { AuthContext } from "@/providers/AuthProvider";
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs";
+import {useMutation} from "@tanstack/react-query";
+import {apiClient} from "@/service/apiClient";
+import {AuthContext} from "@/providers/AuthProvider";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs";
 import {useToast} from "@/hooks/use-toast";
 
 export default function Account() {
