@@ -6,13 +6,26 @@ import QueryProvider from "@/providers/QueryProvider";
 import {AuthProvider} from "@/providers/AuthProvider";
 import {ThemeProvider} from "@/providers/theme-provider";
 
+
 const plusJakarta = Plus_Jakarta_Sans({
     subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-    title: "GebetaMaps",
-    description: "GebetaMaps",
+    title: "GebetaMaps - Location Solutions Simplified",
+    description: "GebetaMaps delivers powerful APIs for all your location-based needs, from geocoding to route optimization. With up-to-date data and easy-to-use features, build precise, scalable solutions quickly.",
+    keywords: ["maps", "geocoding", "route optimization", "directions", "matrix api"],
+    authors: [{name: "GebetaMaps"}],
+    creator: "GebetaMaps",
+    publisher: "GebetaMaps, Inc.",
+    openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: 'https://gebeta.app',
+        title: 'GebetaMaps - Mapping Made Simple',
+        description: 'Powerful location-based APIs for geocoding and route optimization',
+        siteName: 'GebetaMaps'
+    }
 };
 
 export default function RootLayout({
@@ -28,12 +41,7 @@ export default function RootLayout({
         <div className={
             'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] pt-8 flex flex-col min-h-screen'
         }>
-            <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-            >
+            <ThemeProvider defaultTheme="system" storageKey="app-theme">
                 <AuthProvider>
                     <QueryProvider>
                         {children}

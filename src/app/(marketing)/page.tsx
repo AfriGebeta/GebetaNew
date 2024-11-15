@@ -6,16 +6,17 @@ import Testimonial from "@/sections/Testimonal";
 import Partners from "@/sections/Partners";
 import Showcase from "@/sections/Showcase";
 import CallToAction from "@/sections/CallToAction";
+import VideoCarousel from "@/sections/VideoCarousel";
 
 export default function Home() {
 
     return (
         <main>
             <Header/>
-            {/*<VideoCarousel/>*/}
+            <VideoCarousel/>
             <Partners/>
+            <div className="h-[1px] bg-[#FFF5E2] dark:hidden mt-[50px] md:mt-[76px]"></div>
             <Highlight/>
-            <div className="h-[1px] bg-[#FFF5E2] mt-[96px]"></div>
             <Features/>
             <Pricing/>
             <Testimonial/>

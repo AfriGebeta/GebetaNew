@@ -3,8 +3,11 @@ const config: {
 		extend: {
 			dropShadow: { custom: string };
 			keyframes: {
+				"accordion-up": { from: { height: string }; to: { height: string } };
 				"smooth-scroll": { "100%": { transform: string }; "0%": { transform: string } };
-				"smooth-scroll-2": { "100%": { transform: string }; "0%": { transform: string } }
+				"accordion-down": { from: { height: string }; to: { height: string } };
+				"smooth-scroll-2": { "100%": { transform: string }; "0%": { transform: string } };
+				"caret-blink": { "20%,50%": { opacity: string }; "0%,70%,100%": { opacity: string } }
 			};
 			borderRadius: { md: string; sm: string; lg: string };
 			backgroundImage: { "0": string; custom: string; noise: string; "250": string; " xmlns=": string };
@@ -35,7 +38,13 @@ const config: {
 				card: { foreground: string; DEFAULT: string };
 				primary: { foreground: string; DEFAULT: string }
 			};
-			animation: { "smooth-scroll": string; "smooth-scroll-2": string }
+			animation: {
+				"accordion-up": string;
+				"smooth-scroll": string;
+				"accordion-down": string;
+				"smooth-scroll-2": string;
+				"caret-blink": string
+			}
 		}
 	}; darkMode: string[]; content: string[]
 } = {
@@ -117,10 +126,14 @@ const config: {
   			'0': '0',
   			'250': '250',
   			custom: 'linear-gradient(179.416deg, rgba(255, 255, 255, 0%) 0%, rgba(255, 165, 0, 0%) 30%, rgba(255, 165, 0, 0.3) 100%)',
-  			noise: 'url(\\\\\\\\"data:image/svg+xml,%3C!-- svg: first layer --%3E%3Csvg viewBox=',
+  			noise: 'url(\\\\\\\\\\\\\\\\"data:image/svg+xml,%3C!-- svg: first layer --%3E%3Csvg viewBox=',
   			' xmlns=': 'http'
   		},
   		keyframes: {
+			"caret-blink": {
+				"0%,70%,100%": { opacity: "1" },
+				"20%,50%": { opacity: "0" },
+			},
   			'smooth-scroll': {
   				'0%': {
   					transform: 'translateX(0)'
@@ -136,11 +149,30 @@ const config: {
   				'100%': {
   					transform: 'translateX(-50%)'
   				}
+  			},
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
+  				}
   			}
   		},
   		animation: {
   			'smooth-scroll': 'smooth-scroll 30s linear infinite',
-  			'smooth-scroll-2': 'smooth-scroll 40s linear infinite'
+  			'smooth-scroll-2': 'smooth-scroll 40s linear infinite',
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+			"caret-blink": "caret-blink 1.25s ease-out infinite",
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

@@ -1,7 +1,7 @@
 //@ts-nocheck
 "use client"
 
-import {BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Moon, Sun,} from "lucide-react"
+import {BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Moon, Sun, Laptop} from "lucide-react"
 
 import {Avatar, AvatarFallback,} from "@/components/ui/avatar"
 import {
@@ -12,6 +12,9 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
 import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,} from "@/components/ui/sidebar"
 import Link from "next/link"
@@ -71,13 +74,6 @@ export function NavUser({
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator/>
-                        {/*<DropdownMenuGroup>*/}
-                        {/*    <DropdownMenuItem>*/}
-                        {/*        <Sparkles className="mr-2 h-4 w-4"/>*/}
-                        {/*        Upgrade to Business*/}
-                        {/*    </DropdownMenuItem>*/}
-                        {/*</DropdownMenuGroup>*/}
-                        {/*<DropdownMenuSeparator/>*/}
                         <DropdownMenuGroup>
                             <Link href="/dashboard/account">
                                 <DropdownMenuItem>
@@ -91,14 +87,28 @@ export function NavUser({
                                     Billing
                                 </DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-                                {theme === 'light' ? (
-                                    <Moon className="mr-2 h-4 w-4"/>
-                                ) : (
-                                    <Sun className="mr-2 h-4 w-4"/>
-                                )}
-                                {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-                            </DropdownMenuItem>
+                            <DropdownMenuSub>
+                                <DropdownMenuSubTrigger>
+                                    {theme === 'light' && <Sun className="mr-2 h-4 w-4" />}
+                                    {theme === 'dark' && <Moon className="mr-2 h-4 w-4" />}
+                                    {theme === 'system' && <Laptop className="mr-2 h-4 w-4" />}
+                                    Theme
+                                </DropdownMenuSubTrigger>
+                                <DropdownMenuSubContent>
+                                    <DropdownMenuItem onClick={() => setTheme("light")}>
+                                        <Sun className="mr-2 h-4 w-4" />
+                                        Light
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setTheme("dark")}>
+                                        <Moon className="mr-2 h-4 w-4" />
+                                        Dark
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setTheme("system")}>
+                                        <Laptop className="mr-2 h-4 w-4" />
+                                        System
+                                    </DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                            </DropdownMenuSub>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem onClick={() => logout()}>
