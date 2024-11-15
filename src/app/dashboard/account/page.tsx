@@ -21,10 +21,11 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs";
-import Link from "next/link";
+import {useToast} from "@/hooks/use-toast";
 
 export default function Account() {
     const { currentUser, setCurrentUser, logout } = useContext(AuthContext);
+    const {toast} = useToast()
 
     // State for account info
     const [username, setUsername] = useState(currentUser?.username || '');
@@ -53,7 +54,10 @@ export default function Account() {
             return response.data;
         },
         onSuccess: () => {
-            setSuccess('Profile updated successfully');
+            // setSuccess('Profile updated successfully');
+            toast({
+                description:"Profile updated successfully"
+            })
             setCurrentUser({
                 ...currentUser,
                 user: {
@@ -65,7 +69,11 @@ export default function Account() {
             });
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Update failed. Please try again.");
+            // setError(error.response?.data?.message || "Update failed. Please try again.");
+            toast({
+                description:`${error?.response?.data?.message || "Update failed. Please try again."}`,
+                variant: 'destructive'
+            })
         }
     });
 
@@ -93,7 +101,11 @@ export default function Account() {
             setError('');
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Failed to send OTP");
+            // setError(error.response?.data?.message || "Failed to send OTP");
+            toast({
+                description:`${error?.response?.data?.message || "Failed to send OTP"}`,
+                variant: 'destructive'
+            })
         }
     });
 
@@ -105,7 +117,11 @@ export default function Account() {
             setError('');
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Verification failed");
+            // setError(error.response?.data?.message || "Verification failed");
+            toast({
+                description:`${error?.response?.data?.message || "Verification failed"}`,
+                variant: 'destructive'
+            })
         }
     });
 
@@ -118,7 +134,11 @@ export default function Account() {
             logout();
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Failed to change password");
+            // setError(error.response?.data?.message || "Failed to change password");
+            toast({
+                description:`${error?.response?.data?.message || "Failed to change password"}`,
+                variant: 'destructive'
+            })
         }
     });
 
