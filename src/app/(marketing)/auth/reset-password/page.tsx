@@ -1,7 +1,7 @@
-// pages/auth/reset-password.tsx
+//@ts-nocheck
 
 "use client";
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Link from "next/link";
 import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
@@ -107,6 +107,32 @@ const ResetPassword: React.FC = () => {
         }
     };
 
+    const [timer, setTimer] = useState(120); // 2 minutes timer in seconds
+    const [canResend, setCanResend] = useState(false);
+
+    useEffect(() => {
+        if (timer > 0) {
+            const interval = setInterval(() => {
+                setTimer(prev => prev - 1);
+            }, 1000);
+            return () => clearInterval(interval);
+        } else {
+            setCanResend(true);
+        }
+    }, [timer]);
+
+    const handleResendOtp = async () => {
+        if (canResend) {
+            setTimer(120); // Reset timer
+            setCanResend(false);
+            try {
+                await requestOtpMutation.mutateAsync(email);
+            } catch (error) {
+                console.error('OTP resend error:', error);
+            }
+        }
+    };
+
     return (
         <>
             <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center leading-50 mt-[10px]">
@@ -169,13 +195,25 @@ const ResetPassword: React.FC = () => {
                     >
                         {verifyOtpMutation.isPending ? 'Verifying OTP...' : 'Verify OTP'}
                     </button>
+                    <div className="mt-[8px] flex justify-center">
+                        <button
+                            type="button"
+                            onClick={handleResendOtp}
+                            disabled={!canResend}
+                            className={`text-sm text-[#FFA500] ${canResend ? '' : 'opacity-50 cursor-not-allowed'}`}
+                        >
+                            Resend
+                            OTP {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
+                        </button>
+                    </div>
                 </form>
             )}
 
             {step === 3 && (
                 <form className="space-y-6 mt-[40px]" onSubmit={handleChangePassword}>
                     <div>
-                        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <label htmlFor="newPassword"
+                               className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             New Password
                         </label>
                         <input

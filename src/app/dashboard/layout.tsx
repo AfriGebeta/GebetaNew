@@ -12,7 +12,7 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {Toaster} from "react-hot-toast";
+import {Toaster} from "@/components/ui/toaster"
 import PrivateRoute from "@/components/PrivateRoute";
 
 export default function DashboardLayout({children}: { children: React.ReactNode }) {

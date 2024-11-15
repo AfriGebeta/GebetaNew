@@ -5,7 +5,7 @@ import Container from "@/sections/Container";
 export default function Highlight() {
     return (
         <Container>
-            <div className="mt-[104px] flex flex-col items-center">
+            <div className="mt-[80px] md:mt-[104px] flex flex-col items-center">
                 <h4 className="text-[#979BAA] text-[12px] tracking-20 leading-15 font-bold uppercase text-center">This
                     is GebetaMaps</h4>
                 <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center leading-50 mt-[10px]">All in One Location

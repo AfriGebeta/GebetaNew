@@ -3,7 +3,7 @@ import Container from "@/sections/Container";
 export default function Terms() {
     return (
         <Container>
-            <div className="mt-[80px]">
+            <div>
                 <h1 className="text-[48px] text-center text-[#1B1E2B] dark:text-white leading-60 mb-[40px]">
                     Terms and Conditions
                 </h1>
