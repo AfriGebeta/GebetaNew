@@ -5,7 +5,7 @@ import Link from "next/link";
 import Container from "@/sections/Container";
 import {menuItems} from "@/constants";
 import {useNavbarLogic} from "@/utils/useNavbarLogic";
-import {User2Icon, UserIcon} from "lucide-react";
+import {User2Icon} from "lucide-react";
 
 export default function Navbar() {
     const {

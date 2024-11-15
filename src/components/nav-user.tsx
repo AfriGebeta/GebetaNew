@@ -1,7 +1,7 @@
 //@ts-nocheck
 "use client"
 
-import {BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Moon, Sun, Laptop} from "lucide-react"
+import {BadgeCheck, ChevronsUpDown, CreditCard, Laptop, LogOut, Moon, Sun} from "lucide-react"
 
 import {Avatar, AvatarFallback,} from "@/components/ui/avatar"
 import {
@@ -11,10 +11,10 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuTrigger,
     DropdownMenuSub,
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,} from "@/components/ui/sidebar"
 import Link from "next/link"

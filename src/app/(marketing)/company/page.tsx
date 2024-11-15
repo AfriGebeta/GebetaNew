@@ -1,5 +1,5 @@
 import Container from "@/sections/Container";
-import { Lightbulb, Shield, HeartHandshake, Building2, Navigation, Globe2 } from 'lucide-react';
+import {Globe2, HeartHandshake, Lightbulb, Navigation, Shield} from 'lucide-react';
 
 export default function Company() {
     const coreValues = [
