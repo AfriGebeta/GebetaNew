@@ -114,7 +114,7 @@ export default function Navbar() {
                                         </Link>
                                         {item?.submenu && (
                                             <svg
-                                                className={`w-4 h-4 transform ${activeMobileSubmenu === item.title ? 'rotate-180' : ''}`}
+                                                className={`w-4 h-4 dark:stroke-white transform ${activeMobileSubmenu === item.title ? 'rotate-180' : ''}`}
                                                 viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                       d="M19 9l-7 7-7-7"/>
@@ -140,7 +140,7 @@ export default function Navbar() {
                         </ul>
                         <div className="mt-4 space-y-4 px-4">
                             <div className="flex items-center gap-[4px]">
-                                <User2Icon className="w-[16px] h-[16px] text-white"/>
+                                <User2Icon className="w-[16px] h-[16px]"/>
                                 <Link
                                     className="font-medium"
                                     href="/auth/signin"
