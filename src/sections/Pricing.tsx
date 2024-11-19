@@ -160,8 +160,6 @@ export function Plan({data, index}) {
 
     const handleUpgrade = (id) => {
         if (!isLogin) {
-            localStorage.setItem('plan', id)
-            localStorage.setItem('redirect', String(true))
             router.push('/auth/signin')
         } else {
             if (data.name !== "Custom") {
@@ -212,7 +210,7 @@ export function Plan({data, index}) {
                     <h3 className="text-[#2E384E] dark:text-white text-[44px] font-medium mt-[8px]">
                         {data.name !== "Custom" ? (
                             (<>
-                                {data.price} Birr<span className="text-[14px]">/month</span>
+                                {data.price} Birr<span className="text-[14px]">/{data.expiredIn === 30 ? "month" : "year"}</span>
 
                             </>)) : "Let's talk"}
                     </h3>
