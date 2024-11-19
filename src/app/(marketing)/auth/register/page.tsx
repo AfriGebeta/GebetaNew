@@ -66,7 +66,7 @@ const Register: React.FC = () => {
             setError("");
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Failed to send OTP");
+            setError(error.response?.data?.error?.message || "Failed to send OTP");
         }
     });
 
@@ -86,7 +86,7 @@ const Register: React.FC = () => {
             router.push('/dashboard'); // Redirect to dashboard
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Sign-in failed. Please try again.");
+            setError(error.response?.data?.error?.message || "Sign-in failed. Please try again.");
         },
     });
 
@@ -104,14 +104,14 @@ const Register: React.FC = () => {
                 });
             } catch (error) {
                 console.error('Sign-in after registration failed:', error);
-                setError(error.response?.data?.message || "Sign-in failed after registration.");
+                setError(error.response?.data?.error?.message || "Sign-in failed after registration.");
             }
 
             router.push('/dashboard');
             setError("");
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Registration failed");
+            setError(error.response?.data?.error?.message || "Registration failed");
         }
     });
 
@@ -195,7 +195,7 @@ const Register: React.FC = () => {
 
     const handleResendOtp = async () => {
         if (canResend) {
-            setTimer(360); // Reset timer
+            setTimer(120); // Reset timer
             setCanResend(false);
             try {
                 await requestOtpMutation.mutateAsync(registrationData.email);
