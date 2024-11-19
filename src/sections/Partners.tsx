@@ -15,6 +15,7 @@ export default function Partners() {
                     <Image src="/assets/nid.svg" alt="National ID logo" width={58} height={59}/>
                     <Image src="/assets/adika.svg" alt="Adika logo" width={60} height={60}/>
                     <Image src="/assets/tewos.svg" alt="Alen home solutions logo" width={150} height={60}/>
+                    <Image src="/assets/tilla.png" alt="Tilla logo" width={102} height={60}/>
                 </div>
             </div>
         </Container>
