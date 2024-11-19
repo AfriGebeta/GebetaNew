@@ -1,6 +1,0 @@
-[build]
-  command = "curl -fsSL https://bun.sh/install | bash && export BUN_INSTALL=\"$HOME/.bun\" && export PATH=\"$BUN_INSTALL/bin:$PATH\" && bun install && bun run build"
-  publish = ".next"
-
-[build.environment]
-  NODE_VERSION = "18.20.5"
