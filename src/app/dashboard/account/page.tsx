@@ -16,9 +16,9 @@ export default function Account() {
     const {toast} = useToast()
 
     // State for account info
-    const [username, setUsername] = useState(currentUser?.username || '');
-    const [email, setEmail] = useState(currentUser?.email || '');
-    const [phone, setPhone] = useState(currentUser?.phone || '');
+    const [username, setUsername] = useState(currentUser?.user?.username || '');
+    const [email, setEmail] = useState(currentUser?.user?.email || '');
+    const [phone, setPhone] = useState(currentUser?.user?.phone || '');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
