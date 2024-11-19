@@ -15,7 +15,7 @@ export default function Features() {
                                 className={`w-full flex flex-col lg:flex-row gap-[40px] lg:justify-between ${(index + 1) % 2 === 0 ? "lg:flex-row-reverse" : ""} mt-[130px] z-50`}>
                                 <div className="w-full md:w-1/2">
                                     <h5
-                                        className="w-fit whitespace-nowrap px-[30px] py-[15px] bg-[#FFF7E8] dark:bg-zinc-900 rounded-[16px] text-[8px] md:text-[12px] text-[#FFA500] font-extrabold tracking-20 uppercase">
+                                        className="w-fit whitespace-nowrap px-[30px] py-[15px] bg-[#FFF7E8] dark:bg-zinc-900 rounded-[16px] text-[12px] text-[#FFA500] font-extrabold tracking-20 uppercase">
                                         {feature.subtitle}</h5>
                                     <h2 className="w-full whitespace-nowrap text-[24px] md:text-[40px] text-[#1B1E2B] dark:text-white mt-[12px]">{feature.title}</h2>
                                     <p className="w-full md:w-4/5 text-[16px] md:text-[20px] text-[#62677F] dark:text-white/70 leading-25 mt-[32px]"><span
