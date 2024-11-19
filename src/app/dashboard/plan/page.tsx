@@ -95,10 +95,8 @@ function PlanCard({plan, currentUser, key}) {
     };
 
     const handleUpgrade = () => {
-        if (isPurchased) return;
-
         if (plan.name !== "Custom") {
-            buyCredit(currentUser?.token, id)
+            buyCredit(currentUser?.token, plan.id)
                 .then(response => {
                     queryClient.invalidateQueries('history')
                     if (response.data.data.status === "success") {
@@ -152,7 +150,6 @@ function PlanCard({plan, currentUser, key}) {
                     className="w-full py-4 bg-[#FFA500] hover:bg-[#FFA500]/110 text-white transition-all duration-300"
                     variant={isPurchased ? "secondary" : "default"}
                     onClick={handleUpgrade}
-                    disabled={isPurchased}
                 >
                     {getButtonText()}
                 </Button>
