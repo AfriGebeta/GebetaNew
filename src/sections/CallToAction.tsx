@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function CallToAction() {
     return (
-        <div className="relative mt-[80px] md:mt-[104px]">
+        <div className="relative mt-[60px] md:mt-[104px]">
             <Container>
                 <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center">Ready to get started ?</h2>
                 <p className="mt-[42px] text-[#62677F] text-[20px] text-center">Create an account or talk to one of
