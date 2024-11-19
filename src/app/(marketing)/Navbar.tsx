@@ -1,9 +1,11 @@
+//@ts-nocheck
 "use client";
 import Image from "next/image";
 import Link from "next/link";
 import Container from "@/sections/Container";
-import {menuItems} from "../../constants";
+import {menuItems} from "@/constants";
 import {useNavbarLogic} from "@/utils/useNavbarLogic";
+import {User2Icon} from "lucide-react";
 
 export default function Navbar() {
     const {
@@ -15,17 +17,24 @@ export default function Navbar() {
         handleMouseLeave,
         toggleMobileMenu,
         toggleMobileSubmenu,
+        closeMobileMenu,
     } = useNavbarLogic();
 
     return (
         <div
-            className={`fixed top-0 left-0 right-0 z-[1000] bg-white dark:bg-[#05050a] transition-shadow duration-300 ${isScrolled ? "shadow-md" : ""}`}
+            id="navbar-container"
+            className={`fixed top-0 left-0 right-0 z-[1000] bg-white dark:bg-[#05050a] transition-shadow duration-300 ${
+                isScrolled ? "shadow-md" : ""
+            }`}
         >
             <Container>
                 <nav className="flex justify-between items-center py-4">
                     <div className="flex items-center">
-                        <Image src="/assets/logo.svg" width={30} height={30} alt="logo" className="mr-2" />
-                        <Link href="/" className="text-[16px] text-[#2E384E] dark:text-white font-semibold tracking-wider">GebetaMaps</Link>
+                        <Image src="/assets/logo.svg" width={30} height={30} alt="logo" className="mr-2"/>
+                        <Link href="/" onClick={closeMobileMenu}
+                              className="text-[16px] text-[#2E384E] dark:text-white font-semibold tracking-wider">
+                            GebetaMaps
+                        </Link>
                     </div>
 
                     <div className="sm:hidden">
@@ -35,11 +44,13 @@ export default function Navbar() {
                         >
                             {isMobileMenuOpen ? (
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                             ) : (
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M4 6h16M4 12h16m-7 6h7"/>
                                 </svg>
                             )}
                         </button>
@@ -57,8 +68,10 @@ export default function Navbar() {
                                     <Link href={item.link || "#"} className="flex items-center gap-1">
                                         {item.title}
                                         {item.submenu && (
-                                            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                 viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
                                             </svg>
                                         )}
                                     </Link>
@@ -75,11 +88,12 @@ export default function Navbar() {
                                 width={24}
                                 height={24}/>
                             <Link
-                                className="font-medium  hover:text-[#FFA500] transition-all duration-400"
+                                className="font-medium hover:text-[#FFA500] transition-all duration-400"
                                 href="/auth/signin"
                             >Sign In</Link>
                         </div>
-                        <div className="px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
+                        <div
+                            className="px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
                             <Link
                                 className="font-bold"
                                 href="/auth/register"
@@ -95,17 +109,27 @@ export default function Navbar() {
                                 <li key={index} className="px-4 py-2">
                                     <div className="flex justify-between items-center"
                                          onClick={() => item?.submenu && toggleMobileSubmenu(item.title)}>
-                                        <Link href={item.link || "#"}>{item.title}</Link>
+                                        <Link href={item.link || "#"} onClick={closeMobileMenu}>
+                                            {item.title}
+                                        </Link>
                                         {item?.submenu && (
-                                            <svg className={`w-4 h-4 transform ${activeMobileSubmenu === item.title ? 'rotate-180' : ''}`} viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            <svg
+                                                className={`w-4 h-4 dark:stroke-white transform ${activeMobileSubmenu === item.title ? 'rotate-180' : ''}`}
+                                                viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M19 9l-7 7-7-7"/>
                                             </svg>
                                         )}
                                     </div>
                                     {item.submenu && activeMobileSubmenu === item.title && (
                                         <ul className="flex flex-col pl-4 mt-2 space-y-2">
                                             {item.submenu.map((subItem, subIndex) => (
-                                                <Link href={subItem.link} key={subIndex} className="text-sm p-2 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md">
+                                                <Link
+                                                    href={subItem.link}
+                                                    key={subIndex}
+                                                    onClick={closeMobileMenu}
+                                                    className="text-sm p-2 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md"
+                                                >
                                                     {subItem.title}
                                                 </Link>
                                             ))}
@@ -114,23 +138,21 @@ export default function Navbar() {
                                 </li>
                             ))}
                         </ul>
-                        <div className="mt-4 space-y-4">
+                        <div className="mt-4 space-y-4 px-4">
                             <div className="flex items-center gap-[4px]">
-                                <Image
-                                    className="dark:fill-whitesmoke"
-                                    src="/assets/user.svg"
-                                    alt="user icon"
-                                    width={24}
-                                    height={24}/>
+                                <User2Icon className="w-[16px] h-[16px]"/>
                                 <Link
                                     className="font-medium"
-                                    href="/auth/sign-in"
+                                    href="/auth/signin"
+                                    onClick={closeMobileMenu}
                                 >Sign In</Link>
                             </div>
-                            <div className="w-fit px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
+                            <div
+                                className="w-fit px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
                                 <Link
                                     className="font-bold"
-                                    href="/auth/signup"
+                                    href="/auth/register"
+                                    onClick={closeMobileMenu}
                                 >Get Started</Link>
                             </div>
                         </div>

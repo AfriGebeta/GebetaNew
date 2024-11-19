@@ -3,7 +3,14 @@
 
 import * as React from "react"
 import {useContext} from "react"
-import {BookOpen, CreditCard, LockKeyhole, Settings2, SquareTerminal,} from "lucide-react"
+import {
+    BookOpen,
+    CreditCard,
+    LockKeyhole,
+    ReceiptIcon,
+    Settings2,
+    SquareTerminal,
+} from "lucide-react"
 
 import {NavMain} from "@/components/nav-main"
 import {NavUser} from "@/components/nav-user"
@@ -30,6 +37,11 @@ const data = {
             title: "API keys",
             url: "/dashboard/api-token",
             icon: LockKeyhole,
+        },
+        {
+            title: "My Subscription",
+            url: "/dashboard/plan",
+            icon: ReceiptIcon
         },
         {
             title: "Billing",

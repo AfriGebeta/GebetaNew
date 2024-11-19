@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import Image from "next/image";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export default function VideoCarousel() {
     const videos = [
@@ -10,6 +10,13 @@ export default function VideoCarousel() {
     ];
 
     const [currentVideoIndex, setCurrentVideoIndex] = useState(1);
+    const [windowWidth, setWindowWidth] = useState(0);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setWindowWidth(window.innerWidth);
+        }
+    }, []);
 
     const nextVideo = () => {
         setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videos.length);
@@ -20,14 +27,14 @@ export default function VideoCarousel() {
     };
 
     return (
-        <div className="flex flex-col gap-4 sm:gap-8 justify-center items-center w-full mt-[60px] sm:mt-[120px] bg-custom pb-[20px] sm:pb-[40px] px-4 sm:px-[0px] ">
+        <div className="flex flex-col gap-4 sm:gap-8 justify-center items-center w-full mt-[60px] sm:mt-[120px] bg-custom pb-[20px] sm:pb-[40px] px-4 sm:px-[0px]">
             <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] overflow-hidden">
                 {videos.map((video, index) => {
                     const offset = index - currentVideoIndex;
-                    const translateX = offset * (window.innerWidth < 640 ? 100 : 75);
-                    const scale = offset === 0 ? 1 : window.innerWidth < 640 ? 0 : 0.65;
+                    const translateX = offset * (windowWidth < 640 ? 100 : 75);
+                    const scale = offset === 0 ? 1 : windowWidth < 640 ? 0 : 0.65;
                     const zIndex = offset === 0 ? 10 : 0;
-                    const opacity = offset === 0 ? 1 : window.innerWidth < 640 ? 0 : 0.5;
+                    const opacity = offset === 0 ? 1 : windowWidth < 640 ? 0 : 0.5;
 
                     return (
                         <div

@@ -42,7 +42,18 @@ const SignIn: React.FC = () => {
             router.push('/dashboard'); // Redirect to dashboard
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Sign-in failed. Please try again.");
+            const errorCode = error.response?.data?.error?.code;
+
+            switch (errorCode) {
+                case 'HE00009':
+                    setError('Invalid username or password. Please check your credentials and try again.');
+                    break;
+                case 'HE00003':
+                    setError('Account not found. Please check your username or create a new account.');
+                    break;
+                default:
+                    setError('An error occurred while signing in. Please try again later.');
+            }
         },
 
     });

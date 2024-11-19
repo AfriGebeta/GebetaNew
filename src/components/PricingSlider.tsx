@@ -5,9 +5,8 @@ import Link from 'next/link';
 import {ArrowRightIcon} from "@radix-ui/react-icons";
 
 const PricingSlider = () => {
-    const gebetaRate = 0.02;
+    const gebetaRate = 0.002;
 
-    // Add `Matrix` to the features
     const [sliderValues, setSliderValues] = useState({
         Geocoding: 0,
         Direction: 0,
@@ -16,7 +15,6 @@ const PricingSlider = () => {
         Matrix: 0,
     });
 
-    // Handle slider change for each feature
     const handleSliderChange = (e, feature) => {
         setSliderValues({
             ...sliderValues,
@@ -45,20 +43,22 @@ const PricingSlider = () => {
 
     return (
         <div className="flex justify-center">
-            <div className="w-full mt-[40px] mb-8">
-                <div className="flex justify-between items-center mb-4">
-                    <p className="text-md mb-4 max-w-[75ch]">The Routes API uses a pay-as-you-go pricing model. The Gebeta maps APIs arer billed by usage. Cost is calculated by
-                        api call × Price per each use Use our Pricing and Usage calculator to estimate your usage cost per API .</p>
+            <div className="w-full">
+                <div className="bg-[#FFA500]/5 dark:bg-[#FFA500]/10 p-6 rounded-xl mb-8">
+                    <p className="text-md text-gray-700 dark:text-gray-300">
+                        The Routes API uses a pay-as-you-go pricing model. The Gebeta maps APIs are billed by usage.
+                        Cost is calculated by api call × Price per each use. Use our Pricing and Usage calculator to
+                        estimate your usage cost per API.
+                    </p>
                 </div>
 
-                {/* Loop through each feature and render a slider for it */}
                 {Object.keys(sliderValues).map((feature) => (
-                    <div key={feature} className="mb-6">
-                        <div className="flex justify-between items-center mb-2">
-                            <p className="text-lg font-semibold">{feature}</p>
+                    <div key={feature} className="mb-8 bg-white dark:bg-[#111116] p-6 rounded-xl shadow-sm">
+                        <div className="flex justify-between items-center mb-4">
+                            <p className="text-lg font-semibold text-[#1B1E2B] dark:text-white">{feature}</p>
                         </div>
-                        <div className="flex items-center space-x-4">
-                            <div className="w-1/2 pr-4">
+                        <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+                            <div className="flex-1 mb-4 md:mb-0">
                                 <input
                                     type="range"
                                     min="0"
@@ -71,7 +71,7 @@ const PricingSlider = () => {
                                         background: `linear-gradient(to right, ${getBackgroundColor(0)} 0%, ${getBackgroundColor(sliderValues[feature])} ${(sliderValues[feature] / 25000) * 100}%, #e5e7eb ${(sliderValues[feature] / 25000) * 100}%)`,
                                     }}
                                 />
-                                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
                                     <span>0</span>
                                     <span>100</span>
                                     <span>5k</span>
@@ -79,12 +79,16 @@ const PricingSlider = () => {
                                     <span>20k</span>
                                     <span>25k</span>
                                 </div>
-                                <p className="text-sm font-bold mt-2">{sliderValues[feature].toLocaleString()} requests</p>
+                                <p className="text-sm font-bold mt-2 text-[#1B1E2B] dark:text-white">
+                                    {sliderValues[feature].toLocaleString()} requests
+                                </p>
                             </div>
 
-                            <div className="w-1/3 p-4 rounded-lg">
-                                <h3 className="text-sm font-semibold mb-1">Gebeta Maps</h3>
-                                <p className="text-lg font-bold">
+                            <div className="bg-[#FFA500]/5 dark:bg-[#FFA500]/10 p-4 rounded-lg min-w-[200px]">
+                                <h3 className="text-sm font-semibold mb-1 text-gray-600 dark:text-gray-300">
+                                    Estimated Cost
+                                </h3>
+                                <p className="text-2xl font-bold text-[#1B1E2B] dark:text-white">
                                     {formatPrice(sliderValues[feature] * gebetaRate, sliderValues[feature])}
                                 </p>
                             </div>

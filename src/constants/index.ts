@@ -8,6 +8,7 @@ interface Features {
         width: number
         height: number
     }
+    link: string
 }
 
 interface Pricing {
@@ -127,7 +128,8 @@ export const features: Array<Features> = [
             alt: "searching places",
             width: 586,
             height: 494
-        }
+        },
+        link:"https://gebeta-docs.vercel.app/docs/geocoding/geocoding"
     },
     {
         title: "Smart Route Optimization",
@@ -138,7 +140,8 @@ export const features: Array<Features> = [
             alt: "searching places",
             width: 586,
             height: 494
-        }
+        },
+        link:"https://gebeta-docs.vercel.app/docs/route-optimization"
     },
     // {
     //     title: "Optimized Navigation Routes",
@@ -160,7 +163,8 @@ export const features: Array<Features> = [
             alt: "searching places",
             width: 586,
             height: 494
-        }
+        },
+        link:"https://gebeta-docs.vercel.app/docs/onm"
     },
 ]
 
@@ -315,14 +319,14 @@ export const footerLinks: Array<FooterLink> = [
 ]
 
 //Our Team
-export const teamMembers = [
-    {name: "Bemhreth Gezahegn", role: "CEO", img: "/assets/bemhret.png"},
-    {name: "Abenezer Seifu", role: "CTO", img: "/assets/abeni.png"},
-    {name: "Benayas Teshome", role: "COO", img: "/assets/beni.png"},
-    {name: "Rahel Tura", role: "CFO", img: "/assets/rahel.png"},
-    {name: "Deborah Terefe", role: "Legal Advisor", img: "/assets/debora.png"},
-    {name: "Bereket Terefe", role: "Senior Software Engineer", img: "/assets/bereket.png"},
-    {name: "Daniel Tsegaw", role: "Senior Software Engineer", img: "/assets/dani.png"},
-    {name: "Zubeyr Anwar", role: "Frontend Developer", img: "/assets/zubeyr.jpg"},
-    {name: "Tsegaw Tesfaye", role: "Graphic Designer", img: "/assets/tsegaw.png"},
-]
+// export const teamMembers = [
+//     {name: "Bemhreth Gezahegn", role: "CEO", img: "/assets/bemhret.png"},
+//     {name: "Abenezer Seifu", role: "CTO", img: "/assets/abeni.png"},
+//     {name: "Benayas Teshome", role: "COO", img: "/assets/beni.png"},
+//     {name: "Rahel Tura", role: "CFO", img: "/assets/rahel.png"},
+//     {name: "Deborah Terefe", role: "Legal Advisor", img: "/assets/debora.png"},
+//     {name: "Bereket Terefe", role: "Senior Software Engineer", img: "/assets/bereket.png"},
+//     {name: "Daniel Tsegaw", role: "Senior Software Engineer", img: "/assets/dani.png"},
+//     {name: "Zubeyr Anwar", role: "Frontend Developer", img: "/assets/zubeyr.jpg"},
+//     {name: "Tsegaw Tesfaye", role: "Graphic Designer", img: "/assets/tsegaw.png"},
+// ]

@@ -1,4 +1,5 @@
-//@ts-nocheck
+// @ts-nocheck
+
 import {useEffect, useState} from 'react';
 
 export const useNavbarLogic = () => {
@@ -12,8 +13,20 @@ export const useNavbarLogic = () => {
             setIsScrolled(window.scrollY > 0);
         };
 
+        const handleClickOutside = (event) => {
+            const navbar = document.getElementById('navbar-container');
+            if (navbar && !navbar.contains(event.target)) {
+                setIsMobileMenuOpen(false);
+            }
+        };
+
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     let timeoutId;
@@ -32,6 +45,11 @@ export const useNavbarLogic = () => {
         setActiveMobileSubmenu(activeMobileSubmenu === menuTitle ? null : menuTitle);
     };
 
+    const closeMobileMenu = () => {
+        setIsMobileMenuOpen(false);
+        setActiveMobileSubmenu(null);
+    };
+
     return {
         activeMenu,
         isScrolled,
@@ -41,5 +59,6 @@ export const useNavbarLogic = () => {
         handleMouseLeave,
         toggleMobileMenu,
         toggleMobileSubmenu,
+        closeMobileMenu,
     };
 };

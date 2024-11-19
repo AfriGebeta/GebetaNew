@@ -11,10 +11,10 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"; // Import the Dialog components
+} from "@/components/ui/dialog";
 import React, {useContext, useState} from "react";
 import {setToken} from "@/service/apis";
-import toast from "react-hot-toast";
+import {useToast} from "@/hooks/use-toast"
 import {CopyIcon, EyeIcon} from "lucide-react";
 import {AuthContext} from "@/providers/AuthProvider";
 
@@ -25,13 +25,17 @@ export default function APIToken() {
     const [selectedToken, setSelectedToken] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
+    const {toast} = useToast()
+
     const copyToClipboard = (token) => {
         navigator.clipboard.writeText(token)
-            .then(() => toast.success("Copied to clipboard"))
+            .then(() => toast({description: "Copied to clipboard"}))
             .catch(err => {
-                console.error('Failed to copy: ', err);
-                toast.error("Failed to copy to clipboard");
-            });
+                toast({
+                    description: "Failed to copy to clipboard",
+                    variant: "destructive"
+                });
+            })
     };
 
     const createToken = async () => {
@@ -39,12 +43,17 @@ export default function APIToken() {
             const response = await setToken(currentUser.token);
             const updatedTokens = [...tokenList, response.token];
             setTokenList(updatedTokens);
-            setCurrentUser({ ...currentUser, user: { ...currentUser.user, token: updatedTokens } });
+            setCurrentUser({...currentUser, user: {...currentUser.user, token: updatedTokens}});
             setNewToken(response.token);
-            toast.success("Token created successfully");
+            toast({
+                description: "Token created successfully"
+            });
         } catch (err) {
             console.error('Failed to create token: ', err);
-            toast.error("Failed to create token");
+            toast({
+                description: "Failed to create token",
+                variant: "destructive"
+            });
         }
     };
 
@@ -71,7 +80,7 @@ export default function APIToken() {
                 <TableBody>
                     {tokenList.map((token, index) => (
                         <TableRow key={index}>
-                            <TableCell>{token.replace(/./g, '●').slice(0,24)}</TableCell>
+                            <TableCell>{token.replace(/./g, '●').slice(0, 24)}</TableCell>
                             <TableCell className="text-right">
                                 <div className="flex justify-end space-x-2">
                                     <Button
@@ -79,7 +88,7 @@ export default function APIToken() {
                                         onClick={() => copyToClipboard(token)}
                                         className="flex items-center"
                                     >
-                                        <CopyIcon className="" />
+                                        <CopyIcon className=""/>
                                     </Button>
                                     <Dialog>
                                         <DialogTrigger asChild>
@@ -87,14 +96,16 @@ export default function APIToken() {
                                                 variant="link"
                                                 onClick={() => handleShowToken(token)}
                                             >
-                                                <EyeIcon />
+                                                <EyeIcon/>
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-md">
                                             <DialogHeader>
                                                 <DialogTitle>API Token</DialogTitle>
-                                                <DialogDescription className="relative break-words overflow-hidden max-w-sm">
-                                                    <div className="whitespace-normal break-words overflow-wrap break-all">
+                                                <DialogDescription
+                                                    className="relative break-words overflow-hidden max-w-sm">
+                                                    <div
+                                                        className="whitespace-normal break-words overflow-wrap break-all">
                                                         {selectedToken}
                                                     </div>
                                                 </DialogDescription>

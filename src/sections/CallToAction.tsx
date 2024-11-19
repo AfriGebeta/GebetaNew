@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function CallToAction() {
     return (
-        <div className="relative mt-[180px]">
+        <div className="relative mt-[60px] md:mt-[104px]">
             <Container>
                 <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center">Ready to get started ?</h2>
                 <p className="mt-[42px] text-[#62677F] text-[20px] text-center">Create an account or talk to one of
@@ -13,7 +13,7 @@ export default function CallToAction() {
                 <div className="flex justify-center items-center gap-[32px] mt-[60px]">
                     <Link
                         href="/auth/register"
-                        className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Sign
+                        className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Sign
                         up
                         for free</Link>
                     <Link

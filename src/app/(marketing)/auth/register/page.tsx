@@ -1,6 +1,6 @@
 //@ts-nocheck
 "use client";
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Link from "next/link";
 import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
@@ -66,7 +66,7 @@ const Register: React.FC = () => {
             setError("");
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Failed to send OTP");
+            setError(error.response?.data?.error?.message || "Failed to send OTP");
         }
     });
 
@@ -86,7 +86,7 @@ const Register: React.FC = () => {
             router.push('/dashboard'); // Redirect to dashboard
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Sign-in failed. Please try again.");
+            setError(error.response?.data?.error?.message || "Sign-in failed. Please try again.");
         },
     });
 
@@ -104,14 +104,14 @@ const Register: React.FC = () => {
                 });
             } catch (error) {
                 console.error('Sign-in after registration failed:', error);
-                setError(error.response?.data?.message || "Sign-in failed after registration.");
+                setError(error.response?.data?.error?.message || "Sign-in failed after registration.");
             }
 
             router.push('/dashboard');
             setError("");
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Registration failed");
+            setError(error.response?.data?.error?.message || "Registration failed");
         }
     });
 
@@ -176,6 +176,32 @@ const Register: React.FC = () => {
             await registerMutation.mutateAsync(sendData);
         } catch (error) {
             console.error('Registration error:', error);
+        }
+    };
+
+    const [timer, setTimer] = useState(120);
+    const [canResend, setCanResend] = useState(false);
+
+    useEffect(() => {
+        if (timer > 0) {
+            const interval = setInterval(() => {
+                setTimer(prev => prev - 1);
+            }, 1000);
+            return () => clearInterval(interval);
+        } else {
+            setCanResend(true);
+        }
+    }, [timer]);
+
+    const handleResendOtp = async () => {
+        if (canResend) {
+            setTimer(120); // Reset timer
+            setCanResend(false);
+            try {
+                await requestOtpMutation.mutateAsync(registrationData.email);
+            } catch (error) {
+                console.error('OTP resend error:', error);
+            }
         }
     };
 
@@ -340,40 +366,52 @@ const Register: React.FC = () => {
         );
     };
 
-    const renderOtpStep = () => (
-        <div className="space-y-6">
-            <p className="text-center text-gray-600 dark:text-gray-300 mt-[20px]">
-                We've sent a verification code to {registrationData.email}
-            </p>
-            <form onSubmit={handleRegistration} className="space-y-6">
-                <div className="flex justify-center gap-2">
-                    {otp.map((digit, index) => (
-                        <input
-                            key={index}
-                            type="text"
-                            name={`otp-${index}`}
-                            maxLength={1}
-                            value={digit}
-                            onChange={(e) => handleOtpChange(e.target, index)}
-                            className="w-12 h-12 text-center border-2 rounded-lg focus:border-[#FFA500]
+    const renderOtpStep = () => {
+        return (
+            <div className="space-y-6">
+                <p className="text-center text-gray-600 dark:text-gray-300 mt-[20px]">
+                    We've sent a verification code to {registrationData.email}
+                </p>
+                <form onSubmit={handleRegistration} className="space-y-6">
+                    <div className="flex justify-center gap-2">
+                        {otp.map((digit, index) => (
+                            <input
+                                key={index}
+                                type="text"
+                                name={`otp-${index}`}
+                                maxLength={1}
+                                value={digit}
+                                onChange={(e) => handleOtpChange(e.target, index)}
+                                className="w-12 h-12 text-center border-2 rounded-lg focus:border-[#FFA500]
                                      focus:outline-none dark:bg-gray-700 dark:text-white"
-                        />
-                    ))}
-                </div>
-                {error && (
-                    <p className="text-red-500 text-sm text-center">{error}</p>
-                )}
-                <button
-                    type="submit"
-                    disabled={registerMutation.isPending}
-                    className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md
+                            />
+                        ))}
+                    </div>
+                    {error && (
+                        <p className="text-red-500 text-sm text-center">{error}</p>
+                    )}
+                    <button
+                        type="submit"
+                        disabled={registerMutation.isPending}
+                        className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md
                              hover:opacity-75 disabled:opacity-50"
-                >
-                    {registerMutation.isPending ? <BarLoader color="white"/> : 'Create Account'}
-                </button>
-            </form>
-        </div>
-    );
+                    >
+                        {registerMutation.isPending ? <BarLoader color="white"/> : 'Create Account'}
+                    </button>
+                    <div className="flex justify-center">
+                        <button
+                            type="button"
+                            onClick={handleResendOtp}
+                            disabled={!canResend}
+                            className={`text-sm text-[#FFA500] ${canResend ? '' : 'opacity-50 cursor-not-allowed'}`}
+                        >
+                            Resend OTP {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        );
+    };
 
     return (
         <>

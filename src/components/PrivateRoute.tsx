@@ -3,6 +3,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {AuthContext} from "@/providers/AuthProvider";
+import Loading from "@/app/(marketing)/loading";
 
 const ProtectedRoute = ({children}) => {
     const router = useRouter();
@@ -23,7 +24,7 @@ const ProtectedRoute = ({children}) => {
 
     // Show loading state only on client-side when not authenticated
     if (!currentUser) {
-        return <div>Loading...</div>;
+        return <Loading />
     }
 
     return <>{children}</>;

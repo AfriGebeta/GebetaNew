@@ -26,11 +26,13 @@ export default function Footer() {
                         <div>
                             <h6 className="text-[16px] font-bold">Products</h6>
                             <ul className="mt-[16px] space-y-2">
-                                <Link href="https://gebeta-docs.vercel.app/docs/geocoding/geocoding">Geocoding</Link>
-                                <Link href="https://gebeta-docs.vercel.app/docs/direction">Direction</Link>
-                                <Link href="https://gebeta-docs.vercel.app/docs/matrix">Matrix</Link>
-                                <Link href="https://gebeta-docs.vercel.app/docs/route-optimization">Route optimization</Link>
-                                <Link href="https://gebeta-docs.vercel.app/docs/onm">ONM</Link>
+                                <li>
+                                    <Link href="https://gebeta-docs.vercel.app/docs/geocoding/geocoding">Geocoding</Link>
+                                </li>
+                                <li><Link href="https://gebeta-docs.vercel.app/docs/direction">Direction</Link></li>
+                                <li><Link href="https://gebeta-docs.vercel.app/docs/matrix">Matrix</Link></li>
+                                <li><Link href="https://gebeta-docs.vercel.app/docs/route-optimization">Route optimization</Link></li>
+                                <li><Link href="https://gebeta-docs.vercel.app/docs/onm">ONM</Link></li>
                             </ul>
                         </div>
                         <div>
@@ -42,8 +44,8 @@ export default function Footer() {
                         <div>
                             <h6 className="text-[16px] font-bold">Legal</h6>
                             <ul className="mt-[16px] space-y-2">
-                                <Link href="/terms">Terms of Service</Link>
-                                <Link href="/privacy">Privacy Policy</Link>
+                                <li><Link href="/terms">Terms of Service</Link></li>
+                                <li><Link href="/privacy">Privacy Policy</Link></li>
                             </ul>
                         </div>
                         <div>
@@ -89,7 +91,7 @@ export default function Footer() {
                         <div>
                             <h6 className="text-[16px] font-bold">Contact</h6>
                             <p className="mt-[16px]">
-                                Bloom Tour<br/>
+                                Bloom Tower<br/>
                                 Addis Ababa,<br/>
                                 Ethiopia<br/><br/>
                                 info@gebeta.app</p>

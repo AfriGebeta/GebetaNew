@@ -5,6 +5,7 @@ import {useState} from 'react';
 import Container from "@/sections/Container";
 
 export default function Contact() {
+    console.log(process.env.EMAIL_PASS)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -50,7 +51,7 @@ export default function Contact() {
             // Clear error message after 5 seconds
             setTimeout(() => {
                 setStatus(prev => ({ ...prev, error: null }));
-            }, 5000);
+            }, 100000);
         }
     };
 
