@@ -96,7 +96,7 @@ function PlanCard({plan, currentUser, key}) {
 
     const handleUpgrade = () => {
         if (plan.name !== "Custom") {
-            buyCredit(currentUser?.token, id)
+            buyCredit(currentUser?.token, plan.id)
                 .then(response => {
                     queryClient.invalidateQueries('history')
                     if (response.data.data.status === "success") {
