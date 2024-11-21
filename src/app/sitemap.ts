@@ -1,49 +1,30 @@
-//@ts-nocheck
-import {MetadataRoute} from 'next'
-import {menuItems} from "@/constants";
+import type { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://gebeta.app'
-
-    const routes = menuItems.map(item => ({
-        url: item.link ? `${baseUrl}${item.link}` : baseUrl,
-        lastModified: new Date(),
-        changeFrequency: 'monthly' as const,
-        priority: 1
-    }))
-
-    const staticRoutes = [
+    return [
         {
-            url: baseUrl,
+            url: 'https://gebeta.app',
             lastModified: new Date(),
-            changeFrequency: 'yearly' as const,
+            changeFrequency: 'yearly',
             priority: 1,
         },
         {
-            url: `${baseUrl}/pricing`,
+            url: 'https://gebeta.app/pricing',
             lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
+            changeFrequency: 'monthly',
             priority: 0.9,
         },
         {
-            url: `${baseUrl}/company`,
+            url: 'https://gebeta.app/company',
             lastModified: new Date(),
-            changeFrequency: 'monthly' as const,
+            changeFrequency: 'yearly',
             priority: 0.8,
         },
         {
-            url: "https://gebeta-docs.vercel.app",
+            url: 'https://gebeta-docs.vercel.app',
             lastModified: new Date(),
-            changeFrequency: 'monthly' as const,
+            changeFrequency: 'monthly',
             priority: 0.7,
         },
-        {
-            url: `${baseUrl}/contact`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly' as const,
-            priority: 0.6,
-        }
     ]
-
-    return [...staticRoutes, ...routes]
 }
