@@ -1,5 +1,11 @@
 import Container from "@/sections/Container";
 import {Globe2, HeartHandshake, Lightbulb, Navigation, Shield} from 'lucide-react';
+import type {Metadata} from "next";
+
+
+export const metadata:Metadata = {
+    title:"About GebetaMaps"
+}
 
 export default function Company() {
     const coreValues = [
@@ -25,9 +31,6 @@ export default function Company() {
             <Container>
                 <div className="md:pb-[32px]">
                     <div className="text-center mb-[80px]">
-                        {/*<div className="flex items-center justify-center gap-3 mb-4">*/}
-                        {/*    <Building2 className="w-8 h-8 text-[#FFA500]" />*/}
-                        {/*</div>*/}
                         <h2 className="text-[40px] text-[#1B1E2B] dark:text-white leading-[1.2] mb-[20px]">
                             About <span className="text-[#FFA500]">Gebeta Maps</span>
                         </h2>
