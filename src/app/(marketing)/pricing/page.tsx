@@ -1,8 +1,13 @@
+import type {Metadata} from "next";
 import {Plans} from "@/sections/Pricing";
 import Container from "@/sections/Container";
 import PricingSlider from "@/components/PricingSlider";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Building2, CircleDollarSign, Scale, Shield} from 'lucide-react';
+
+export const metadata:Metadata = {
+    title:"GebetaMaps Pricing"
+}
 
 export default function PricingPage() {
     const features = [
@@ -48,9 +53,7 @@ export default function PricingPage() {
             <Container>
                 <div className="md:pb-[60px]">
                     <div className="text-center mb-[80px]">
-                        <h2 className="text-[48px] text-[#1B1E2B] dark:text-white leading-[1.2] mb-[20px]">
-                            Simple, <span className="text-[#FFA500]">Transparent</span> Pricing
-                        </h2>
+                        <h2 className="text-[48px] text-[#1B1E2B] dark:text-white leading-[1.2] mb-[20px]">Pricing</h2>
                         <p className="text-gray-600 dark:text-gray-400 max-w-[600px] mx-auto text-lg mb-[40px]">
                             Choose the perfect plan for your mapping needs
                         </p>

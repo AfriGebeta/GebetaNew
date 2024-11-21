@@ -21,7 +21,7 @@ export default function Navbar() {
     } = useNavbarLogic();
 
     return (
-        <div
+        <header
             id="navbar-container"
             className={`fixed top-0 left-0 right-0 z-[1000] bg-white dark:bg-[#05050a] transition-shadow duration-300 ${
                 isScrolled ? "shadow-md" : ""
@@ -183,6 +183,6 @@ export default function Navbar() {
                     </Container>
                 </div>
             )}
-        </div>
+        </header>
     );
 }

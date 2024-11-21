@@ -90,29 +90,8 @@ export const menuItems: Array<MegaMenu> = [
             },
         ],
     },
-    // {
-    //     title: "Solutions",
-    //     submenu: [
-    //         {
-    //             title: "Logistics",
-    //             link: "/solutions/logistics",
-    //             description: "Optimize your supply chain and delivery operations"
-    //         },
-    //         {
-    //             title: "Delivery",
-    //             link: "/solutions/delivery",
-    //             description: "Streamline last-mile delivery and route planning"
-    //         },
-    //         {
-    //             title: "Ride-hailing",
-    //             link: "/solutions/ride",
-    //             description: "Enhance your ride-sharing and taxi services"
-    //         },
-    //     ],
-    // },
     {title: "Company", link: "/company"},
     {title: "Documentation", link: "https://gebeta-docs.vercel.app"},
-    // {title: "Blog", link: "/blog"},
     {title: "Pricing", link: "/pricing"},
 ];
 

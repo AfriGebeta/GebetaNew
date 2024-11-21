@@ -18,15 +18,11 @@ export const metadata: Metadata = {
     authors: [{name: "GebetaMaps"}],
     creator: "GebetaMaps",
     publisher: "GebetaMaps, Inc.",
-    openGraph: {
-        images:'/assets/gebeta-opengraph.png',
-        type: 'website',
-        locale: 'en_US',
-        url: 'https://gebeta.app',
-        title: 'GebetaMaps - Location Solutions Simplified',
-        description: 'Powerful location-based APIs for geocoding and route optimization',
-        siteName: 'GebetaMaps'
-    }
+    robots: {
+        index: true,
+        follow: true,
+        nocache: true,
+    },
 };
 
 export default function RootLayout({
