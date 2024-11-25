@@ -13,9 +13,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import React, {useContext, useState} from "react";
-import {setToken} from "@/service/apis";
+import {revokeToken, setToken} from "@/service/apis";
 import {useToast} from "@/hooks/use-toast"
-import {CopyIcon, EyeIcon} from "lucide-react";
+import {CopyIcon, EyeIcon, Trash2Icon} from "lucide-react";
 import {AuthContext} from "@/providers/AuthProvider";
 
 export default function APIToken() {
@@ -41,13 +41,21 @@ export default function APIToken() {
     const createToken = async () => {
         try {
             const response = await setToken(currentUser.token);
-            const updatedTokens = [...tokenList, response.token];
-            setTokenList(updatedTokens);
-            setCurrentUser({...currentUser, user: {...currentUser.user, token: updatedTokens}});
-            setNewToken(response.token);
-            toast({
-                description: "Token created successfully"
-            });
+            if(response.success){
+                const updatedTokens = [...tokenList, response.data.token];
+                setTokenList(updatedTokens);
+                setCurrentUser({...currentUser, user: {...currentUser.user, token: updatedTokens}});
+                setNewToken(response.data.token);
+                toast({
+                    description: "Token created successfully",
+                });
+            } else {
+                toast({
+                    description:`${response.message}`,
+                    variant: "destructive"
+                })
+            }
+
         } catch (err) {
             console.error('Failed to create token: ', err);
             toast({
@@ -56,6 +64,30 @@ export default function APIToken() {
             });
         }
     };
+
+    const handleRevokeToken = async (token) => {
+        try {
+            const response = await revokeToken(currentUser.token, token)
+            if(response.success){
+                const updatedTokens = tokenList.filter(t => t !== token)
+                setTokenList(updatedTokens);
+                setCurrentUser({...currentUser, user: {...currentUser.user, token: updatedTokens}});
+                toast({
+                    description: "Token revoked successfully"
+                });
+            } else {
+                toast({
+                    description:`${response.message}`,
+                    variant: "destructive"
+                })
+            }
+        } catch (err) {
+            toast({
+                description: "Failed to revoke token",
+                variant: "destructive"
+            })
+        }
+    }
 
     const handleShowToken = (token) => {
         setSelectedToken(token);
@@ -89,6 +121,13 @@ export default function APIToken() {
                                         className="flex items-center"
                                     >
                                         <CopyIcon className=""/>
+                                    </Button>
+                                    <Button
+                                        variant="link"
+                                        onClick={() => handleRevokeToken(token)}
+                                        className="flex items-center"
+                                    >
+                                        <Trash2Icon className=""/>
                                     </Button>
                                     <Dialog>
                                         <DialogTrigger asChild>
