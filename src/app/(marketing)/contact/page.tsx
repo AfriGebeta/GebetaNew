@@ -1,13 +1,8 @@
 //@ts-nocheck
 'use client';
 
-import type {Metadata} from "next";
 import {useState} from 'react';
 import Container from "@/sections/Container";
-
-export const metadata:Metadata = {
-    title:"Contact"
-}
 
 export default function Contact() {
     console.log(process.env.EMAIL_PASS)

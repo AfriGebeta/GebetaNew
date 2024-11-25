@@ -1,13 +1,8 @@
-import type {Metadata} from "next";
 import {Plans} from "@/sections/Pricing";
 import Container from "@/sections/Container";
 import PricingSlider from "@/components/PricingSlider";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Building2, CircleDollarSign, Scale, Shield} from 'lucide-react';
-
-export const metadata:Metadata = {
-    title:"GebetaMaps Pricing"
-}
 
 export default function PricingPage() {
     const features = [
