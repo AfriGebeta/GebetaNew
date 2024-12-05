@@ -70,28 +70,28 @@ export const menuItems: Array<MegaMenu> = [
         submenu: [
             {
                 title: "Geocoding",
-                link: "https://gebeta-docs.vercel.app/docs/geocoding/geocoding",
+                link: "https://docs.gebeta.app/docs/geocoding/geocoding",
                 description: "Convert addresses to coordinates and vice versa"
             },
             {
                 title: "Route Optimization",
-                link: "https://gebeta-docs.vercel.app/docs/route-optimization",
+                link: "https://docs.gebeta.app/docs/route-optimization",
                 description: "Find the most efficient routes for multiple stops"
             },
             {
                 title: "Directions",
-                link: "https://gebeta-docs.vercel.app/docs/direction",
+                link: "https://docs.gebeta.app/docs/direction",
                 description: "Get turn-by-turn navigation for various transportation modes"
             },
             {
                 title: "Matrix",
-                link: "https://gebeta-docs.vercel.app/docs/matrix",
+                link: "https://docs.gebeta.app/docs/matrix",
                 description: "Calculate travel times and distances between multiple origins and destinations"
             },
         ],
     },
     {title: "Company", link: "/company"},
-    {title: "Documentation", link: "https://gebeta-docs.vercel.app"},
+    {title: "Documentation", link: "https://docs.gebeta.app/"},
     {title: "Pricing", link: "/pricing"},
 ];
 
@@ -108,7 +108,7 @@ export const features: Array<Features> = [
             width: 586,
             height: 494
         },
-        link:"https://gebeta-docs.vercel.app/docs/geocoding/geocoding"
+        link:"https://docs.gebeta.app/docs/geocoding/geocoding"
     },
     {
         title: "Smart Route Optimization",
@@ -120,7 +120,7 @@ export const features: Array<Features> = [
             width: 586,
             height: 494
         },
-        link:"https://gebeta-docs.vercel.app/docs/route-optimization"
+        link:"https://docs.gebeta.app/docs/route-optimization"
     },
     // {
     //     title: "Optimized Navigation Routes",
@@ -143,7 +143,7 @@ export const features: Array<Features> = [
             width: 586,
             height: 494
         },
-        link:"https://gebeta-docs.vercel.app/docs/onm"
+        link:"https://docs.gebeta.app/docs/onm"
     },
 ]
 
