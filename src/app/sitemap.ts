@@ -3,12 +3,6 @@ import type { MetadataRoute } from 'next'
 export default function sitemap(): MetadataRoute.Sitemap {
     return [
         {
-            url: 'https://gebeta.app',
-            lastModified: new Date(),
-            changeFrequency: 'yearly',
-            priority: 1,
-        },
-        {
             url: 'https://gebeta.app/pricing',
             lastModified: new Date(),
             changeFrequency: 'monthly',
@@ -21,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.8,
         },
         {
-            url: 'https://gebeta-docs.vercel.app',
+            url: 'https://docs.gebeta.app/',
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.7,

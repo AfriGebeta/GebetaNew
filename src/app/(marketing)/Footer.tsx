@@ -27,18 +27,18 @@ export default function Footer() {
                             <h6 className="text-[16px] font-bold">Products</h6>
                             <ul className="mt-[16px] space-y-2">
                                 <li>
-                                    <Link href="https://gebeta-docs.vercel.app/docs/geocoding/geocoding">Geocoding</Link>
+                                    <Link href="https://docs.gebeta.app/docs/geocoding/geocoding">Geocoding</Link>
                                 </li>
-                                <li><Link href="https://gebeta-docs.vercel.app/docs/direction">Direction</Link></li>
-                                <li><Link href="https://gebeta-docs.vercel.app/docs/matrix">Matrix</Link></li>
-                                <li><Link href="https://gebeta-docs.vercel.app/docs/route-optimization">Route optimization</Link></li>
-                                <li><Link href="https://gebeta-docs.vercel.app/docs/onm">ONM</Link></li>
+                                <li><Link href="https://docs.gebeta.app/docs/direction">Direction</Link></li>
+                                <li><Link href="https://docs.gebeta.app/docs/matrix">Matrix</Link></li>
+                                <li><Link href="https://docs.gebeta.app/docs/route-optimization">Route optimization</Link></li>
+                                <li><Link href="https://docs.gebeta.app/docs/onm">ONM</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h6 className="text-[16px] font-bold">Resources</h6>
                             <ul className="mt-[16px] space-y-2">
-                                <Link href="https://gebeta-docs.vercel.app">Documentation</Link>
+                                <Link href="https://docs.gebeta.app/">Documentation</Link>
                             </ul>
                         </div>
                         <div>
