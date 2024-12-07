@@ -18,7 +18,9 @@ jobs:
     - uses: actions/checkout@v4
     - name: Create .env file
       run: |
-        echo "BACKEND_URL=${{ secrets.BACKEND_URL }}" >> .env
+        echo "NEXT_PUBLIC_BASE_URL=${{ secrets.BASE_URL }}" >> .env
+        echo "NEXT_PUBLIC_EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+        echo "NEXT_PUBLIC_EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env 
     - name: Verify .env file exists
       run: ls -la
     - name: Show .env file contents
@@ -44,12 +46,12 @@ jobs:
       with:
         name: dot-env
         path: .
-    - run: yarn install
-    - run: yarn build
+    - run: npm install
+    - run: npm run export
     - uses: actions/upload-artifact@v4
       with:
         name: build
-        path: .next/standalone
+        path: out
 
   deploy:
     needs: lint-and-build
@@ -65,17 +67,19 @@ jobs:
       with:
         name: build
         path: build
-    - name: Copy public directory
-      uses: actions/checkout@v4
-      with:
-        sparse-checkout: |
-          public
+    - name: Show directory contents
+      run: ls -la
     - name: Deploy to Azure
       env:
         AZURE_SERVER_USER: ${{ secrets.AZURE_SERVER_USER }}
         AZURE_SERVER_IP: ${{ secrets.AZURE_SERVER_IP }}
       run: |
         echo "Deploying to Azure"
+        echo "Downloaded artifact..."
+        ls -la
+        echo "Current working directory:"
+        pwd
+        # Create a directory for the new version
         NEW_VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
         ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION"
 
