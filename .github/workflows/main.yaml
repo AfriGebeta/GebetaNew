@@ -1,0 +1,88 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  create-dot-env:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Create .env file
+      run: |
+        echo "BACKEND_URL=${{ secrets.BACKEND_URL }}" >> .env
+    - name: Verify .env file exists
+      run: ls -la
+    - name: Show .env file contents
+      run: cat .env
+    - name: Upload .env file
+      uses: actions/upload-artifact@v4
+      with:
+        include-hidden-files: true
+        name: dot-env
+        path: .env
+
+  lint-and-build:
+    needs: create-dot-env
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+    - name: Download .env file
+      uses: actions/download-artifact@v4
+      with:
+        name: dot-env
+        path: .
+    - run: npm install
+    - run: npm run export
+    - uses: actions/upload-artifact@v4
+      with:
+        name: build
+        path: out
+
+  deploy:
+    needs: lint-and-build
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup SSH Key
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.AZURE_SERVER_SSH_KEY }}
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: build
+        path: build
+    - name: Show directory contents
+      run: ls -la
+    - name: Deploy to Azure
+      env:
+        AZURE_SERVER_USER: ${{ secrets.AZURE_SERVER_USER }}
+        AZURE_SERVER_IP: ${{ secrets.AZURE_SERVER_IP }}
+      run: |
+        echo "Deploying to Azure"
+        echo "Downloaded artifact..."
+        ls -la
+        echo "Current working directory:"
+        pwd
+        # Create a directory for the new version
+        NEW_VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
+        ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION"
+
+        # Copy files to the new version directory
+        scp -o StrictHostKeyChecking=no -r build/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION
+        
+        # Update the symlink to point to the new version
+        ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "ln -sfn ~/gebeta-remade/releases/$NEW_VERSION ~/gebeta-remade/current"
