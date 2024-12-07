@@ -44,12 +44,12 @@ jobs:
       with:
         name: dot-env
         path: .
-    - run: yarn install
-    - run: yarn build
+    - run: npm install
+    - run: npm run export
     - uses: actions/upload-artifact@v4
       with:
-        name: build
-        path: .next/standalone
+        name: out
+        path: out
 
   deploy:
     needs: lint-and-build
@@ -63,8 +63,8 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v4
       with:
-        name: build
-        path: build
+        name: out
+        path: out
     - name: Copy public directory
       uses: actions/checkout@v4
       with:
@@ -80,7 +80,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION"
 
         # Copy files to the new version directory
-        scp -o StrictHostKeyChecking=no -r build/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION
+        scp -o StrictHostKeyChecking=no -r out/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION
         
         # Update the symlink to point to the new version
         ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "ln -sfn ~/gebeta-remade/releases/$NEW_VERSION ~/gebeta-remade/current"
