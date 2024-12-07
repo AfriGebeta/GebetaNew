@@ -44,12 +44,12 @@ jobs:
       with:
         name: dot-env
         path: .
-    - run: yarn install
-    - run: yarn build
+    - run: npm install
+    - run: npm run export
     - uses: actions/upload-artifact@v4
       with:
         name: build
-        path: .next/standalone
+        path: out
 
   deploy:
     needs: lint-and-build
@@ -65,17 +65,19 @@ jobs:
       with:
         name: build
         path: build
-    - name: Copy public directory
-      uses: actions/checkout@v4
-      with:
-        sparse-checkout: |
-          public
+    - name: Show directory contents
+      run: ls -la
     - name: Deploy to Azure
       env:
         AZURE_SERVER_USER: ${{ secrets.AZURE_SERVER_USER }}
         AZURE_SERVER_IP: ${{ secrets.AZURE_SERVER_IP }}
       run: |
         echo "Deploying to Azure"
+        echo "Downloaded artifact..."
+        ls -la
+        echo "Current working directory:"
+        pwd
+        # Create a directory for the new version
         NEW_VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
         ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION"
 
