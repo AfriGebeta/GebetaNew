@@ -8,7 +8,7 @@ export default function Partners() {
             <div className="flex flex-col justify-center items-center mt-[98px]">
                 <p className="text-[12px] text-[#979BAA] tracking-20 leading-15 font-bold uppercase text-center">Location
                     solutions
-                    powering 15+ innovative businesses</p>
+                    powering innovative businesses</p>
                 <div className="w-full flex gap-[32px] md:justify-between flex-wrap items-center mt-[40px]">
                     <Image src="/assets/zayride.svg" alt="zayride logo" width={102} height={60} className="max-w-full object-cover"/>
                     <Image src="/assets/postoffice.svg" alt="Ethiopian post office logo" width={187} height={60}/>
