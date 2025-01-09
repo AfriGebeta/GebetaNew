@@ -91,7 +91,7 @@ export function Plans() {
                                             fill="currentColor" className="fill-gray-300 dark:fill-neutral-700"/>
                                       </svg>
                                       <span
-                                          className="mt-3 inline-block whitespace-nowrap text-[11px] leading-5 font-semibold tracking-wide uppercase bg-[#FFA500]/80 text-white rounded-full py-1 px-2.5">Save up to 30%</span>
+                                          className="mt-3 inline-block whitespace-nowrap text-[11px] leading-5 font-semibold tracking-wide uppercase bg-[#FFA500]/80 text-white rounded-full py-1 px-2.5">Save up to 20%</span>
                                     </span>
                                 </span>
                             </div>
