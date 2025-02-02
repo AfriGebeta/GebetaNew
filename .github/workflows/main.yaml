@@ -47,7 +47,7 @@ jobs:
         name: dot-env
         path: .
     - run: npm install
-    - run: npm run export
+    - run: npm run build
     - uses: actions/upload-artifact@v4
       with:
         name: build
