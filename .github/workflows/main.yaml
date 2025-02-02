@@ -46,8 +46,8 @@ jobs:
       with:
         name: dot-env
         path: .
-    - run: npm install
-    - run: npm run export
+    - run: yarn install
+    - run: yarn export
     - uses: actions/upload-artifact@v4
       with:
         name: build
