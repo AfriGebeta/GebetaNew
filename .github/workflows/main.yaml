@@ -47,11 +47,15 @@ jobs:
         name: dot-env
         path: .
     - run: npm install
-    - run: npm run export
+    - run: npm run build
     - uses: actions/upload-artifact@v4
       with:
         name: build
-        path: out
+        path: |
+          .next/standalone/**
+          .next/static/**
+          public/**
+          package.json
 
   deploy:
     needs: lint-and-build
@@ -68,23 +72,30 @@ jobs:
         name: build
         path: build
     - name: Show directory contents
-      run: ls -la
+      run: ls -la build
     - name: Deploy to Azure
       env:
         AZURE_SERVER_USER: ${{ secrets.AZURE_SERVER_USER }}
         AZURE_SERVER_IP: ${{ secrets.AZURE_SERVER_IP }}
       run: |
-        echo "Deploying to Azure"
-        echo "Downloaded artifact..."
-        ls -la
-        echo "Current working directory:"
-        pwd
-        # Create a directory for the new version
         NEW_VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
         ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION"
 
-        # Copy files to the new version directory
-        scp -o StrictHostKeyChecking=no -r build/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION
+        # Copy the standalone server and its files
+        scp -o StrictHostKeyChecking=no -r build/standalone/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION/
         
-        # Update the symlink to point to the new version
+        # Copy static files to the correct location
+        ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION/.next/static"
+        scp -o StrictHostKeyChecking=no -r build/static/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION/.next/static/
+        
+        # Copy public files
+        scp -o StrictHostKeyChecking=no -r build/public/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION/public/
+        
+        # Copy package.json
+        scp -o StrictHostKeyChecking=no build/package.json $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION/
+        
+        # Update the symlink
         ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "ln -sfn ~/gebeta-remade/releases/$NEW_VERSION ~/gebeta-remade/current"
+        
+        # Restart the PM2 process (if you're using PM2)
+        ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "cd ~/gebeta-remade/current && pm2 reload gebeta-app || pm2 start ecosystem.config.js"
