@@ -15,7 +15,11 @@ export default function Page() {
         staleTime: 5 * 60 * 1000,
     });
 
+
+    console.log("metrics",data)
+
     const defaultMetrics = [
+        { calltype: "TILE", total: 0 },
         { calltype: "GEOCODING", total: 0 },
         { calltype: "DIRECTION", total: 0 },
         { calltype: "ONM", total: 0 },

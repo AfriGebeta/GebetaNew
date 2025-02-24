@@ -227,6 +227,7 @@ export default function Usage() {
                             <SelectContent>
                                 <SelectGroup>
                                     <SelectItem value="All">All</SelectItem>
+                                    <SelectItem value="TILE">Tile</SelectItem>
                                     <SelectItem value="Geocoding">Geocoding</SelectItem>
                                     <SelectItem value="Direction">Direction</SelectItem>
                                     <SelectItem value="Matrix">Matrix</SelectItem>
