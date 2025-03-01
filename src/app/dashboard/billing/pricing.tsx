@@ -185,7 +185,7 @@ function Plan({data, index}) {
                             (<>
                                 {data.price}<span className="text-[14px]">/month</span>
 
-                            </> ) ): "Let's talk"}
+                            </> ) ): "Pay as you go"}
                     </h3>
                     <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{pricing[index].subtitle}</p>
 
