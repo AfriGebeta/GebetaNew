@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {KeyIcon} from "lucide-react";
 import {useQuery} from "@tanstack/react-query";
-import {getUserUsage} from "@/service/apis";
+import {getMatrix} from "@/service/apis";
 import SkeletonItem from "@/app/_component/SkeletonItem";
 
 
@@ -17,7 +17,7 @@ export default function UsageOverview({currentUser}: UsageOverviewProps) {
 
     const {data, isLoading} = useQuery({
         queryKey: ["metrics", currentUser.token],
-        queryFn: () => getUserUsage(currentUser.token),
+        queryFn: () => getMatrix(currentUser.token),
         staleTime: 5 * 60 * 1000,
     });
 

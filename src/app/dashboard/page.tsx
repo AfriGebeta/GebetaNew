@@ -1,6 +1,6 @@
 //@ts-nocheck
 "use client";
-import {getUserUsage} from "@/service/apis";
+import {getMatrix} from "@/service/apis";
 import {useQuery} from "@tanstack/react-query";
 import {useContext, useMemo} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -13,7 +13,7 @@ export default function Page() {
 
     const {data, isLoading} = useQuery({
         queryKey: ["metrics", currentUser.token],
-        queryFn: () => getUserUsage(currentUser.token),
+        queryFn: () => getMatrix(currentUser.token),
         staleTime: 5 * 60 * 1000,
     });
 
