@@ -1,7 +1,7 @@
 //@ts-nocheck
 "use client";
-import {useContext, useEffect, useState} from "react";
-import {getUserUsageForGraph} from "@/service/apis";
+import {useContext, useEffect, useMemo, useState} from "react";
+import {getUserUsage, getUserUsageForGraph} from "@/service/apis";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import APIUsage from "./APIUsage";
 import {CalendarIcon} from "lucide-react";
@@ -12,7 +12,8 @@ import {Button} from "@/components/ui/button";
 import {Calendar} from "@/components/ui/calendar";
 import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
-import UsageOverview from "@/app/dashboard/usage/UsageOverview";
+import SkeletonItem from "@/app/_component/SkeletonItem";
+import {useQuery} from "@tanstack/react-query";
 
 export default function Usage() {
     const {currentUser} = useContext(AuthContext);
@@ -28,6 +29,46 @@ export default function Usage() {
     const [endingDate, setEndingDate] = useState(currentDate);
     const [selected, setSelected] = useState("All");
     const [loading, setLoading] = useState(false);
+
+    const {data: usageData, isLoading: usageLoading} = useQuery({
+        queryKey: ["usage", currentUser.token, selected, startingDate, endingDate],
+        queryFn: () => getUserUsage(startingDate, endingDate, currentUser.token),
+        staleTime: 5 * 60 * 1000,
+    });
+
+    console.log("usageData", usageData)
+
+    const defaultMetrics = [
+        {calltype: "TILE", total: 0},
+        {calltype: "GEOCODING", total: 0},
+        {calltype: "DIRECTION", total: 0},
+        {calltype: "ONM", total: 0},
+        {calltype: "MATRIX", total: 0},
+        {calltype: "TSS", total: 0},
+    ];
+
+    const mergedMetrics = useMemo(() => {
+        if (!usageData || !usageData) return defaultMetrics;
+
+        const metricsMap = {};
+
+        usageData?.forEach(item => {
+            if (!metricsMap[item.calltype]) {
+                metricsMap[item.calltype] = 0;
+            }
+            metricsMap[item.calltype] += item.total;
+        });
+
+
+        return defaultMetrics.map((metric) => ({
+            calltype: metric.calltype,
+            total: metricsMap[metric.calltype] || 0,
+        }));
+    }, [usageData]);
+
+    const totalCalls = useMemo(() => {
+        return mergedMetrics.reduce((sum, metric) => sum + metric.total, 0);
+    }, [mergedMetrics]);
 
     function handleEndChange(date) {
         setEndingDate(date ? format(date, "yyyy-MM-dd") : currentDate);
@@ -75,7 +116,60 @@ export default function Usage() {
     return (
         <div>
             <div className="flex flex-col px-8 py-6 rounded-md">
-                <UsageOverview currentUser={currentUser}/>
+                <div className="w-full grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {usageLoading ? (
+                        Array(5)
+                            .fill(0)
+                            .map((_, i) => <SkeletonItem key={i}/>)
+                    ) : (
+                        <>
+                            {mergedMetrics.map((data, i) => (
+                                <Card key={i}>
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">{data.calltype}</CardTitle>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            className="h-4 w-4 text-muted-foreground"
+                                        >
+                                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                        </svg>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <h3 className="whitespace-nowrap text-sm font-bold">{data.total} calls</h3>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <Card>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-sm font-medium">Total</CardTitle>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        className="h-4 w-4 text-muted-foreground"
+                                    >
+                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                    </svg>
+                                </CardHeader>
+                                <CardContent>
+                                    <h3 className="whitespace-nowrap text-sm font-bold">{totalCalls} calls</h3>
+                                </CardContent>
+                            </Card>
+
+                        </>
+
+                    )}
+                </div>
 
                 <div className="flex flex-col md:flex-row md:items-center mt-[40px] gap-4">
                     <div className="flex flex-row items-center gap-4">
