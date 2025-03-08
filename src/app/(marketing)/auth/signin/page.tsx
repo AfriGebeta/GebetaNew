@@ -10,17 +10,6 @@ import {BarLoader} from "react-spinners";
 
 const SignIn: React.FC = () => {
     const {login, setCurrentUser} = useContext(AuthContext);
-
-    // const [_, setCurrentUser] = useLocalStorage({
-    //     key: 'currentUser',
-    //     defaultValue: null,
-    // });
-
-    // const [__, setAuthToken] = useLocalStorage({
-    //     key: 'authToken',
-    //     defaultValue: null,
-    // });
-
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
