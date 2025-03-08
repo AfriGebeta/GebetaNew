@@ -48,7 +48,6 @@ export function Plans() {
     const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30) || [];
     const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365) || [];
 
-    console.log(monthlyPlans)
 
     return (
         <Container>
@@ -170,7 +169,7 @@ export function Plan({data, index}) {
                             window.open(response.data.data.Data.checkout_url, '_blank');
                         }
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => {});
             } else {
                 router.push('/contact')
             }

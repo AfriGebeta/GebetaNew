@@ -22,7 +22,6 @@ export const AuthProvider = ({children}) => {
         if(typeof window !== 'undefined'){
             localStorage.setItem('isAuthenticated', JSON.stringify(true));
         }
-        console.log("login is bein called")
     };
 
     const logout = () => {

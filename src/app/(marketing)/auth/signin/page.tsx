@@ -35,7 +35,6 @@ const SignIn: React.FC = () => {
             return response.data; // Assuming the response contains user data
         },
         onSuccess: (data) => {
-            console.log('Sign-in successful:', data.data);
             login(); // Update authentication state
             setCurrentUser(data.data); // Store user data in local storage
             // setAuthToken(data.data.token); // Store auth token in local storage

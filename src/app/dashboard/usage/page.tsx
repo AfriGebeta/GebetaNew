@@ -36,8 +36,6 @@ export default function Usage() {
         staleTime: 5 * 60 * 1000,
     });
 
-    console.log("usageData", usageData)
-
     const defaultMetrics = [
         {calltype: "TILE", total: 0},
         {calltype: "GEOCODING", total: 0},
