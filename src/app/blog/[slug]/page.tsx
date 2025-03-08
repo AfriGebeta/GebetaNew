@@ -117,21 +117,21 @@ export default async function BlogPost({params}) {
                         </div>
                     </div>
 
-                    {frontMatter.tags && frontMatter.tags.length > 0 && (
-                        <div className="mt-12 pt-6 border-t border-gray-200">
-                            <div className="flex flex-wrap gap-2">
-                                {frontMatter.tags.map(tag => (
-                                    <Link
-                                        key={tag}
-                                        href={`/blog/tag/${tag}`}
-                                        className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
-                                    >
-                                        {tag}
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    {/*{frontMatter.tags && frontMatter.tags.length > 0 && (*/}
+                    {/*    <div className="mt-12 pt-6 border-t border-gray-200">*/}
+                    {/*        <div className="flex flex-wrap gap-2">*/}
+                    {/*            {frontMatter.tags.map(tag => (*/}
+                    {/*                <Link*/}
+                    {/*                    key={tag}*/}
+                    {/*                    href={`/blog/tag/${tag}`}*/}
+                    {/*                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"*/}
+                    {/*                >*/}
+                    {/*                    {tag}*/}
+                    {/*                </Link>*/}
+                    {/*            ))}*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
                 </article>
             </Container>
 
