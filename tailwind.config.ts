@@ -61,7 +61,7 @@ const config: {
     theme: {
         extend: {
             backgroundPosition: {
-                '1%': '0% 12%',
+                '1%': '0% 10%',
             },
             colors: {
                 background: 'hsl(var(--background))',
