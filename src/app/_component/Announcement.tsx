@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 export default function Announcement() {
     const [isVisible, setIsVisible] = useState(true);
 
-    // Optional: Save the closed state in localStorage to remember user preference
     useEffect(() => {
         const announcementClosed = localStorage.getItem("announcementClosed");
         if (announcementClosed === "true") {
@@ -16,17 +15,14 @@ export default function Announcement() {
 
     const closeAnnouncement = () => {
         setIsVisible(false);
-        // Optional: Save the closed state in localStorage
         localStorage.setItem("announcementClosed", "true");
 
-        // Adjust the navbar position after closing
         const navbar = document.getElementById("navbar-container");
         if (navbar) {
             navbar.style.top = "0";
         }
     };
 
-    // If announcement is closed, adjust navbar position
     useEffect(() => {
         const navbar = document.getElementById("navbar-container");
         if (navbar) {
