@@ -38,8 +38,8 @@ export default function Footer() {
                         <div>
                             <h6 className="text-[16px] font-bold">Resources</h6>
                             <ul className="mt-[16px] space-y-2">
-                                <Link href="https://gebeta.app/blog">Blog</Link>
-                                <Link href="https://docs.gebeta.app/">Documentation</Link>
+                                <li><Link href="https://gebeta.app/blog">Blog</Link></li>
+                                <li><Link href="https://docs.gebeta.app/">Documentation</Link></li>
                             </ul>
                         </div>
                         <div>
