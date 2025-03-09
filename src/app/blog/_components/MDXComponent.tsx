@@ -2,19 +2,19 @@ import React from 'react';
 
 export const MDXComponents = {
     h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h1 {...props} className="text-3xl font-bold text-white mb-4 mt-6" />
+        <h1 {...props} className="text-3xl font-bold text-zinc-700 dark:text-white mb-4 mt-6" />
     ),
     h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h2 {...props} className="text-2xl font-semibold text-white mb-3 mt-5" />
+        <h2 {...props} className="text-2xl font-semibold text-zinc-700 dark:text-white mb-3 mt-5" />
     ),
     h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h3 {...props} className="text-xl font-medium text-white mb-2 mt-4" />
+        <h3 {...props} className="text-xl font-medium text-zinc-700 dark:text-white mb-2 mt-4" />
     ),
     p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-        <p {...props} className="text-gray-300 mb-4 leading-relaxed" />
+        <p {...props} className="text-zinc-500 dark:text-gray-300 mb-4  leading-relaxed" />
     ),
     ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
-        <ul {...props} className="list-disc list-inside mb-4 text-gray-300" />
+        <ul {...props} className="list-disc list-inside mb-4 text-zinc-500 dark:text-gray-300" />
     ),
     ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
         <ol {...props} className="list-decimal list-inside mb-4 text-gray-300" />
@@ -35,7 +35,7 @@ export const MDXComponents = {
         <pre {...props} className="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto" />
     ),
     strong: (props: React.HTMLAttributes<HTMLElement>) => (
-        <strong {...props} className="font-bold text-white" />
+        <strong {...props} className="font-bold text-zinc-700 dark:text-white" />
     ),
     em: (props: React.HTMLAttributes<HTMLElement>) => (
         <em {...props} className="italic text-gray-300" />
