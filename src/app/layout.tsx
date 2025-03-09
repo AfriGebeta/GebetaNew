@@ -12,6 +12,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://gebeta.app/" || 'http://localhost:3000'),
     title: "GebetaMaps - Location Solutions Simplified",
     description: "GebetaMaps delivers powerful APIs for all your location-based needs, from geocoding to route optimization. With up-to-date data and easy-to-use features, build precise, scalable solutions quickly.",
     keywords: ["maps", "geocoding", "route optimization", "directions", "matrix api"],

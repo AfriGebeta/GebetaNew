@@ -9,7 +9,6 @@ function APIUsage({ graphData, isLoading }) {
 
     useEffect(() => {
         if (graphData && !graphData.error) {
-            console.log("Original Graph Data:", graphData);
             try {
                 const dataArray = Object.entries(graphData.data.data.data).map(([key, value]) => ({
                     date: new Date(value.Day).toISOString(),
@@ -18,8 +17,7 @@ function APIUsage({ graphData, isLoading }) {
 
                 const sortedData = dataArray.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-                console.log("Formatted Chart Data:", sortedData);
-                setChartData(sortedData);
+                    setChartData(sortedData);
             } catch (error) {
                 console.error("Error formatting data:", error);
                 setChartData([]);
@@ -46,8 +44,6 @@ function APIUsage({ graphData, isLoading }) {
         }
         return null;
     };
-
-    console.log("Current chartData:", chartData);
 
     return (
         <div className="rounded-lg border bg-card mt-[40px]">

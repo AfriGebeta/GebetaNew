@@ -80,7 +80,6 @@ const Register: React.FC = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            console.log('Sign-in successful:', data.data);
             login(); // Update authentication state
             setCurrentUser(data.data); // Store user data in local storage
             router.push('/dashboard'); // Redirect to dashboard

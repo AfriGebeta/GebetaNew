@@ -1,0 +1,82 @@
+---
+title: "Introducing Gebeta Maps' New Map Tiles: A Game Changer for African and Emerging Market Mapping"
+date: "2025-03-07"
+excerpt: "Discover our new map tiles, designed to provide affordable, highly localized, and customizable maps for African and emerging markets."
+coverImage: "/images/blog/banner.jpg"
+coverImageCaption: "Gebeta Maps Tiles - Revolutionizing mapping for emerging markets"
+tags: ["map tiles", "geospatial", "Africa", "developers", "localization"]
+---
+
+# Introducing Gebeta Maps' New Map Tiles: A Game Changer for African and Emerging Market Mapping
+
+At Gebeta Maps, we’ve always been driven by a simple goal—making maps more accessible, reliable, and truly local. When we first started, we focused on providing mapping APIs that developers could use alongside other map tile providers. But we knew this wasn’t a complete solution. Our users still had to rely on multiple services, which added complexity.
+
+That’s why we’re excited to share a big milestone. We are now launching our own map tiles, making Gebeta Maps a full, all-in-one mapping service. This means our users no longer need to depend on third-party providers—we now offer everything in one place, with more flexibility and at an affordable price.
+
+This has been a long time coming, and we’ve worked hard to make it happen based on feedback from our users. We believe maps should be built for the people who use them, and this release brings us one step closer to that vision.
+
+## Why We Built This
+
+Many mapping solutions available today either lack local details or are too expensive for businesses and developers in emerging markets. This makes it difficult for them to build location-based services that truly reflect their surroundings.
+
+We built Gebeta Maps to bridge this gap. Our goal is to provide affordable, highly localized, and customizable maps that accurately represent the landscapes and cities where people live and work.
+
+Accessing and distributing a country’s own mapping data is often a challenge, and we understand how important it is for governments, businesses, and developers to have control over their own geographic information. That’s why we are committed to solving these issues—not just for one country, but for the entire continent.
+
+## Key Benefits
+
+### 1. Faster and More Efficient
+We designed our map tiles to load quickly by leveraging the power of users’ devices for rendering. Instead of relying solely on external servers, our technology processes maps locally, making loading times much faster. This ensures a smooth and seamless experience, whether you're using a logistics platform, an e-commerce app, or any other location-based service.
+
+### 2. Cost-Effective Pricing
+High mapping costs often come from expensive server infrastructure. By optimizing local rendering and processing, we’ve significantly reduced these costs—allowing us to offer a more affordable pricing model without compromising on quality. With Gebeta Maps, businesses can now access high-quality maps at a fraction of the cost of traditional providers.
+
+### 3. Improved Local Coverage
+Many global mapping providers lack detailed data for African cities, often missing key roads, landmarks, and informal settlements. Our map tiles are built with extensive local data, ensuring accurate and reliable coverage that truly represents the areas where people live and work.
+
+### 4. Customizable for Your Needs
+Every business has unique needs when it comes to maps. That’s why we offer fully customizable tiles, allowing you to adjust the design, colors, and styles to match your brand and functional requirements.
+
+Additionally, we provide self-hosting options for organizations that require enhanced security and data privacy. With Gebeta Maps, governments, financial institutions, and enterprises can run a world-class mapping solution on their own infrastructure—giving them full control over their data without relying on external providers. It doesn’t get better than that!
+
+### 5. Offline Capabilities
+Reliable internet access isn’t always guaranteed in emerging markets. That’s why our map tiles are designed to work offline, ensuring that businesses and users can still navigate and access important location data even when connectivity is limited.
+
+## Who Can Benefit from This?
+
+- **Developers & Startups**: Easily integrate fast, reliable, and affordable maps into applications.
+- **Logistics & Delivery Companies**: Optimize routes and navigation for better efficiency.
+- **E-commerce Businesses**: Improve customer experiences with precise location-based services.
+- **Government & NGOs**: Utilize accurate maps for urban planning, infrastructure projects, and public services.
+
+## How to Get Started
+
+Here’s a quick example of how you can integrate Gebeta Maps into your application:
+
+```jsx
+import { GebetaMap, MapStyles } from '@gebetamaps/react';
+
+function MyMapComponent() {
+  const mapRef = useRef(null);
+
+  return (
+    <GebetaMap
+      mapRef={mapRef}
+      style={MapStyles.MODERN}
+      apiKey={import.meta.env.VITE_GEBETA_API_KEY}
+      center={[9.005401, 38.763611]} // Addis Ababa coordinates
+      zoom={11}
+      width="100%"
+      height="100%"
+      markers={[
+        {
+          id: "marker-1",
+          lngLat: [9.005401, 38.763611],
+          imageUrl: "your-marker.png",
+          imageSize: { width: 35, height: 35 },
+          onClick: () => { //do something }
+        }
+      ]}
+    />
+  );
+}

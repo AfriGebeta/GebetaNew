@@ -34,8 +34,6 @@ export default function Pricing() {
     const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30) || [];
     const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365) || [];
 
-    console.log(monthlyPlans)
-
     return (
         <Container>
             <div className="w-full pb-[40px]">
@@ -143,7 +141,7 @@ function Plan({data, index}) {
                             window.open(response.data.data.Data.checkout_url, '_blank');
                         }
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => {});
             } else {
                 router.push('/contact')
             }
@@ -185,7 +183,7 @@ function Plan({data, index}) {
                             (<>
                                 {data.price}<span className="text-[14px]">/month</span>
 
-                            </> ) ): "Let's talk"}
+                            </> ) ): "Pay as you go"}
                     </h3>
                     <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{pricing[index].subtitle}</p>
 

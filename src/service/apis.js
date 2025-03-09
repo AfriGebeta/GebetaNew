@@ -60,7 +60,7 @@ export const revokeToken = async (apiToken, token) => {
     }
 }
 
-export const getUserUsage = async (apiToken) => {
+export const getMatrix = async (apiToken) => {
     const {data} = await apiClient.get(`/usage/matrix`, {
         headers: {
             Authorization: `Bearer ${apiToken}`,
@@ -69,6 +69,24 @@ export const getUserUsage = async (apiToken) => {
 
     return data.data
 };
+
+export const getUserUsage = async (
+    startDate,
+    endDate,
+    apiToken) => {
+    try {
+        const {data} = await apiClient.get(`/usage/matrix?startDate=${startDate}&endDate=${endDate}`, {
+            headers: {
+                Authorization: `Bearer ${apiToken}`,
+            }
+        })
+
+        return data.data
+
+    } catch (error) {
+        return error
+    }
+}
 
 export const getUserUsageForGraph = async (
     selected,

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Footer() {
     return (
-        <footer className="w-full mt-[80px] bg-[#574B35] dark:bg-[#05050a] text-[#FFF] text-[14px]">
+        <footer className="w-full mt-[80px] bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-900 text-zinc-700 dark:text-white text-[14px]">
             <Container>
                 <div className="flex flex-col md:flex-row justify-between gap-y-[32px] py-[64px]">
                     <div>
@@ -38,6 +38,7 @@ export default function Footer() {
                         <div>
                             <h6 className="text-[16px] font-bold">Resources</h6>
                             <ul className="mt-[16px] space-y-2">
+                                <Link href="https://gebeta.app/blog">Blog</Link>
                                 <Link href="https://docs.gebeta.app/">Documentation</Link>
                             </ul>
                         </div>

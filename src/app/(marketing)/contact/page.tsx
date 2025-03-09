@@ -5,7 +5,6 @@ import {useState} from 'react';
 import Container from "@/sections/Container";
 
 export default function Contact() {
-    console.log(process.env.EMAIL_PASS)
     const [formData, setFormData] = useState({
         name: '',
         email: '',

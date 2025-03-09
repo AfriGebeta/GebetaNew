@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {ArrowRightIcon} from "@radix-ui/react-icons";
 
 const PricingSlider = () => {
-    const gebetaRate = 0.002;
+    const gebetaRate = 0.0036;
 
     const [sliderValues, setSliderValues] = useState({
         Geocoding: 0,
