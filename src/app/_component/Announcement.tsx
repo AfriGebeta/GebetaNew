@@ -46,7 +46,7 @@ export default function Announcement() {
                         <div className="flex flex-col sm:flex-row justify-center items-center gap-2 px-4">
                             <div className="flex items-center gap-2">
                                 <p className="text-sm sm:text-base text-white font-medium">
-                                    GebetaMap Tile will be live coming soon.
+                                    GebetaMap Tile is now live.
                                 </p>
                             </div>
                             <Link
