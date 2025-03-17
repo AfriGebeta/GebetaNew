@@ -17,7 +17,7 @@ export default function Partners() {
                     <Image src="/assets/tewos.svg" alt="Alen home solutions logo" width={150} height={60}/>
                     <Image src="/assets/tilla.png" alt="Tilla logo" width={102} height={60}/>
                     <Image src="/assets/beu.png" alt="Beu delivery logo" width={102} height={60}/>
-                    <Image src="/assets/bluehealth.png" alt="Beu delivery logo" width={102} height={60}/>
+                    <Image src="/assets/bluehealth.png" alt="Blue health logo" width={102} height={60}/>
                 </div>
             </div>
         </Container>
