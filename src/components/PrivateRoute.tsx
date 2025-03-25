@@ -5,7 +5,7 @@ import {useRouter} from 'next/navigation';
 import {AuthContext} from "@/providers/AuthProvider";
 import Loading from "@/app/(marketing)/loading";
 
-const ProtectedRoute = ({children}) => {
+const PrivateRoute = ({children}) => {
     const router = useRouter();
     const { currentUser } = useContext(AuthContext);
     const [isClient, setIsClient] = useState(false);
@@ -30,4 +30,4 @@ const ProtectedRoute = ({children}) => {
     return <>{children}</>;
 };
 
-export default ProtectedRoute;
+export default PrivateRoute;
