@@ -1,53 +1,33 @@
-'use client';
+//@ts-nocheck
+"use client"
+import React, {useContext, useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {AuthContext} from "@/providers/AuthProvider";
+import Loading from "@/app/(marketing)/loading";
 
-import {useRouter} from 'nextjs-toploader/app';
-import {ReactNode, useContext, useEffect, useState} from 'react';
-import {AuthContext} from '@/providers/AuthProvider';
-
-interface ProtectedRouteProps {
-    children: ReactNode;
-    fallbackUrl?: string;
-}
-
-const ProtectedRoute = ({
-                            children,
-                            fallbackUrl = '/auth/signin'
-                        }: ProtectedRouteProps) => {
+const ProtectedRoute = ({children}) => {
     const router = useRouter();
-    const {currentUser, loading} = useContext(AuthContext);
-    const [mounted, setMounted] = useState(false);
+    const { currentUser } = useContext(AuthContext);
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (mounted && !loading && !currentUser) {
-            router.replace(fallbackUrl);
+        setIsClient(true);
+        if (!currentUser) {
+            router.push('/auth/signin');
         }
-    }, [currentUser, loading, mounted, router, fallbackUrl]);
+    }, [currentUser, router]);
 
-    // Don't render anything during SSR or before mounting
-    if (!mounted) {
+    // Return null during server-side rendering and initial client render
+    if (!isClient) {
         return null;
     }
 
-    // Show loading state while checking authentication
-    if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"/>
-            </div>
-        );
+    // Show loading state only on client-side when not authenticated
+    if (!currentUser) {
+        return <Loading />
     }
 
-    // If authenticated, render children
-    if (currentUser) {
-        return <>{children}</>;
-    }
-
-    // Return null while redirecting
-    return null;
+    return <>{children}</>;
 };
 
 export default ProtectedRoute;
