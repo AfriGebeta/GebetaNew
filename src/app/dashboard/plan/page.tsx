@@ -9,7 +9,7 @@ import { AuthContext } from "@/providers/AuthProvider";
 import { Check } from "lucide-react";
 import {useToast} from "@/hooks/use-toast"
 import {queryClient} from "@/providers/QueryProvider";
-import {useRouter} from "next/navigation";
+import {useRouter} from 'nextjs-toploader/app';
 
 export default function UserPlan() {
     const enterprise = {

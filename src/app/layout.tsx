@@ -5,6 +5,7 @@ import {Plus_Jakarta_Sans} from "next/font/google";
 import QueryProvider from "@/providers/QueryProvider";
 import {AuthProvider} from "@/providers/AuthProvider";
 import {ThemeProvider} from "@/providers/theme-provider";
+import NextTopLoader from 'nextjs-toploader';
 
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -36,6 +37,10 @@ export default function RootLayout({
         <body
             className={`${plusJakarta.className}`}
         >
+        <NextTopLoader
+            color="#FFA500"
+            showSpinner={false}
+        />
         <div className={
             'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] pt-8 flex flex-col min-h-screen'
         }>

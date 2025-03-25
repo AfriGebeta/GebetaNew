@@ -1,7 +1,6 @@
 "use client";
 import {useEffect, useState} from "react";
 import Link from "next/link";
-import {Clock} from "@/app/_component/Clock";
 
 export default function Announcement() {
     const [isVisible, setIsVisible] = useState(true);

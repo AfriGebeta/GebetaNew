@@ -6,6 +6,7 @@ import Container from "@/sections/Container";
 import {menuItems} from "@/constants";
 import {useNavbarLogic} from "@/utils/useNavbarLogic";
 import {User2Icon} from "lucide-react";
+import {useRouter} from 'nextjs-toploader/app';
 
 export default function Navbar() {
     const {
@@ -19,6 +20,8 @@ export default function Navbar() {
         toggleMobileSubmenu,
         closeMobileMenu,
     } = useNavbarLogic();
+
+    const router = useRouter()
 
     return (
         <header
@@ -65,7 +68,10 @@ export default function Navbar() {
                                     onMouseEnter={() => item.submenu && handleMouseEnter(item.title)}
                                     onMouseLeave={item.submenu && handleMouseLeave}
                                 >
-                                    <Link href={item.link || "#"} className="flex items-center gap-1">
+                                    <a
+                                        className="flex items-center gap-1 cursor-pointer"
+                                        onClick={() => router.push(item.link)}
+                                    >
                                         {item.title}
                                         {item.submenu && (
                                             <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor"
@@ -74,7 +80,7 @@ export default function Navbar() {
                                                       d="M19 9l-7 7-7-7"/>
                                             </svg>
                                         )}
-                                    </Link>
+                                    </a>
                                 </li>
                             ))}
                         </ul>
@@ -87,17 +93,17 @@ export default function Navbar() {
                                 alt="user icon"
                                 width={24}
                                 height={24}/>
-                            <Link
-                                className="font-medium hover:text-[#FFA500] transition-all duration-400"
-                                href="/auth/signin"
-                            >Sign In</Link>
+                            <a
+                                className="font-medium hover:text-[#FFA500] transition-all duration-400 cursor-pointer"
+                                onClick={() => router.push("/auth/signin")}
+                            >Sign In</a>
                         </div>
                         <div
                             className="px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
-                            <Link
-                                className="font-bold"
-                                href="/auth/register"
-                            >Get Started</Link>
+                            <a
+                                className="font-bold cursor-pointer"
+                                onClick={() => router.push("/auth/register")}
+                            >Get Started</a>
                         </div>
                     </div>
                 </nav>
@@ -109,9 +115,12 @@ export default function Navbar() {
                                 <li key={index} className="px-4 py-2">
                                     <div className="flex justify-between items-center"
                                          onClick={() => item?.submenu && toggleMobileSubmenu(item.title)}>
-                                        <Link href={item.link || "#"} onClick={closeMobileMenu}>
+                                        <a onClick={() => {
+                                            router.push(item.link)
+                                            closeMobileMenu()
+                                        }}>
                                             {item.title}
-                                        </Link>
+                                        </a>
                                         {item?.submenu && (
                                             <svg
                                                 className={`w-4 h-4 dark:stroke-white transform ${activeMobileSubmenu === item.title ? 'rotate-180' : ''}`}
@@ -124,14 +133,16 @@ export default function Navbar() {
                                     {item.submenu && activeMobileSubmenu === item.title && (
                                         <ul className="flex flex-col pl-4 mt-2 space-y-2">
                                             {item.submenu.map((subItem, subIndex) => (
-                                                <Link
-                                                    href={subItem.link}
+                                                <a
+                                                    onClick={() => {
+                                                        router.push(subItem.link)
+                                                        closeMobileMenu()
+                                                    }}
                                                     key={subIndex}
-                                                    onClick={closeMobileMenu}
                                                     className="text-sm p-2 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md"
                                                 >
                                                     {subItem.title}
-                                                </Link>
+                                                </a>
                                             ))}
                                         </ul>
                                     )}
@@ -141,19 +152,23 @@ export default function Navbar() {
                         <div className="mt-4 space-y-4 px-4">
                             <div className="flex items-center gap-[4px]">
                                 <User2Icon className="w-[16px] h-[16px]"/>
-                                <Link
+                                <a
                                     className="font-medium"
-                                    href="/auth/signin"
-                                    onClick={closeMobileMenu}
-                                >Sign In</Link>
+                                    onClick={() => {
+                                        router.push("/auth/signin")
+                                        closeMobileMenu()
+                                    }}
+                                >Sign In</a>
                             </div>
                             <div
                                 className="w-fit px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
-                                <Link
+                                <a
                                     className="font-bold"
-                                    href="/auth/register"
-                                    onClick={closeMobileMenu}
-                                >Get Started</Link>
+                                    onClick={() => {
+                                        router.push("/auth/register")
+                                        closeMobileMenu()
+                                    }}
+                                >Get Started</a>
                             </div>
                         </div>
                     </div>
@@ -169,15 +184,18 @@ export default function Navbar() {
                     <Container>
                         <div className="py-8 grid grid-cols-4 gap-8">
                             {(menuItems?.find((item) => item.title === activeMenu)?.submenu || []).map((subItem, index) => (
-                                <Link
+                                <a
                                     href={subItem.link}
-                                    onClick={handleMouseLeave}
+                                    onClick={() => {
+                                        router.push(subItem.link)
+                                        handleMouseLeave()
+                                    }}
                                     key={index}
                                     className="block space-y-2 p-3 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md"
                                 >
                                     <h3 className="text-[14px] font-semibold">{subItem.title}</h3>
                                     <p className="text-[12px] text-gray-600 dark:text-gray-400">{subItem.description}</p>
-                                </Link>
+                                </a>
                             ))}
                         </div>
                     </Container>

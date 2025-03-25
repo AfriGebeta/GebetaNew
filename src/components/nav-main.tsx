@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import {ArrowTopRightIcon} from "@radix-ui/react-icons";
+import {useRouter} from 'nextjs-toploader/app';
 
 export function NavMain({
                             items,
@@ -30,6 +31,8 @@ export function NavMain({
         }[];
     }[];
 }) {
+    const router = useRouter()
+
     return (
         <SidebarGroup>
             <SidebarGroupLabel>GebetaMaps</SidebarGroupLabel>
@@ -43,24 +46,20 @@ export function NavMain({
                     >
                         <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
-                                <SidebarMenuButton tooltip={item.title}>
-                                    {item.icon && <item.icon className="mr-2"/>}
-                                    <Link href={item.url}
-                                          style={{display: 'flex', alignItems: 'center', width: '100%'}}>
+                                <a onClick={() => router.push(item.url)} style={{width: '100%', display: 'block'}}>
+                                    <SidebarMenuButton tooltip={item.title}>
+                                        {item.icon && <item.icon className="mr-2"/>}
                                         {item.title}
-                                    </Link>
-                                    {item.items && (
-                                        <ChevronRight
-                                            className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
-                                        />
-                                    )}
-
-                                    {
-                                        item.title === "Documentation" && (
+                                        {item.items && (
+                                            <ChevronRight
+                                                className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                                            />
+                                        )}
+                                        {item.title === "Documentation" && (
                                             <ArrowTopRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"/>
-                                        )
-                                    }
-                                </SidebarMenuButton>
+                                        )}
+                                    </SidebarMenuButton>
+                                </a>
                             </CollapsibleTrigger>
                             {item.items && (
                                 <CollapsibleContent>

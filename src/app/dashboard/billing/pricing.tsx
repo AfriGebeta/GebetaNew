@@ -6,7 +6,7 @@ import Container from "@/sections/Container";
 import {useContext, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {buyCredit, getAllCredits} from "@/service/apis";
-import {useRouter} from "next/navigation";
+import {useRouter} from 'nextjs-toploader/app';
 import {queryClient} from "@/providers/QueryProvider";
 import {AuthContext} from "@/providers/AuthProvider";
 

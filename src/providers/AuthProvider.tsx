@@ -2,7 +2,7 @@
 "use client";
 import React, {createContext, useEffect, useState} from 'react';
 import useLocalStorage from "../hooks/use-local-storage";
-import {useRouter} from "next/navigation";
+import {useRouter} from 'nextjs-toploader/app';
 
 export const AuthContext = createContext();
 

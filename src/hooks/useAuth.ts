@@ -1,7 +1,7 @@
 //@ts-nocheck
 
 import {useEffect} from 'react';
-import {useRouter} from 'next/navigation';
+import {useRouter} from 'nextjs-toploader/app';
 
 export const useAuth = () => {
     const router = useRouter();

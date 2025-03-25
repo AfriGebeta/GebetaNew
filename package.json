@@ -45,6 +45,7 @@
     "motion": "^12.4.10",
     "next": "14.2.14",
     "next-mdx-remote": "^5.0.0",
+    "nextjs-toploader": "^3.8.15",
     "nodemailer": "^6.9.16",
     "pdf-lib": "^1.17.1",
     "react": "^18",
