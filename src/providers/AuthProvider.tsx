@@ -2,7 +2,7 @@
 "use client";
 import React, {createContext, useEffect, useState} from 'react';
 import useLocalStorage from "../hooks/use-local-storage";
-import {useRouter} from 'nextjs-toploader/app';
+import {useRouter} from "next/navigation";
 
 export const AuthContext = createContext();
 
@@ -22,6 +22,7 @@ export const AuthProvider = ({children}) => {
         if(typeof window !== 'undefined'){
             localStorage.setItem('isAuthenticated', JSON.stringify(true));
         }
+        console.log("login is bein called")
     };
 
     const logout = () => {
