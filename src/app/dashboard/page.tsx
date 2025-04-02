@@ -1,8 +1,8 @@
 //@ts-nocheck
 "use client";
+import React, {useContext, useMemo} from "react";
 import {getMatrix} from "@/service/apis";
 import {useQuery} from "@tanstack/react-query";
-import {useContext, useMemo} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {AuthContext} from "@/providers/AuthProvider";
 import UsageOverview from "@/app/dashboard/usage/UsageOverview";
@@ -48,7 +48,11 @@ export default function Page() {
                 {isLoading ? (
                     Array(5)
                         .fill(0)
-                        .map((_, i) => <SkeletonItem/>)
+                        .map((_, i) => (
+                            <React.Fragment key={i}>
+                                <SkeletonItem/>
+                            </React.Fragment>
+                        ))
                 ) : (
                     mergedMetrics.map((data, i) => (
                         <Card key={i}>
