@@ -104,7 +104,7 @@ export const features: Array<Features> = [
         subtitle: "Geocoding",
         description: "makes it effortless to access and integrate detailed local data. Whether for web or mobile platforms, we empower you to customize and include all the data you need, ensuring your users get the most relevant and up-to-date information.",
         image: {
-            source: "assets/gc.gif",
+            source: "assets/geocoding.jpg",
             alt: "searching places",
             width: 586,
             height: 494
@@ -116,7 +116,7 @@ export const features: Array<Features> = [
         subtitle: "Route Optimization",
         description: "API provides your users with the most optimal routes, making navigation easy. Whether you're developing for web or mobile, we ensure streamlined navigation, helping users save time and reach their destinations faster.",
         image: {
-            source: "assets/ro.gif",
+            source: "assets/route-optimization.jpg",
             alt: "searching places",
             width: 586,
             height: 494
