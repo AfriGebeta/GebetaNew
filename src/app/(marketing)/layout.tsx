@@ -13,7 +13,7 @@ export default function RootLayout({
         <>
             <Announcement />
             <div
-                className="w-full antialiased pt-32 flex flex-col min-h-screen dark:bg-[#05050a]"
+                className="w-full antialiased pt-[50px] flex flex-col min-h-screen dark:bg-[#05050a]"
             >
                 <Navbar/>
                 <div className="flex-1">

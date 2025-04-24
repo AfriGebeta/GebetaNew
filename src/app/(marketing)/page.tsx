@@ -13,7 +13,6 @@ export default function Home() {
     return (
         <main>
             <Header/>
-            <VideoCarousel/>
             <Partners/>
             <div className="h-[1px] bg-[#FFF5E2] dark:hidden mt-[50px] md:mt-[76px]"></div>
             <Highlight/>
