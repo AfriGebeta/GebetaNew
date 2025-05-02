@@ -109,7 +109,7 @@ export const features: Array<Features> = [
             width: 586,
             height: 494
         },
-        link:"https://docs.gebeta.app/docs/geocoding/geocoding"
+        link: "https://docs.gebeta.app/docs/geocoding/geocoding"
     },
     {
         title: "Smart Route Optimization",
@@ -121,7 +121,7 @@ export const features: Array<Features> = [
             width: 586,
             height: 494
         },
-        link:"https://docs.gebeta.app/docs/route-optimization"
+        link: "https://docs.gebeta.app/docs/route-optimization"
     },
     // {
     //     title: "Optimized Navigation Routes",
@@ -139,12 +139,12 @@ export const features: Array<Features> = [
         subtitle: "ONM",
         description: "API one-to-many routing feature allows you to easily generate optimized routes from a single point to multiple destinations. Whether managing deliveries, planning logistics, or mapping out multiple stops, our API ensures that your users receive the most efficient paths to all their endpoints in one go",
         image: {
-            source: "assets/onm.gif",
+            source: "assets/onm.jpg",
             alt: "searching places",
             width: 586,
             height: 494
         },
-        link:"https://docs.gebeta.app/docs/onm"
+        link: "https://docs.gebeta.app/docs/onm"
     },
 ]
 
