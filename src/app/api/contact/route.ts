@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 
 export async function POST(req) {
     try {
-        const { name, email, subject, message } = await req.json();
+        const {name, email, subject, message} = await req.json();
 
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -17,7 +17,7 @@ export async function POST(req) {
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: 'webgoat12@gmail.com',
+            to: 'noreply@gebeta.app',
             subject: `Contact Form: ${subject}`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #333;">
@@ -44,12 +44,12 @@ export async function POST(req) {
 
         await transporter.sendMail(mailOptions);
 
-        return new Response(JSON.stringify({ success: true }), {
+        return new Response(JSON.stringify({success: true}), {
             status: 200,
         });
 
     } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
+        return new Response(JSON.stringify({error: error.message}), {
             status: 500,
         });
     }
