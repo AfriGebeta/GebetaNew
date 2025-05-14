@@ -92,7 +92,7 @@ export function Plans() {
                                             fill="currentColor" className="fill-gray-300 dark:fill-neutral-700"/>
                                       </svg>
                                       <span
-                                          className="mt-3 inline-block whitespace-nowrap text-[11px] leading-5 font-semibold tracking-wide uppercase bg-[#FFA500]/80 text-white rounded-full py-1 px-2.5">Save up to 20%</span>
+                                          className="mt-3 inline-block whitespace-nowrap text-[11px] leading-5 font-semibold tracking-wide uppercase bg-[#FFA500]/80 text-white rounded-full py-1 px-2.5">Save up to 10%</span>
                                     </span>
                                 </span>
                             </div>
@@ -121,6 +121,23 @@ export function Plan({data, index}) {
     const {currentUser} = useContext(AuthContext);
     const [isLogin, setIsLogin] = useState(false)
     const location = useGeoLocation();
+    const [exchangeRate, setExchangeRate] = useState(140);
+
+    useEffect(() => {
+        const fetchExchangeRate = async () => {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await response.json();
+                if (data.rates.ETB) {
+                    setExchangeRate(Math.ceil(data.rates.ETB));
+                }
+            } catch (error) {
+                console.error("Failed to fetch exchange rate, using default", error);
+            }
+        };
+
+        fetchExchangeRate();
+    }, []);
 
     useEffect(() => {
         setIsLogin(JSON.parse(localStorage.getItem('isAuthenticated')))
@@ -133,7 +150,7 @@ export function Plan({data, index}) {
         if (isEthiopia) {
             return `${price} Birr`;
         } else {
-            const usdPrice = (price / 140).toFixed(2);
+            const usdPrice = Math.ceil(price / exchangeRate);
             return `$${usdPrice} USD`;
         }
     };

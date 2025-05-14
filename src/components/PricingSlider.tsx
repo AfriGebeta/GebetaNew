@@ -1,11 +1,13 @@
 //@ts-nocheck
 "use client";
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {ArrowRightIcon} from "@radix-ui/react-icons";
+import useGeoLocation from "react-ipgeolocation";
 
+const gebetaRate = 0.0036;
 const PricingSlider = () => {
-    const gebetaRate = 0.0036;
+    const location = useGeoLocation();
 
     const [sliderValues, setSliderValues] = useState({
         Geocoding: 0,
@@ -14,6 +16,23 @@ const PricingSlider = () => {
         TSS: 0,
         Matrix: 0,
     });
+    const [exchangeRate, setExchangeRate] = useState(140);
+
+    useEffect(() => {
+        const fetchExchangeRate = async () => {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await response.json();
+                if (data.rates.ETB) {
+                    setExchangeRate(Math.ceil(data.rates.ETB));
+                }
+            } catch (error) {
+                console.error("Failed to fetch exchange rate, using default", error);
+            }
+        };
+
+        fetchExchangeRate();
+    }, []);
 
     const handleSliderChange = (e, feature) => {
         setSliderValues({
@@ -31,14 +50,25 @@ const PricingSlider = () => {
     };
 
     const formatPrice = (price, sliderValue) => {
-        return sliderValue === 25000 ? (
-            <div className="flex items-center gap-2">
-                <Link href="/contact" className="text-[14px] text-GebetaMain hover:underline">Contact sales</Link>
-                <ArrowRightIcon className="text-sm text-GebetaMain" />
-            </div>
-        ) : (
-            `$${price.toFixed(2)}`
-        );
+        if (sliderValue === 25000) {
+            return (
+                <div className="flex items-center gap-2">
+                    <Link href="/contact" className="text-[14px] text-GebetaMain hover:underline">
+                        Contact sales
+                    </Link>
+                    <ArrowRightIcon className="text-sm text-GebetaMain"/>
+                </div>
+            );
+        }
+
+        const isEthiopia = location.country === 'ET';
+        if (isEthiopia) {
+            const birrPrice = Math.ceil(price * exchangeRate);
+            return `${birrPrice} Birr`;
+        } else {
+            const usdPrice = Math.ceil(price);
+            return `$${usdPrice} USD`;
+        }
     };
 
     return (
