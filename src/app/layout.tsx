@@ -44,7 +44,7 @@ export default function RootLayout({
         <div className={
             'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] pt-8 flex flex-col min-h-screen'
         }>
-            <ThemeProvider defaultTheme="system" storageKey="app-theme">
+            <ThemeProvider defaultTheme="light" storageKey="app-theme">
                 <AuthProvider>
                     <QueryProvider>
                         {children}

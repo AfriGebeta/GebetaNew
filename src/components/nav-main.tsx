@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import {ArrowTopRightIcon} from "@radix-ui/react-icons";
 import {useRouter} from 'nextjs-toploader/app';
+import {usePathname} from "next/navigation";
 
 export function NavMain({
                             items,
@@ -32,6 +33,9 @@ export function NavMain({
     }[];
 }) {
     const router = useRouter()
+    const pathname = usePathname();
+
+    const isActive = (item) => pathname === item.url;
 
     return (
         <SidebarGroup>
@@ -44,7 +48,8 @@ export function NavMain({
                         defaultOpen={item.isActive}
                         className="group/collapsible"
                     >
-                        <SidebarMenuItem>
+                        <SidebarMenuItem
+                            className={`${isActive(item) ? "bg-[#FFA500] text-white" : ""} rounded-[8px]`}>
                             <CollapsibleTrigger asChild>
                                 <a onClick={() => router.push(item.url)} style={{width: '100%', display: 'block'}}>
                                     <SidebarMenuButton tooltip={item.title}>
@@ -56,7 +61,8 @@ export function NavMain({
                                             />
                                         )}
                                         {item.title === "Documentation" && (
-                                            <ArrowTopRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"/>
+                                            <ArrowTopRightIcon
+                                                className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"/>
                                         )}
                                     </SidebarMenuButton>
                                 </a>
