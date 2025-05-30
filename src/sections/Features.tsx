@@ -54,7 +54,7 @@ export default async function Features() {
                                         alt={feature.image.alt}
                                         fill
                                         sizes="(max-width: 768px) 100vw, 50vw"
-                                        className="object-cover z-50"
+                                        className="object-cover"
                                     />
                                 </div>
                             </div>
