@@ -91,7 +91,7 @@ export default function Navbar() {
                                 width={24}
                                 height={24}/>
                             <a
-                                className="font-medium text-[#222] hover:text-[#FFA500] transition-all duration-400 cursor-pointer"
+                                className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400 cursor-pointer"
                                 onClick={() => router.push("/auth/signin")}
                             >Sign In</a>
                         </div>
