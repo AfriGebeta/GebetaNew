@@ -25,10 +25,7 @@ export default function Navbar() {
 
     return (
         <header
-            id="navbar-container"
-            className={`fixed top-0 left-0 right-0 z-[1000] bg-white dark:bg-[#05050a] transition-shadow duration-300 ${
-                isScrolled ? "shadow-md" : ""
-            }`}
+            className={`w-full h-15 flex items-center transition-colors z-50 fixed top-0 bg-background/80 ${isScrolled && 'backdrop-blur-lg border-b border-separator'}`}
         >
             <Container>
                 <nav className="flex justify-between items-center py-4">
@@ -94,12 +91,12 @@ export default function Navbar() {
                                 width={24}
                                 height={24}/>
                             <a
-                                className="font-medium hover:text-[#FFA500] transition-all duration-400 cursor-pointer"
+                                className="font-medium text-[#222] hover:text-[#FFA500] transition-all duration-400 cursor-pointer"
                                 onClick={() => router.push("/auth/signin")}
                             >Sign In</a>
                         </div>
                         <div
-                            className="px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
+                            className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">
                             <a
                                 className="font-bold cursor-pointer"
                                 onClick={() => router.push("/auth/register")}
