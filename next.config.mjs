@@ -1,4 +1,4 @@
-import createMDX from '@next/mdx'
+import withPlaiceholder from "@plaiceholder/next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,5 +15,5 @@ const nextConfig = {
     pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 }
 
-export default nextConfig
+export default withPlaiceholder(nextConfig);
 
