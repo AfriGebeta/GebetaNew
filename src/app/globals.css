@@ -101,3 +101,20 @@
         @apply bg-background text-foreground;
     }
 }
+
+@keyframes scrollX {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.animate-scroll-x {
+    animation: scrollX 30s linear infinite;
+}
+
+.fade-x {
+    mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 80px), transparent);
+}

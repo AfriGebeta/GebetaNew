@@ -1,5 +1,4 @@
 //@ts-nocheck
-import Image from "next/image";
 import Container from "@/sections/Container";
 
 export default function Partners() {
@@ -10,14 +9,13 @@ export default function Partners() {
                     solutions
                     powering innovative businesses</p>
                 <div className="w-full flex gap-[32px] md:justify-between flex-wrap items-center mt-[40px]">
-                    <Image src="/assets/zayride.svg" alt="zayride logo" width={102} height={60} className="max-w-full object-cover"/>
-                    <Image src="/assets/postoffice.svg" alt="Ethiopian post office logo" width={187} height={60}/>
-                    <Image src="/assets/nid.svg" alt="National ID logo" width={58} height={59}/>
-                    <Image src="/assets/adika.svg" alt="Adika logo" width={60} height={60}/>
-                    <Image src="/assets/tewos.svg" alt="Alen home solutions logo" width={150} height={60}/>
-                    <Image src="/assets/tilla.png" alt="Tilla logo" width={102} height={60}/>
-                    <Image src="/assets/beu.png" alt="Beu delivery logo" width={102} height={60}/>
-                    <Image src="/assets/bluehealth.png" alt="Blue health logo" width={102} height={60}/>
+                    <div className="fade-x h-[160px] w-full overflow-hidden opacity-50 dark:grayscale">
+                        <div className="animate-scroll-x h-full w-full bg-[length:200%_auto] md:bg-[length:130%_auto]"
+                             style={{
+                                 backgroundRepeat: "repeat-x",
+                                 backgroundImage: "url(/assets/partner.png)"
+                             }}></div>
+                    </div>
                 </div>
             </div>
         </Container>
