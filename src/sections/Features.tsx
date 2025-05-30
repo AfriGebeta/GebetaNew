@@ -3,13 +3,24 @@ import Container from "@/sections/Container";
 import Image from "next/image";
 import {features} from "../constants";
 import Link from "next/link";
+import {getBlurData} from "@/utils/getBlurDataURL";
 
-export default function Features() {
+export default async function Features() {
+    const featuresWithBlurData = await Promise.all(
+        features.map(async (feature) => ({
+            ...feature,
+            blurData: await getBlurData(feature.image.source)
+        }))
+    );
+
     return (
         <div className="overflow-hidden mb-[180px]">
             {
-                features.map((feature, index) => (
-                    <div className="w-full mt-[24px] md:mt-[80px]" key={index}>
+                featuresWithBlurData.map((feature, index) => (
+                    <div
+                        className="w-full mt-[24px] md:mt-[80px]"
+                        key={index}
+                    >
                         <Container>
                             <div
                                 className={`w-full flex flex-col lg:flex-row gap-[40px] lg:justify-between ${(index + 1) % 2 === 0 ? "lg:flex-row-reverse" : ""} mt-[130px] z-50`}>
@@ -33,21 +44,27 @@ export default function Features() {
                                             alt="right arrow icon"/>
                                     </div>
                                 </div>
-                                <Image
-                                    className="z-50 rounded-[16px]"
-                                    src={feature.image.source}
-                                    alt={feature.image.alt}
-                                    width={feature.image.width}
-                                    height={feature.image.height}/>
+
+                                <div
+                                    className="relative w-full md:w-1/2 aspect-[4/3] lg:aspect-[5/4] rounded-[16px] overflow-hidden">
+                                    <Image
+                                        src={feature.image.source}
+                                        placeholder="blur"
+                                        blurDataURL={feature?.blurData}
+                                        alt={feature.image.alt}
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        className="object-cover z-50"
+                                    />
+                                </div>
                             </div>
                         </Container>
 
-                        {/*    Flavour elements*/}
-                        {/*<div*/}
-                        {/*    className={`hidden md:absolute ${(index + 1) % 2 === 0 ? "left-0 -top-[15%]" : "left-[70%] -top-[15%]"} w-[400px] h-[400px] bg-[#FFF6E4] dark:bg-zinc-900 rounded-[48px] z-0`}></div>*/}
-                        {/*<div*/}
-                        {/*    className={`hidden md:absolute ${(index + 1) % 2 === 0 ? "left-[40%] top-[75%]" : "left-[45%] top-[75%]"} w-[200px] h-[200px] bg-[#FFF6E4] dark:bg-zinc-900 rounded-[48px] z-0`}></div>*/}
-
+                        {/* Flavour elements (commented out) */}
+                        {/*<div
+                            className={`hidden md:absolute ${(index + 1) % 2 === 0 ? "left-0 -top-[15%]" : "left-[70%] -top-[15%]"} w-[400px] h-[400px] bg-[#FFF6E4] dark:bg-zinc-900 rounded-[48px] z-0`}></div>
+                        <div
+                            className={`hidden md:absolute ${(index + 1) % 2 === 0 ? "left-[40%] top-[75%]" : "left-[45%] top-[75%]"} w-[200px] h-[200px] bg-[#FFF6E4] dark:bg-zinc-900 rounded-[48px] z-0`}></div>*/}
                     </div>
                 ))
             }
