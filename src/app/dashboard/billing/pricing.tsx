@@ -17,7 +17,7 @@ export default function Pricing() {
         price: "",
         expiredIn: 30,
         call_caps: ["Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited"],
-        included_call_types: ["Geocoding", "Direction", "Matrix", "TSS", "ONM","Tile"],
+        included_call_types: ["Geocoding", "Direction", "Matrix", "TSS", "ONM", "Tile"],
     };
 
     const [activeTab, setActiveTab] = useState("monthly");
@@ -141,7 +141,8 @@ function Plan({data, index}) {
                             window.open(response.data.data.Data.checkout_url, '_blank');
                         }
                     })
-                    .catch(err => {});
+                    .catch(err => {
+                    });
             } else {
                 router.push('/contact')
             }
@@ -183,7 +184,7 @@ function Plan({data, index}) {
                             (<>
                                 {data.price}<span className="text-[14px]">/month</span>
 
-                            </> ) ): "Pay as you go"}
+                            </>)) : "Pay as you go"}
                     </h3>
                     <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{pricing[index].subtitle}</p>
 
@@ -199,7 +200,7 @@ function Plan({data, index}) {
                                         width={36}
                                         height={36}
                                     />
-                                    <li>{data.call_caps[featureIndex] + " " + feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase() +  " calls" + `${feature === "TILE" ? " (daily limit)" : ""} </li>
+                                    <li>{data.call_caps[featureIndex] + " " + feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase() + " calls" + `${feature === "TILE" ? " (daily limit)" : ""}`}</li>
                                     {feature.showInfo &&
                                         <div className="relative">
                                             <Image
