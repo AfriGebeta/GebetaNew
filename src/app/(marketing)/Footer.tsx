@@ -5,7 +5,8 @@ import Link from "next/link";
 
 export default function Footer() {
     return (
-        <footer className="w-full mt-[80px] bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-900 text-zinc-700 dark:text-white text-[14px]">
+        <footer
+            className="w-full mt-[80px] bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-900 text-zinc-700 dark:text-white text-[14px]">
             <Container>
                 <div className="flex flex-col md:flex-row justify-between gap-y-[32px] py-[64px]">
                     <div>
@@ -18,7 +19,8 @@ export default function Footer() {
                             />
                             <h3 className="text-lg font-bold">GebetaMaps</h3>
                         </div>
-                        <p className="mt-[24px] text-[12px] text-[#a0a0a0]">© 2024 GebetaMaps, Inc. All rights
+                        <p className="mt-[24px] text-[12px] text-[#a0a0a0]">© {new Date().getFullYear()} GebetaMaps,
+                            Inc. All rights
                             reserved.</p>
                     </div>
 
@@ -31,7 +33,8 @@ export default function Footer() {
                                 </li>
                                 <li><Link href="https://docs.gebeta.app/docs/direction">Direction</Link></li>
                                 <li><Link href="https://docs.gebeta.app/docs/matrix">Matrix</Link></li>
-                                <li><Link href="https://docs.gebeta.app/docs/route-optimization">Route optimization</Link></li>
+                                <li><Link href="https://docs.gebeta.app/docs/route-optimization">Route
+                                    optimization</Link></li>
                                 <li><Link href="https://docs.gebeta.app/docs/onm">ONM</Link></li>
                             </ul>
                         </div>

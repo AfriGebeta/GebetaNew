@@ -25,7 +25,7 @@ export default function Navbar() {
 
     return (
         <header
-            className={`w-full h-15 flex items-center transition-colors z-50 fixed top-0 bg-background/80 ${isScrolled && 'backdrop-blur-lg border-b border-separator'}`}
+            className={`w-full h-15 flex items-center transition-colors z-50 fixed top-0 ${isScrolled && ' bg-background/80 backdrop-blur-lg border-b border-separator'}`}
         >
             <Container>
                 <nav className="flex justify-between items-center py-4">
