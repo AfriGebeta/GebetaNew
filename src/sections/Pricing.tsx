@@ -31,8 +31,8 @@ export function Plans() {
         name: "Custom",
         price: "",
         expiredIn: 30,
-        call_caps: ["Unlimited", "Unlimited", "Unlimited", "Unlimited"],
-        included_call_types: ["Geocoding", "Direction", "Matrix", "Route"],
+        call_caps: ["Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited"],
+        included_call_types: ["Geocoding", "Direction", "Matrix", "TSS", "ONM", "Tile"],
     };
 
     const [activeTab, setActiveTab] = useState("monthly");

@@ -16,8 +16,8 @@ export default function Pricing() {
         name: "Custom",
         price: "",
         expiredIn: 30,
-        call_caps: ["Unlimited", "Unlimited", "Unlimited", "Unlimited"],
-        included_call_types: ["Geocoding", "Direction", "Matrix", "Route"],
+        call_caps: ["Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited"],
+        included_call_types: ["Geocoding", "Direction", "Matrix", "TSS", "ONM","Tile"],
     };
 
     const [activeTab, setActiveTab] = useState("monthly");
@@ -199,7 +199,7 @@ function Plan({data, index}) {
                                         width={36}
                                         height={36}
                                     />
-                                    <li>{data.call_caps[featureIndex] + " " + feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase()} calls</li>
+                                    <li>{data.call_caps[featureIndex] + " " + feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase() +  " calls" + `${feature === "TILE" ? " (daily limit)" : ""} </li>
                                     {feature.showInfo &&
                                         <div className="relative">
                                             <Image
