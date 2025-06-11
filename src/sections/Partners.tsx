@@ -9,8 +9,8 @@ export default function Partners() {
                     solutions
                     powering innovative businesses</p>
                 <div className="w-full flex gap-[32px] md:justify-between flex-wrap items-center mt-[40px]">
-                    <div className="fade-x h-[160px] w-full overflow-hidden opacity-50 dark:grayscale">
-                        <div className="animate-scroll-x h-full w-full bg-[length:200%_auto] md:bg-[length:130%_auto]"
+                    <div className="fade-x h-[160px] w-full overflow-hidden opacity-50 dark:opacity-1 dark:grayscale">
+                        <div className="animate-scroll-x h-full w-full bg-[length:200%_auto] md:bg-[length:110%_auto]"
                              style={{
                                  backgroundRepeat: "repeat-x",
                                  backgroundImage: "url(/assets/partner.png)"
