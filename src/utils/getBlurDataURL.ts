@@ -5,10 +5,10 @@ export const getBlurData = async (src: string) => {
     try {
         const buffer = await fs.readFile(`./public${src}`);
         const {base64} = await getPlaiceholder(buffer, {
-            brightness: 0.9,
-            saturation: 2.5,
+            brightness: 0.2,
+            saturation: 1.2,
             size: 10,
-            removeAlpha: true
+            removeAlpha: false
         });
         return base64;
     } catch (error) {
