@@ -46,14 +46,13 @@ export default async function Features() {
                                 </div>
 
                                 <div
-                                    className="relative w-full md:w-1/2 aspect-[4/3] lg:aspect-[5/4] rounded-[16px] overflow-hidden">
+                                    className="relative w-full md:w-1/2 rounded-[16px] overflow-hidden">
                                     <Image
                                         src={feature.image.source}
                                         placeholder="blur"
                                         blurDataURL={feature?.blurData}
                                         alt={feature.image.alt}
                                         fill
-                                        sizes="(max-width: 768px) 100vw, 50vw"
                                         className="object-cover"
                                     />
                                 </div>
