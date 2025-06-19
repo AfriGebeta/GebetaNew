@@ -237,7 +237,6 @@ const Register: React.FC = () => {
                         id="coupon"
                         value={registrationData.coupon}
                         onChange={(e) => setRegistrationData({...registrationData, coupon: e.target.value})}
-                        required
                         placeholder="Optional"
                         className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
                            focus:outline-none focus:ring focus:ring-[#FFA500]
