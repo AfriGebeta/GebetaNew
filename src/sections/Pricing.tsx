@@ -46,8 +46,8 @@ export function Plans() {
         staleTime: 5 * 60 * 1000,
     });
 
-    const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30) || [];
-    const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365) || [];
+    const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30)?.reverse() || [];
+    const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365)?.reverse() || [];
 
 
     return (
