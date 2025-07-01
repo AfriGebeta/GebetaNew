@@ -46,13 +46,13 @@ jobs:
       with:
         name: dot-env
         path: .
-    - run: npm install -g pnpm@latest-10
-    - run: pnpm install --frozen-lockfile
-    - run: pnpm build
+    - run: npm install -g yarn
+    - run: yarn install
+    - run: yarn build
     - name: Prepare Deployment Artifacts
       run: |
         mkdir -p deploy
-        cp -r .env .next public package.json pnpm-lock.yaml start.sh deploy/
+        cp -r .env .next public package.json yarn-lock.yaml start.sh deploy/
         chmod +x deploy/start.sh
     - uses: actions/upload-artifact@v4
       with:
