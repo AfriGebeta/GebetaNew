@@ -46,12 +46,19 @@ jobs:
       with:
         name: dot-env
         path: .
-    - run: npm install
-    - run: npm run export
+    - run: npm install -g yarn
+    - run: yarn install
+    - run: yarn build
+    - name: Prepare Deployment Artifacts
+      run: |
+        mkdir -p deploy
+        cp -r .env .next public package.json yarn.lock start.sh deploy/
+        chmod +x deploy/start.sh
     - uses: actions/upload-artifact@v4
       with:
         name: build
-        path: out
+        path: deploy
+        include-hidden-files: true
 
   deploy:
     needs: lint-and-build
@@ -86,5 +93,13 @@ jobs:
         # Copy files to the new version directory
         scp -o StrictHostKeyChecking=no -r build/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION
         
+        # Copy files to the new version directory
+        rsync -avz --progress --delete \
+          -e "ssh -o StrictHostKeyChecking=no" \
+          build/ $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION/
+        
         # Update the symlink to point to the new version
         ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "ln -sfn ~/gebeta-remade/releases/$NEW_VERSION ~/gebeta-remade/current"
+
+        # Restart the server
+        ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "pm2 restart all"
