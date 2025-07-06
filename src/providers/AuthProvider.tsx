@@ -2,7 +2,7 @@
 "use client";
 import React, {createContext, useEffect, useState} from 'react';
 import useLocalStorage from "../hooks/use-local-storage";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 
 export const AuthContext = createContext();
 
@@ -10,10 +10,25 @@ export const AuthProvider = ({children}) => {
     const router = useRouter();
     const [currentUser, setCurrentUser] = useLocalStorage('currentUser', null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const pathname = usePathname()
+    console.log(pathname);
+
+    const UN_PROTECTED_ROUTES = [
+        "/",
+        "/auth/signin",
+        "/auth/register",
+        "/auth/reset-password",
+    ]
 
     useEffect(() => {
-        setIsAuthenticated(JSON.parse(localStorage.getItem('isAuthenticated')))
+        setIsAuthenticated(JSON.parse(localStorage.getItem('isAuthenticated') as string))
     }, []);
+
+    useEffect(() => {
+        if(isAuthenticated && UN_PROTECTED_ROUTES.includes(pathname)) {
+            router.push('/dashboard');
+        }
+    }, [isAuthenticated]);
 
 
     const login = (user) => {
@@ -22,7 +37,6 @@ export const AuthProvider = ({children}) => {
         if(typeof window !== 'undefined'){
             localStorage.setItem('isAuthenticated', JSON.stringify(true));
         }
-        console.log("login is bein called")
     };
 
     const logout = () => {

@@ -56,7 +56,7 @@ export default function Contact() {
 
     return (
         <Container>
-            <div className="mt-[80px] max-w-2xl mx-auto px-4">
+            <div className="mt-[80px] max-w-2xl mx-auto px-4 mt-[120px]">
                 <h1 className="text-[48px] text-center text-[#1B1E2B] dark:text-white leading-60 mb-[40px]">
                     Contact Us
                 </h1>

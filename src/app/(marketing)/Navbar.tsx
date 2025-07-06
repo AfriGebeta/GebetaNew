@@ -7,6 +7,8 @@ import {menuItems} from "@/constants";
 import {useNavbarLogic} from "@/utils/useNavbarLogic";
 import {User2Icon} from "lucide-react";
 import {useRouter} from 'nextjs-toploader/app';
+import Announcement from "@/app/_component/Announcement";
+import {useState} from "react";
 
 export default function Navbar() {
     const {
@@ -21,11 +23,15 @@ export default function Navbar() {
         closeMobileMenu,
     } = useNavbarLogic();
 
+    const [showAnnouncement, setShowAnnouncement] = useState(true)
+
     const router = useRouter()
 
     return (
+        <>
+            <Announcement showAnnouncement={showAnnouncement} setShowAnnouncement={setShowAnnouncement} />
         <header
-            className={`w-full h-15 flex items-center transition-colors z-50 fixed top-0 ${isScrolled && ' bg-background/80 backdrop-blur-lg border-b border-separator'}`}
+            className={`w-full h-15 flex items-center transition-colors z-50 fixed ${showAnnouncement ? 'top-11' : 'top-0'} ${isScrolled && ' bg-background/80 backdrop-blur-lg border-b border-separator'}`}
         >
             <Container>
                 <nav className="flex justify-between items-center py-4">
@@ -174,7 +180,7 @@ export default function Navbar() {
 
             {activeMenu && menuItems.find((item) => item.title === activeMenu)?.submenu && (
                 <div
-                    className="absolute left-0 w-full bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700"
+                    className="absolute left-0 top-20 w-full bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700"
                     onMouseEnter={() => handleMouseEnter(activeMenu)}
                     onMouseLeave={handleMouseLeave}
                 >
@@ -199,5 +205,6 @@ export default function Navbar() {
                 </div>
             )}
         </header>
+        </>
     );
 }

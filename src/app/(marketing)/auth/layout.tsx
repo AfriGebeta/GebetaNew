@@ -10,8 +10,8 @@ export default function AuthLayout({
 }) {
     return (
         <Container>
-            <div className="flex flex-col items-center mt-[8px]">
-                <div className="shadow rounded-lg px-8 py-6 w-full max-w-md">
+            <div className="flex flex-col items-center mt-[120px]">
+                <div className="rounded-lg px-8 py-6 mt-12 w-full max-w-md">
                     {children}
                 </div>
             </div>

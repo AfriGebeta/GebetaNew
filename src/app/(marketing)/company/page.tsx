@@ -27,7 +27,7 @@ export default function Company() {
     ];
 
     return (
-        <div className="bg-gradient-to-b from-white to-[#FFF7E8] dark:from-[#05050a] dark:to-[#05050a]">
+        <div className="bg-gradient-to-b from-white to-[#FFF7E8] dark:from-[#05050a] dark:to-[#05050a] mt-[120px]">
             <Container>
                 <div className="md:pb-[32px]">
                     <div className="text-center mb-[80px]">

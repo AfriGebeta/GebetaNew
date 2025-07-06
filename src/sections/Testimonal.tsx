@@ -1,4 +1,5 @@
 //@ts-nocheck
+"use client";
 import Container from "@/sections/Container";
 import Image from "next/image";
 
@@ -59,8 +60,10 @@ export default function Testimonial() {
             </Container>
 
             <div className="relative pt-10 md:pt-[80px] overflow-hidden px-4">
-                <div className="flex gap-5 animate-smooth-scroll hover:pause">
-                    {[...testimonials, ...testimonials].map((item, index) => (
+                <div
+                    className="flex gap-5 animate-smooth-scroll hover:pause will-change transform-3d transition-all"
+                >
+                    {[...testimonials, ...testimonials, ...testimonials, ...testimonials].map((item, index) => (
                         <div
                             key={index}
                             className="w-[280px] md:w-[320px] flex-shrink-0 bg-white dark:bg-[#0A0A0F]

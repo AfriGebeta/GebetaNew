@@ -12,7 +12,6 @@ interface UsageOverviewProps {
 }
 
 export default function UsageOverview({currentUser}: UsageOverviewProps) {
-
     const [purchasedPlans, setPurchasedPlans] = useState('');
 
     const {data, isLoading} = useQuery({

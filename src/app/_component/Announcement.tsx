@@ -1,95 +1,66 @@
 "use client";
-import {useEffect, useState} from "react";
+
 import Link from "next/link";
 
-export default function Announcement() {
-    const [isVisible, setIsVisible] = useState(true);
-
-    useEffect(() => {
-        const announcementClosed = localStorage.getItem("announcementClosed");
-        if (announcementClosed === "true") {
-            setIsVisible(false);
-        }
-    }, []);
-
-    const closeAnnouncement = () => {
-        setIsVisible(false);
-        localStorage.setItem("announcementClosed", "true");
-
-        const navbar = document.getElementById("navbar-container");
-        if (navbar) {
-            navbar.style.top = "0";
-        }
-    };
-
-    useEffect(() => {
-        const navbar = document.getElementById("navbar-container");
-        if (navbar) {
-            navbar.style.top = isVisible ? "68px" : "0";
-        }
-    }, [isVisible]);
-
-    if (!isVisible) {
-        return null;
-    }
+export default function Announcement({
+    showAnnouncement,
+    setShowAnnouncement,
+                                     }) {
 
     return (
-        <div id="announcement" className="fixed top-0 left-0 right-0 z-[1001] w-full">
-            <div className="w-full">
+        <div
+            className="w-full isolate fixed top-0 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1"
+            style={{
+                visibility: showAnnouncement ? 'visible' : 'hidden',
+            }}
+        >
+            <div
+                className="absolute top-1/2 left-[max(-7rem,calc(50%-52rem))] -z-10 -translate-y-1/2 transform-gpu blur-2xl"
+                aria-hidden="true"
+            >
                 <div
-                    className="relative bg-blue-600 bg-[url('/assets/banner.jpg')] bg-1% bg-no-repeat bg-cover p-4 text-center">
-                    <div className="absolute inset-0 bg-black/40 md:bg-transparent"></div>
-
-                    {/* Content */}
-                    <div className="relative z-10">
-                        <div className="flex flex-col sm:flex-row justify-center items-center gap-2 px-4">
-                            <div className="flex items-center gap-2">
-                                <p className="text-sm sm:text-base text-white font-medium">
-                                    GebetaMap Tile is now live.
-                                </p>
-                            </div>
-                            <Link
-                                className="py-1.5 px-2.5 md:py-2 md:px-3 inline-flex items-center justify-center gap-x-2 text-sm font-medium rounded-full border-2 border-white text-white hover:bg-white/10 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
-                                href="/blog/gebeta-tile"
-                            >
-                                Learn more
-                                <svg
-                                    className="shrink-0 size-4"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="m9 18 6-6-6-6"/>
-                                </svg>
-                            </Link>
-                        </div>
-                    </div>
-
-                    {/* Close button */}
-                    <button
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white hover:bg-white/10 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 z-20"
-                        onClick={closeAnnouncement}
-                        aria-label="Close announcement"
-                    >
-                        <svg
-                            className="size-5"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="M18 6L6 18"></path>
-                            <path d="M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
+                    className="aspect-[577/310] w-[36.0625rem] bg-gradient-to-r from-[#ff80b5] to-[#9089fc] opacity-30"
+                    style={{
+                        clipPath: "polygon(74.8% 41.9%, 97.2% 73.2%, 100% 34.9%, 92.5% 0.4%, 87.5% 0%, 75% 28.6%, 58.5% 54.6%, 50.1% 56.8%, 46.9% 44%, 48.3% 17.4%, 24.7% 53.9%, 0% 27.9%, 11.9% 74.2%, 24.9% 54.1%, 68.6% 100%, 74.8% 41.9%)"
+                    }}
+                />
+            </div>
+            <div
+                className="absolute top-1/2 left-[max(45rem,calc(50%+8rem))] -z-10 -translate-y-1/2 transform-gpu blur-2xl"
+                aria-hidden="true"
+            >
+                <div
+                    className="aspect-[577/310] w-[36.0625rem] bg-gradient-to-r from-[#ff80b5] to-[#9089fc] opacity-30"
+                    style={{
+                        clipPath: "polygon(74.8% 41.9%, 97.2% 73.2%, 100% 34.9%, 92.5% 0.4%, 87.5% 0%, 75% 28.6%, 58.5% 54.6%, 50.1% 56.8%, 46.9% 44%, 48.3% 17.4%, 24.7% 53.9%, 0% 27.9%, 11.9% 74.2%, 24.9% 54.1%, 68.6% 100%, 74.8% 41.9%)"
+                    }}
+                />
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <p className="text-sm leading-6 text-gray-900">
+                    <strong className="font-semibold">Important Update</strong>
+                    <svg viewBox="0 0 2 2" className="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
+                        <circle cx="1" cy="1" r="1" />
+                    </svg>
+                    We've updated our pricing structure
+                </p>
+                <Link
+                    href="/pricing"
+                    className="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                >
+                    View new pricing <span aria-hidden="true">&rarr;</span>
+                </Link>
+            </div>
+            <div className="flex flex-1 justify-end">
+                <button
+                    onClick={() => setShowAnnouncement(false)}
+                    type="button"
+                    className="-m-3 p-3 focus-visible:outline-offset-[-4px]">
+                    <span className="sr-only">Dismiss</span>
+                    <svg className="h-5 w-5 text-gray-900" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                    </svg>
+                </button>
             </div>
         </div>
     );

@@ -5,6 +5,11 @@ export const getUser = async (apiToken) => {
     try {
         const data = await apiClient.get(
             `/user/me`,
+            {
+                headers: {
+                    Authorization: `Bearer ${apiToken}`
+                }
+            }
         );
         return data.data.data;
     } catch (error) {
@@ -169,3 +174,21 @@ export const getAllCredits = async ({page, limit}) => {
         return error;
     }
 };
+
+export const claimFreemium = async (apiToken) => {
+    try {
+        const data = await apiClient.post(
+            `/payment/freemium/credit`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${apiToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return data?.data
+    } catch (error) {
+        return error?.response?.data?.error?.additional.claim?.[0];
+    }
+}

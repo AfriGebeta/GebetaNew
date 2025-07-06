@@ -112,12 +112,12 @@ export default function APIToken() {
                 <TableBody>
                     {tokenList.map((token, index) => (
                         <TableRow key={index}>
-                            <TableCell>{token.replace(/./g, '●').slice(0, 24)}</TableCell>
+                            <TableCell>{(token?.token).replace(/./g, '●').slice(0, 24)}</TableCell>
                             <TableCell className="text-right">
                                 <div className="flex justify-end space-x-2">
                                     <Button
                                         variant="link"
-                                        onClick={() => copyToClipboard(token)}
+                                        onClick={() => copyToClipboard(token?.token)}
                                         className="flex items-center"
                                     >
                                         <CopyIcon className=""/>

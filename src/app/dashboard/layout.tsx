@@ -14,10 +14,30 @@ import {
 } from "@/components/ui/breadcrumb";
 import {Toaster} from "@/components/ui/toaster"
 import PrivateRoute from "@/components/PrivateRoute";
+import {useQuery} from "@tanstack/react-query";
+import {getUser} from "@/service/apis";
+import {useContext, useEffect} from "react";
+import {AuthContext} from "@/providers/AuthProvider";
 
 export default function DashboardLayout({children}: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const {currentUser, setCurrentUser} = useContext(AuthContext)
 
+    const {data, isSuccess} = useQuery({
+        queryKey: ["me"],
+        queryFn: () => getUser(currentUser.token),
+        enabled: !!currentUser?.token,
+        staleTime: 5 * 60 * 1000,
+    })
+
+    console.log("current user", data)
+
+    useEffect(() => {
+        if (isSuccess && data) {
+            console.log("me ,", data)
+            // setCurrentUser(user)
+        }
+    }, [isSuccess, data]);
     // Create breadcrumb items from the pathname
     const breadcrumbItems = pathname
         .split('/')
@@ -42,7 +62,7 @@ export default function DashboardLayout({children}: { children: React.ReactNode 
                         <div className="flex items-center gap-2 px-4">
                             <SidebarTrigger className="-ml-1"/>
                             <Separator orientation="vertical" className="mr-2 h-4"/>
-                            <Breadcrumb>
+                            <Breadcrumb className="pt-8">
                                 <BreadcrumbList className="flex items-center">
                                     {breadcrumbItems.map((item, index) => (
                                         <div key={item.href} className="flex items-center">

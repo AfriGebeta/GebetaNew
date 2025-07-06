@@ -7,7 +7,7 @@ export const useAuth = () => {
     const router = useRouter();
 
     useEffect(() => {
-        const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated'));
+        const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') as string);
         if (!isAuthenticated) {
             router.push('/auth/signin');
         }

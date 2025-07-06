@@ -451,6 +451,7 @@ const Register: React.FC = () => {
                                 value="Business"
                                 onChange={() => setAccountType("Business")}
                                 defaultChecked
+                                className="accent-[#FFA500]"
                             />
                             <label className="text-[14px]">Business - for your work, school or organization</label>
                         </div>

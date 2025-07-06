@@ -135,7 +135,7 @@ const config = {
     			}
     		},
     		animation: {
-    			'smooth-scroll': 'smooth-scroll 30s linear infinite',
+    			'smooth-scroll': 'smooth-scroll 20s linear infinite',
     			'smooth-scroll-2': 'smooth-scroll 40s linear infinite',
     			'accordion-down': 'accordion-down 0.2s ease-out',
     			'accordion-up': 'accordion-up 0.2s ease-out',

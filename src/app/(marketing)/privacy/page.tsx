@@ -8,7 +8,7 @@ export const metadata:Metadata = {
 export default function PrivacyPolicy() {
     return (
         <Container>
-            <div>
+            <div className="mt-[120px]">
                 <h1 className="text-[48px] text-center text-[#1B1E2B] dark:text-white leading-60 mb-[40px]">
                     Privacy Policy
                 </h1>

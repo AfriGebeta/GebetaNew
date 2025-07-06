@@ -44,7 +44,7 @@ export default function PricingPage() {
     ];
 
     return (
-        <div className=" dark:from-[#05050a] dark:to-[#05050a]">
+        <div className=" dark:from-[#05050a] dark:to-[#05050a] mt-[120px]">
             <Container>
                 <div className="md:pb-[60px]">
                     <div className="text-center mb-[80px]">

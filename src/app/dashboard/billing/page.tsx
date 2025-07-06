@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import {Button} from "@/components/ui/button";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
 import {AuthContext} from "@/providers/AuthProvider";
+import Spinner from "@/components/Spinner";
 
 export default function BillingHistory() {
     const {currentUser, setCurrentUser} = useContext(AuthContext)
@@ -45,7 +46,7 @@ export default function BillingHistory() {
         <div className="p-4 rounded-lg min-h-[60vh]">
             <h2 className="text-xl text-white font-semibold mb-4 mt-[40px]">Billing History</h2>
             {isLoading ? (
-                <div>Loading...</div>
+                <Spinner />
             ) : data?.billing?.length > 0 ? (
                 <>
                     <Table>

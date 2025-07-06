@@ -1,12 +1,12 @@
 //@ts-nocheck
 "use client";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { getAllCredits, buyCredit } from "@/service/apis";
-import { useContext, useState } from "react";
-import { AuthContext } from "@/providers/AuthProvider";
-import { Check } from "lucide-react";
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {useQuery} from "@tanstack/react-query";
+import {buyCredit, getAllCredits} from "@/service/apis";
+import {useContext, useState} from "react";
+import {AuthContext} from "@/providers/AuthProvider";
+import {Check} from "lucide-react";
 import {useToast} from "@/hooks/use-toast"
 import {queryClient} from "@/providers/QueryProvider";
 import {useRouter} from 'nextjs-toploader/app';
@@ -87,6 +87,9 @@ function PlanCard({plan, currentUser, key}) {
     const isPurchased = plan.name !== 'Custom'
         ? currentUser?.user?.credits?.find(item => item.bundle_id === plan.id)
         : false;
+
+    console.log("plans :", plan)
+    console.log("user :", currentUser)
 
     const getButtonText = () => {
         if (isPurchased) return "Selected Plan";

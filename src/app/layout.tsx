@@ -42,7 +42,7 @@ export default function RootLayout({
             showSpinner={false}
         />
         <div className={
-            'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] pt-8 flex flex-col min-h-screen'
+            'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] flex flex-col min-h-screen'
         }>
             <ThemeProvider defaultTheme="light" storageKey="app-theme">
                 <AuthProvider>
