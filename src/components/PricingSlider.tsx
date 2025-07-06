@@ -52,84 +52,111 @@ const PricingSlider = () => {
         });
     };
 
+    const getSliderSteps = () => [
+        { value: 0, label: "0", position: '0%' },
+        { value: 100000, label: "100k", position: '10%' },
+        { value: 250000, label: "250k", position: '25%' },
+        { value: 500000, label: "500k", position: '50%' },
+        { value: 750000, label: "750k", position: '75%' },
+        { value: 1000000, label: "1M", position: '100%' }
+    ];
+
     const getBackgroundColor = (value) => {
-        if (value <= 100) return '#fcf2e9';
-        if (value <= 5000) return '#fdbe85';
-        if (value <= 10000) return '#fdac63';
-        if (value <= 20000) return '#fb9234';
+        const percentage = (value / 1000000) * 100;
+
+        if (percentage <= 10) return '#fcf2e9';
+        if (percentage <= 25) return '#fdbe85';
+        if (percentage <= 50) return '#fdac63';
+        if (percentage <= 75) return '#fb9234';
         return '#fd7800';
     };
 
-    const calculatePrice = (feature, calls) => {
-        // Convert calls to thousands since pricing is per 1000 calls
-        const callsInThousands = calls;
+    const calculatePrice = (feature, rawCalls) => {
+        // Convert raw calls to units of 1000 (since pricing is per 1k calls)
+        const unitsOf1000 = rawCalls / 1000;
 
-        // Define pricing tiers for each feature
+        const first20kPricing = {
+            Autocomplete: 2.00,
+            ReverseGeocoding: 3.60,
+            Direction: 3.60,
+            Matrix: 3.60,
+            ONM: 3.60,
+            RouteOptimization: 6.00,
+            FleetRouting: 17.00,
+            Tile: 0.45
+        };
+
+        console.log("Hi babay")
+        if(rawCalls <= 20_000 && rawCalls > 0) {
+            return first20kPricing[feature] * 20
+        }
+
+        // Pricing tiers (cost PER 1000 CALLS)
         const pricingTiers = {
             Autocomplete: [
-                { range: [0, 100], price: 2 },
-                { range: [100.001, 500], price: 1.589 },
-                { range: [500.001, 1000], price: 1.19 },
-                { range: [1000.001, 5000], price: 0.595 },
-                { range: [5000.001, 10000], price: 0.147 }
+                { range: [0, 100], price: 2 },       // $2 per 1000 for 0-100k calls
+                { range: [100, 500], price: 1.589 }, // $1.589 per 1000 for 100k-500k
+                { range: [500, 1000], price: 1.19 }, // $1.19 per 1000 for 500k-1M
+                { range: [1000, 5000], price: 0.595 }, // $0.595 per 1000 for 1M-5M
+                { range: [5000, 10000], price: 0.147 } // $0.147 per 1000 for 5M-10M
             ],
             ReverseGeocoding: [
                 { range: [0, 100], price: 3.6 },
-                { range: [100.001, 500], price: 2.48 },
-                { range: [500.001, 1000], price: 1.86 },
-                { range: [1000.001, 5000], price: 0.93 },
-                { range: [5000.001, 10000], price: 0.2356 }
+                { range: [100, 500], price: 2.48 },
+                { range: [500, 1000], price: 1.86 },
+                { range: [1000, 5000], price: 0.93 },
+                { range: [5000, 10000], price: 0.2356 }
             ],
             Direction: [
                 { range: [0, 100], price: 3.6 },
-                { range: [100.001, 500], price: 2.48 },
-                { range: [500.001, 1000], price: 1.86 },
-                { range: [1000.001, 5000], price: 0.93 },
-                { range: [5000.001, 10000], price: 0.2356 }
+                { range: [100, 500], price: 2.48 },
+                { range: [500, 1000], price: 1.86 },
+                { range: [1000, 5000], price: 0.93 },
+                { range: [5000, 10000], price: 0.2356 }
             ],
             Matrix: [
                 { range: [0, 100], price: 3.6 },
-                { range: [100.001, 500], price: 2.2 },
-                { range: [500.001, 1000], price: 1.65 },
-                { range: [1000.001, 5000], price: 0.825 },
-                { range: [5000.001, 10000], price: 0.209 }
+                { range: [100, 500], price: 2.2 },
+                { range: [500, 1000], price: 1.65 },
+                { range: [1000, 5000], price: 0.825 },
+                { range: [5000, 10000], price: 0.209 }
             ],
             ONM: [
                 { range: [0, 100], price: 3.6 },
-                { range: [100.001, 500], price: 2.2 },
-                { range: [500.001, 1000], price: 1.65 },
-                { range: [1000.001, 5000], price: 0.825 },
-                { range: [5000.001, 10000], price: 0.209 }
+                { range: [100, 500], price: 2.2 },
+                { range: [500, 1000], price: 1.65 },
+                { range: [1000, 5000], price: 0.825 },
+                { range: [5000, 10000], price: 0.209 }
             ],
             RouteOptimization: [
                 { range: [0, 100], price: 6 },
-                { range: [100.001, 500], price: 2.2 },
-                { range: [500.001, 1000], price: 1.1 },
-                { range: [1000.001, 5000], price: 0.44 },
-                { range: [5000.001, 10000], price: 0.385 }
+                { range: [100, 500], price: 2.2 },
+                { range: [500, 1000], price: 1.1 },
+                { range: [1000, 5000], price: 0.44 },
+                { range: [5000, 10000], price: 0.385 }
             ],
             FleetRouting: [
                 { range: [0, 100], price: 17 },
-                { range: [100.001, 500], price: 7.7 },
-                { range: [500.001, 1000], price: 3.3 },
-                { range: [1000.001, 5000], price: 1.32 },
-                { range: [5000.001, 10000], price: 1.155 }
+                { range: [100, 500], price: 7.7 },
+                { range: [500, 1000], price: 3.3 },
+                { range: [1000, 5000], price: 1.32 },
+                { range: [5000, 10000], price: 1.155 }
             ],
             Tile: [
                 { range: [0, 50], price: 0 },
-                { range: [50.001, 100], price: 0.45 },
-                { range: [100.001, 500], price: 0.45 },
-                { range: [500.001, 1000], price: 0.45 },
-                { range: [1000.001, 5000], price: 0.336 },
-                { range: [5000.001, 10000], price: 0.252 },
-                { range: [10000.001, 50000], price: 0.126 },
-                { range: [50000.001, 100000], price: 0.0315 }
+                { range: [50, 100], price: 0.45 },
+                { range: [100, 500], price: 0.45 },
+                { range: [500, 1000], price: 0.45 },
+                { range: [1000, 5000], price: 0.336 },
+                { range: [5000, 10000], price: 0.252 },
+                { range: [10000, 50000], price: 0.126 },
+                { range: [50000, 100000], price: 0.0315 }
             ]
         };
 
-        // Apply special conditions for certain features
+        // Special conditions (thresholds in units of 1000 calls)
         const specialConditions = {
-            Autocomplete: { threshold: 150, adjustedPrice: 1.981 },
+            Autocomplete: { threshold: 150, adjustedPrice: 1.981 }, // 150k calls
             ReverseGeocoding: { threshold: 150, adjustedPrice: 3.1 },
             Direction: { threshold: 150, adjustedPrice: 3.1 },
             Matrix: { threshold: 150, adjustedPrice: 2.75 },
@@ -140,42 +167,41 @@ const PricingSlider = () => {
         };
 
         let totalCost = 0;
-        let remainingCalls = callsInThousands;
+        let remainingUnits = unitsOf1000;
 
-        // Check if we need to apply special condition for the first tier
-        if (specialConditions[feature] && callsInThousands > specialConditions[feature].threshold) {
+
+        // Apply special condition if applicable
+        if (specialConditions[feature] && unitsOf1000 > specialConditions[feature].threshold) {
             const firstTier = pricingTiers[feature][0];
             const tierRange = firstTier.range[1] - firstTier.range[0];
-            const callsInTier = Math.min(remainingCalls, tierRange);
+            const unitsInTier = Math.min(remainingUnits, tierRange);
 
-            totalCost += callsInTier * specialConditions[feature].adjustedPrice;
-            remainingCalls -= callsInTier;
+            totalCost += unitsInTier * specialConditions[feature].adjustedPrice;
+            remainingUnits -= unitsInTier;
         }
 
-        // Calculate cost for remaining tiers
-        for (let i = 0; i < pricingTiers[feature].length && remainingCalls > 0; i++) {
+        // Calculate remaining tiers
+        for (let i = 0; i < pricingTiers[feature].length && remainingUnits > 0; i++) {
             const tier = pricingTiers[feature][i];
 
-            // Skip first tier if we already processed it with special condition
-            if (i === 0 && specialConditions[feature] && callsInThousands > specialConditions[feature].threshold) {
+            // Skip first tier if special condition was applied
+            if (i === 0 && specialConditions[feature] && unitsOf1000 > specialConditions[feature].threshold) {
                 continue;
             }
 
             const tierMin = tier.range[0];
             const tierMax = tier.range[1];
             const tierRange = tierMax - tierMin;
+            const unitsInTier = Math.min(remainingUnits, tierRange);
 
-            const callsInTier = Math.min(remainingCalls, tierRange);
-
-            if (callsInTier > 0) {
-                totalCost += callsInTier * tier.price;
-                remainingCalls -= callsInTier;
+            if (unitsInTier > 0) {
+                totalCost += unitsInTier * tier.price;
+                remainingUnits -= unitsInTier;
             }
         }
 
         return totalCost;
     };
-
     const formatPrice = (price, sliderValue) => {
         if (sliderValue === 25000) {
             return (
@@ -188,14 +214,9 @@ const PricingSlider = () => {
             );
         }
 
-        const isEthiopia = location.country === 'ET';
-        if (isEthiopia) {
-            const birrPrice = Math.ceil(price * exchangeRate);
-            return `${birrPrice?.toLocaleString()} Birr`;
-        } else {
-            const usdPrice = price.toFixed(2);
-            return `$${usdPrice?.toLocaleString()} USD`;
-        }
+
+        const usdPrice = price.toFixed(2);
+        return `$${usdPrice?.toLocaleString()} USD`;
     };
 
     return (
@@ -209,7 +230,11 @@ const PricingSlider = () => {
                     </p>
                 </div>
 
-                {Object.keys(sliderValues).map((feature) => (
+                {Object.keys(sliderValues).map((feature) => {
+                    const steps = getSliderSteps(feature);
+                    const max = 1_000_000;
+
+                    return (
                     <div key={feature} className="mb-8 bg-white dark:bg-[#111116] p-6 rounded-xl shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                             <p className="text-lg font-semibold text-[#1B1E2B] dark:text-white">
@@ -221,23 +246,23 @@ const PricingSlider = () => {
                                 <input
                                     type="range"
                                     min="0"
-                                    max="10000" // Updated to match the highest tier in pricing (10,000 = 10,000,000 calls)
+                                    max={max}
                                     value={sliderValues[feature]}
                                     onChange={(e) => handleSliderChange(e, feature)}
                                     className="w-full h-2 rounded-lg appearance-none cursor-pointer"
                                     style={{
-                                        background: `linear-gradient(to right, ${getBackgroundColor(0)} 0%, ${getBackgroundColor(sliderValues[feature])} ${(sliderValues[feature] / 10000) * 100}%, #e5e7eb ${(sliderValues[feature] / 10000) * 100}%)`,
+                                        background: `linear-gradient(to right, ${getBackgroundColor(0, feature)} 0%, ${getBackgroundColor(sliderValues[feature], feature)} ${(sliderValues[feature] / max) * 100}%, #e5e7eb ${(sliderValues[feature] / max) * 100}%)`,
                                     }}
                                 />
-                                <div className="relative w-full">
-                                    {sliderSteps.map((step) => (
+                                <div className="relative w-full mt-2">
+                                    {steps.map((step) => (
                                         <span
                                             key={step.value}
                                             className="absolute text-xs text-gray-500 dark:text-gray-400 -translate-x-1/2"
                                             style={{ left: step.position }}
                                         >
-        {step.value >= 1000 ? `${step.value / 1000}k` : step.value}
-      </span>
+                                {step.label}
+                            </span>
                                     ))}
                                 </div>
                                 <p className="text-sm font-bold mt-6 text-[#1B1E2B] dark:text-white">
@@ -255,7 +280,7 @@ const PricingSlider = () => {
                             </div>
                         </div>
                     </div>
-                ))}
+                )})}
             </div>
         </div>
     );
