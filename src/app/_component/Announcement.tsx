@@ -9,7 +9,7 @@ export default function Announcement({
 
     return (
         <div
-            className="w-full isolate fixed top-0 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1"
+            className="w-full isolate z-[999] fixed top-0 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1"
             style={{
                 visibility: showAnnouncement ? 'visible' : 'hidden',
             }}
