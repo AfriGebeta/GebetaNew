@@ -25,6 +25,8 @@ export default function APIToken() {
     const [selectedToken, setSelectedToken] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
+    console.log("token list", tokenList)
+
     const {toast} = useToast()
 
     const copyToClipboard = (token) => {
@@ -43,6 +45,7 @@ export default function APIToken() {
             const response = await setToken(currentUser.token);
             if(response.success){
                 const updatedTokens = [...tokenList, response.data.token];
+                console.log("updated tokens", updatedTokens);
                 setTokenList(updatedTokens);
                 setCurrentUser({...currentUser, user: {...currentUser.user, token: updatedTokens}});
                 setNewToken(response.data.token);
@@ -133,7 +136,7 @@ export default function APIToken() {
                                         <DialogTrigger asChild>
                                             <Button
                                                 variant="link"
-                                                onClick={() => handleShowToken(token)}
+                                                onClick={() => handleShowToken(token?.token)}
                                             >
                                                 <EyeIcon/>
                                             </Button>
