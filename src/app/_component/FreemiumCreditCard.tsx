@@ -17,6 +17,10 @@ const FreemiumCreditCard = () => {
     const [claimed, setClaimed] = useState(currentUser?.user?.claimed_freemium);
     const [totalCredit, setTotalCredit] = useState(0);
 
+    // const isSubscribedUser =  currentUser?.user?.map(i)
+    
+    console.log("current user", currentUser)
+
     useEffect(() => {
         const freemiumCredit = currentUser?.user?.remaining?.filter((item) => item?.is_freeemium) ?? {}
         const sum = freemiumCredit?.[0]?.remaining?.reduce((acc, item) =>
@@ -57,7 +61,12 @@ const FreemiumCreditCard = () => {
     }
 
     return (
-        <div className="flex justify-center items-center p-2">
+        <div
+            className="flex justify-center items-center p-2"
+            style={{
+                visibility: "hidden",
+            }}
+        >
             <div className="w-full max-w-md rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
                 <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-[#FFA500] to-pink-500 opacity-90" />

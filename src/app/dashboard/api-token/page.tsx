@@ -40,25 +40,32 @@ export default function APIToken() {
             })
     };
 
+    console.log("tokenList", tokenList)
+
     const createToken = async () => {
         try {
-            const response = await setToken(currentUser.token);
+            const response = await setToken({apiToken: currentUser?.token, userId: currentUser?.user?.id});
             if(response.success){
-                const updatedTokens = [...tokenList, response.data.token];
+                const updatedTokens = [...tokenList, response.data];
                 console.log("updated tokens", updatedTokens);
                 setTokenList(updatedTokens);
-                setCurrentUser({...currentUser, user: {...currentUser.user, token: updatedTokens}});
+                setCurrentUser({
+                    ...currentUser,
+                    user: {
+                        ...currentUser.user,
+                        token: updatedTokens
+                    }
+                });
                 setNewToken(response.data.token);
                 toast({
                     description: "Token created successfully",
                 });
             } else {
                 toast({
-                    description:`${response.message}`,
+                    description: `${response.message}`,
                     variant: "destructive"
-                })
+                });
             }
-
         } catch (err) {
             console.error('Failed to create token: ', err);
             toast({
@@ -67,20 +74,25 @@ export default function APIToken() {
             });
         }
     };
-
-    const handleRevokeToken = async (token) => {
+    const handleRevokeToken = async (tokenToRevoke) => {
         try {
-            const response = await revokeToken(currentUser.token, token)
+            const response = await revokeToken(currentUser.token, tokenToRevoke?.token)
             if(response.success){
-                const updatedTokens = tokenList.filter(t => t !== token)
+                const updatedTokens = tokenList.filter(t => t.token !== tokenToRevoke.token || t.id !== tokenToRevoke.id)
                 setTokenList(updatedTokens);
-                setCurrentUser({...currentUser, user: {...currentUser.user, token: updatedTokens}});
+                setCurrentUser({
+                    ...currentUser,
+                    user: {
+                        ...currentUser.user,
+                        token: updatedTokens
+                    }
+                });
                 toast({
                     description: "Token revoked successfully"
                 });
             } else {
                 toast({
-                    description:`${response.message}`,
+                    description: `${response.message}`,
                     variant: "destructive"
                 })
             }
