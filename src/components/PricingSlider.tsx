@@ -26,7 +26,6 @@ const PricingSlider = () => {
         { value: 10000, position: '100%' }
     ];
 
-    console.log("slider values", sliderValues.Autocomplete)
     const [exchangeRate, setExchangeRate] = useState(140);
 
     useEffect(() => {
@@ -72,7 +71,6 @@ const PricingSlider = () => {
     };
 
     const calculatePrice = (feature, rawCalls) => {
-        // Convert raw calls to units of 1000 (since pricing is per 1k calls)
         const unitsOf1000 = rawCalls / 1000;
 
         const first20kPricing = {
@@ -86,9 +84,12 @@ const PricingSlider = () => {
             Tile: 0.45
         };
 
-        console.log("Hi babay")
         if(rawCalls <= 20_000 && rawCalls > 0) {
-            return first20kPricing[feature] * 20
+            if(feature === "Tile") {
+                if(rawCalls <= 50_000) return 0;
+            } else {
+                return first20kPricing[feature] * 20;
+            }
         }
 
         // Pricing tiers (cost PER 1000 CALLS)
@@ -200,10 +201,12 @@ const PricingSlider = () => {
             }
         }
 
+        console.log("total cost", totalCost)
         return totalCost;
     };
     const formatPrice = (price, sliderValue) => {
-        if (sliderValue === 25000) {
+        console.log("price values", price)
+        if (sliderValue === 10_000_000) {
             return (
                 <div className="flex items-center gap-2">
                     <Link href="/contact" className="text-[14px] text-GebetaMain hover:underline">
@@ -232,7 +235,7 @@ const PricingSlider = () => {
 
                 {Object.keys(sliderValues).map((feature) => {
                     const steps = getSliderSteps(feature);
-                    const max = 1_000_000;
+                    const max = 10_000_000;
 
                     return (
                         <div key={feature} className="mb-8 bg-white dark:bg-[#111116] p-6 rounded-xl shadow-sm">
