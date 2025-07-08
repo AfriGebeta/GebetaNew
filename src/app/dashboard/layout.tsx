@@ -59,10 +59,10 @@ export default function DashboardLayout({children}: { children: React.ReactNode 
                 <SidebarInset className="dark:bg-[#05050a]">
                     <header
                         className="flex h-fit shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-fit">
-                        <div className="flex items-center gap-2 px-4">
+                        <div className="flex items-center gap-2 px-4 pt-2">
                             <SidebarTrigger className="-ml-1"/>
                             <Separator orientation="vertical" className="mr-2 h-4"/>
-                            <Breadcrumb className="pt-8">
+                            <Breadcrumb>
                                 <BreadcrumbList className="flex items-center">
                                     {breadcrumbItems.map((item, index) => (
                                         <div key={item.href} className="flex items-center">
