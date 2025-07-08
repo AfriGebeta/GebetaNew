@@ -64,7 +64,7 @@ const FreemiumCreditCard = () => {
         <div
             className="flex justify-center items-center p-2"
             style={{
-                visibility: "hidden",
+                visibility: currentUser?.user?.purchased_date ? "hidden": "block",
             }}
         >
             <div className="w-full max-w-md rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
