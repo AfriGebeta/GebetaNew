@@ -9,6 +9,7 @@ import {User2Icon} from "lucide-react";
 import {useRouter} from 'nextjs-toploader/app';
 import Announcement from "@/app/_component/Announcement";
 import {useState} from "react";
+import {usePathname} from "next/navigation";
 
 export default function Navbar() {
     const {
@@ -22,6 +23,8 @@ export default function Navbar() {
         toggleMobileSubmenu,
         closeMobileMenu,
     } = useNavbarLogic();
+
+    const pathname = usePathname();
 
     const [showAnnouncement, setShowAnnouncement] = useState(true)
 
@@ -67,7 +70,7 @@ export default function Navbar() {
                             {menuItems.map((item, index) => (
                                 <li
                                     key={index}
-                                    className="relative px-4 py-2 cursor-pointer hover:text-[#FFA500] transition-colors duration-200"
+                                    className={`relative px-4 py-2 cursor-pointer hover:text-[#FFA500] ${pathname?.substring(1) === item.title.toLowerCase() ? "text-[#FFA500]": ""} transition-colors duration-200`}
                                     onMouseEnter={() => item.submenu && handleMouseEnter(item.title)}
                                     onMouseLeave={item.submenu && handleMouseLeave}
                                 >
