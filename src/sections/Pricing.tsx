@@ -36,7 +36,7 @@ export function Plans() {
         included_call_types: ["Geocoding", "Direction", "Matrix", "TSS", "ONM", "Tile"],
     };
 
-    const [activeTab, setActiveTab] = useState("monthly");
+    const [activeTab, setActiveTab] = useState<"monthly" | "yearly">("monthly");
     const handleTabChange = (tab) => {
         setActiveTab(tab);
     };
@@ -108,7 +108,7 @@ export function Plans() {
 
                     {
                         (activeTab === "monthly" ? monthlyPlans : yearlyPlans).map((credit, index) => (
-                            <Plan data={credit} index={index}/>
+                            <Plan data={credit} index={index} activeTab={activeTab} monthlyPlans={monthlyPlans}/>
                         ))
                     }
                     <Plan data={enterprise} index={data?.length || 1}/>
@@ -118,7 +118,7 @@ export function Plans() {
     )
 }
 
-export function Plan({data, index}) {
+export function Plan({data, index, activeTab, monthlyPlans}: {data?: any, index?: number, activeTab: "monthly" | "yearly", monthlyPlans: any[] }) {
     const {currentUser} = useContext(AuthContext);
     const [isLogin, setIsLogin] = useState(false)
     const location = useGeoLocation();
@@ -216,6 +216,7 @@ export function Plan({data, index}) {
         return "Select Plan";
     }
 
+    console.log("monthly plans", monthlyPlans)
     return (
         <>
             <div
@@ -238,13 +239,21 @@ export function Plan({data, index}) {
                             </div>}
                     </div>
 
-                    <h3 className="text-[#2E384E] dark:text-white text-[44px] font-medium mt-[8px]">
+                    <h3 className="text-[#2E384E] dark:text-white text-[28px] font-medium mt-[8px] whitespace-nowrap">
                         {data.name !== "Custom" ? (
-                            (<>
-                                {formatPrice(data.price)} <span
-                                className="text-[14px]">/{data.expiredIn === 30 ? "month" : "year"}</span>
-
-                            </>)) : "Let's talk"}
+                        activeTab === "yearly" ? (
+                        <>
+                            <span>{formatPrice(data.price / 12)}</span>
+                            <span className="text-[20px] text-gray-400 line-through ml-2">{formatPrice(monthlyPlans?.[index]?.price || data.price)}</span>
+                            <span className="text-[18px]"> / month</span>
+                        </>
+                        ) : (
+                        <>
+                            <span>{formatPrice(data.price)}</span>
+                            <span className="text-[18px]"> / month</span>
+                        </>
+                        )
+                        ) : "Let's talk"}
                     </h3>
                     <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{data.name !== "Custom" ? pricing[index].subtitle : data.description}</p>
 
