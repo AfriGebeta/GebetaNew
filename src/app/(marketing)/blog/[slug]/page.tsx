@@ -1,7 +1,6 @@
 //@ts-nocheck
 import {getAllPosts, getPostBySlug} from '@/lib/mdx';
 import Image from 'next/image';
-import Footer from "@/app/(marketing)/Footer";
 import Container from "@/sections/Container";
 
 export async function generateMetadata({params}) {
@@ -131,10 +130,6 @@ export default async function BlogPost({params}) {
                     {/*)}*/}
                 </article>
             </Container>
-
-
-            <Footer/>
-
         </div>
     );
 }
