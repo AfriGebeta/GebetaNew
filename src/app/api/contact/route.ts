@@ -17,7 +17,7 @@ export async function POST(req) {
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: 'noreply@gebeta.app',
+            to: 'info@gebeta.app',
             subject: `Contact Form: ${subject}`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #333;">
