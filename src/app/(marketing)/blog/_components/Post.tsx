@@ -5,15 +5,15 @@ import Image from "next/image";
 // interface PostProps {
 //
 // }
-export default function Post({post}: any) {
+export default function Post({post, isFeatured}: any) {
     return (
         <div className="mb-16">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
-                    <div
+                    {isFeatured && <div
                         className="w-fit whitespace-nowrap px-[30px] py-[15px] bg-[#FFF7E8] dark:bg-zinc-900 rounded-[16px] text-[12px] text-[#FFA500] font-extrabold tracking-20 uppercase">FEATURED
                         POST
-                    </div>
+                    </div>}
                     <h1 className="text-3xl md:text-2xl font-bold mt-2 mb-3 leading-tight">
                         <Link href={`/blog/${post.slug}`} className="hover:text-[#ffa500]">
                             {post.title}

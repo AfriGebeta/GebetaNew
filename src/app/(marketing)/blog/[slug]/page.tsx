@@ -1,9 +1,7 @@
 //@ts-nocheck
 import {getAllPosts, getPostBySlug} from '@/lib/mdx';
 import Image from 'next/image';
-import Link from 'next/link';
 import Footer from "@/app/(marketing)/Footer";
-import Navbar from "@/app/(marketing)/Navbar";
 import Container from "@/sections/Container";
 
 export async function generateMetadata({params}) {
@@ -64,7 +62,6 @@ export default async function BlogPost({params}) {
 
     return (
         <div className="w-full antialiased pt-32 flex flex-col min-h-screen dark:bg-[#05050a]">
-            <Navbar/>
             <Container>
                 <article className="max-w-[680px] mx-auto px-4 pt-10 pb-20">
                     <header className="mb-8">

@@ -5,7 +5,7 @@ import matter from 'gray-matter';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import {compileMDX} from 'next-mdx-remote/rsc';
-import {MDXComponents} from "@/app/blog/_components/MDXComponent";
+import {MDXComponents} from "@/app/(marketing)/blog/_components/MDXComponent";
 
 const contentDirectory = path.join(process.cwd(), 'src/content');
 
