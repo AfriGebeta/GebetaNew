@@ -153,7 +153,7 @@ export const features: Array<Features> = [
 export const pricing: Array<Pricing> = [
     {
         title: "Individual",
-        subtitle: "Best choice for your location based software",
+        subtitle: "Best for your early-stage startup affordable and flexible.",
         price: 500,
         features: [
             {
@@ -174,7 +174,7 @@ export const pricing: Array<Pricing> = [
     },
     {
         title: "Start up",
-        subtitle: "Best choice for your startup get your api key and use today!",
+        subtitle: "Best for growth-stage startups or enterprises with moderate usage.",
         price: 1000,
         features: [
             {
@@ -203,7 +203,7 @@ export const pricing: Array<Pricing> = [
     },
     {
         title: "Enterprise",
-        subtitle: "Talk to Us to Create a Pricing Model That Fits Your Needs, Only Paying for What You Use!",
+        subtitle: "Best choice for high usage by any organization.",
         price: "Let's Talk",
         features: [
             {

@@ -30,6 +30,7 @@ export function Plans() {
     const enterprise = {
         name: "Custom",
         price: "",
+        description: "Best choice for high usage by any organization",
         expiredIn: 30,
         call_caps: ["Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited"],
         included_call_types: ["Geocoding", "Direction", "Matrix", "TSS", "ONM", "Tile"],
@@ -245,7 +246,7 @@ export function Plan({data, index}) {
 
                             </>)) : "Let's talk"}
                     </h3>
-                    <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{pricing[index].subtitle}</p>
+                    <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{data.name !== "Custom" ? pricing[index].subtitle : data.description}</p>
 
                     <ul className="relative text-[#62677F] dark:text-gray-400 text-[14px] font-semibold leading-17 mt-[30px] mb-[30px] space-y-[12px]">
                         {
