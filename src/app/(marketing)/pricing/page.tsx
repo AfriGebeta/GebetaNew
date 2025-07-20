@@ -1,5 +1,4 @@
 import {Plans} from "@/sections/Pricing";
-import Container from "@/sections/Container";
 import PricingSlider from "@/components/PricingSlider";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Building2, CircleDollarSign, Scale, Shield} from 'lucide-react';
@@ -45,7 +44,7 @@ export default function PricingPage() {
 
     return (
         <div className=" dark:from-[#05050a] dark:to-[#05050a] mt-[120px]">
-            <Container>
+            <div className="px-12">
                 <div className="md:pb-[60px]">
                     <div className="text-center mb-[80px]">
                         <h2 className="text-[48px] text-[#1B1E2B] dark:text-white leading-[1.2] mb-[20px]">Pricing</h2>
@@ -97,7 +96,7 @@ export default function PricingPage() {
                         </Accordion>
                     </div>
                 </div>
-            </Container>
+            </div>
         </div>
     );
 }

@@ -2,7 +2,6 @@
 "use client"
 import {pricing} from "@/constants";
 import Image from "next/image";
-import Container from "@/sections/Container";
 import {useContext, useEffect, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {buyCredit, getAllCredits} from "@/service/apis";
@@ -48,11 +47,11 @@ export function Plans() {
     });
 
     const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30)?.reverse() || [];
-    const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365)?.reverse() || [];
+    const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365) || [];
 
 
     return (
-        <Container>
+        <div className="px-12">
             <div className="w-full pb-[40px]">
                 <div className="flex justify-center mt-12 mb-8">
                     <div className="bg-[#FFA500] p-1 rounded-full inline-flex">
@@ -93,14 +92,14 @@ export function Plans() {
                                             fill="currentColor" className="fill-gray-300 dark:fill-neutral-700"/>
                                       </svg>
                                       <span
-                                          className="mt-3 inline-block whitespace-nowrap text-[11px] leading-5 font-semibold tracking-wide uppercase bg-[#FFA500]/80 text-white rounded-full py-1 px-2.5">Save up to 10%</span>
+                                          className="mt-3 inline-block whitespace-nowrap text-[11px] leading-5 font-semibold tracking-wide uppercase bg-[#FFA500]/80 text-white rounded-full py-1 px-2.5">Save up to 20%</span>
                                     </span>
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col lg:flex-row mt-[45px] justify-between gap-y-[32px]">
+                <div className="flex flex-col flex-wrap lg:flex-row mt-[45px] justify-center gap-x-6 gap-y-[32px]">
                     {/*{*/}
                     {/*    pricing.map((item, pricingIndex) => (*/}
                     {/*    ))*/}
@@ -114,7 +113,7 @@ export function Plans() {
                     <Plan data={enterprise} index={data?.length || 1}/>
                 </div>
             </div>
-        </Container>
+        </div>
     )
 }
 
@@ -147,11 +146,18 @@ export function Plan({data, index, activeTab, monthlyPlans}: {data?: any, index?
     const router = useRouter();
 
     const formatPrice = (price) => {
+        console.log({price})
+        let displayPrice;
+        if(isNaN(price)) {
+            displayPrice = 0;
+        } else {
+            displayPrice = price
+        }
         const isEthiopia = location.country === 'ET';
         if (isEthiopia) {
-            return `${price} Birr`;
+            return `${displayPrice} Birr`;
         } else {
-            const usdPrice = Math.ceil(price / exchangeRate);
+            const usdPrice = Math.ceil(displayPrice / exchangeRate);
             return `$${usdPrice} USD`;
         }
     };
@@ -220,7 +226,7 @@ export function Plan({data, index, activeTab, monthlyPlans}: {data?: any, index?
     return (
         <>
             <div
-                className="w-full lg:w-[30%] border border-gray-300 dark:border-gray-700 flex flex-col justify-between p-[32px] relative isolate rounded-lg"
+                className="w-full lg:w-[400px] border border-gray-300 dark:border-gray-700 flex flex-col justify-between p-[32px] relative isolate rounded-lg"
                 key={index}
             >
 
@@ -240,19 +246,17 @@ export function Plan({data, index, activeTab, monthlyPlans}: {data?: any, index?
                     </div>
 
                     <h3 className="text-[#2E384E] dark:text-white text-[28px] font-medium mt-[8px] whitespace-nowrap">
-                        {data.name !== "Custom" ? (
-                        activeTab === "yearly" ? (
+                        {data.name !== "Custom" ? activeTab === "yearly" ? (
                         <>
                             <span>{formatPrice(data.price / 12)}</span>
-                            <span className="text-[20px] text-gray-400 line-through ml-2">{formatPrice(monthlyPlans?.[index]?.price || data.price)}</span>
                             <span className="text-[18px]"> / month</span>
+                            <span className="text-[16px] block text-gray-500"> billed annually</span>
                         </>
                         ) : (
-                        <>
-                            <span>{formatPrice(data.price)}</span>
-                            <span className="text-[18px]"> / month</span>
-                        </>
-                        )
+                            <>
+                                <span>{formatPrice(data.price)}</span>
+                                <span className="text-[18px]"> / month</span>
+                            </>
                         ) : "Let's talk"}
                     </h3>
                     <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{data.name !== "Custom" ? pricing[index].subtitle : data.description}</p>
