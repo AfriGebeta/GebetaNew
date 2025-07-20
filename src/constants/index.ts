@@ -14,8 +14,8 @@ interface Features {
 interface Pricing {
     title: string
     subtitle: string
-    price: number | string
-    features: {
+    price?: number | string
+    features?: {
         service: string
         credit: number | string
         showInfo?: boolean
@@ -152,7 +152,7 @@ export const features: Array<Features> = [
 
 export const pricing: Array<Pricing> = [
     {
-        title: "Individual",
+        title: "Start up",
         subtitle: "Best for your early-stage startup affordable and flexible.",
         price: 500,
         features: [
@@ -173,7 +173,7 @@ export const pricing: Array<Pricing> = [
         ]
     },
     {
-        title: "Start up",
+        title: "Premium",
         subtitle: "Best for growth-stage startups or enterprises with moderate usage.",
         price: 1000,
         features: [
@@ -200,6 +200,10 @@ export const pricing: Array<Pricing> = [
                 credit: ""
             },
         ]
+    },
+    {
+        title: "Developer",
+        subtitle: "Great fit for individual developers and idea testing",
     },
     {
         title: "Enterprise",
