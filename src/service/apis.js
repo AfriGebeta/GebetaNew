@@ -46,7 +46,6 @@ export const setToken = async ({apiToken, userId}) => {
 
 export const revokeToken = async (apiToken, token) => {
     try {
-        console.log("revoked token", token);
         const {data} = await apiClient.patch(
             `/user/revoke-token?token=${token}`,
             {},

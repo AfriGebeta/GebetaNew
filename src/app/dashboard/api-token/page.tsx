@@ -25,7 +25,6 @@ export default function APIToken() {
     const [selectedToken, setSelectedToken] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    console.log("token list", tokenList)
 
     const {toast} = useToast()
 
@@ -40,14 +39,12 @@ export default function APIToken() {
             })
     };
 
-    console.log("tokenList", tokenList)
 
     const createToken = async () => {
         try {
             const response = await setToken({apiToken: currentUser?.token, userId: currentUser?.user?.id});
             if(response.success){
                 const updatedTokens = [...tokenList, response.data];
-                console.log("updated tokens", updatedTokens);
                 setTokenList(updatedTokens);
                 setCurrentUser({
                     ...currentUser,

@@ -19,7 +19,6 @@ const FreemiumCreditCard = () => {
 
     // const isSubscribedUser =  currentUser?.user?.map(i)
     
-    console.log("current user", currentUser)
 
     useEffect(() => {
         const freemiumCredit = currentUser?.user?.remaining?.filter((item) => item?.is_freeemium) ?? {}
@@ -43,11 +42,9 @@ const FreemiumCreditCard = () => {
             return response.data;
         },
         onSuccess: () => {
-            console.log("Successfully claimed!");
          setClaimed(true);
         },
         onError: (error) => {
-            console.log("error", error);
             toast({description: error?.response?.data?.error?.additional.claim?.[0], variant: "destructive"})
         }
     })
