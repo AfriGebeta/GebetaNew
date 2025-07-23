@@ -118,3 +118,27 @@
 .fade-x {
     mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 80px), transparent);
 }
+
+.carousel-container {
+    position: relative;
+}
+
+.react-multi-carousel-list {
+    min-height: 300px;
+}
+
+.react-multi-carousel-item {
+    height: auto;
+}
+
+.react-multi-carousel-dot button {
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+@media (max-width: 768px) {
+    .react-multi-carousel-arrow {
+        display: none !important;
+    }
+}

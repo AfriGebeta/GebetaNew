@@ -1,4 +1,5 @@
 import type {Metadata} from "next";
+import "react-multi-carousel/lib/styles.css";
 
 export const metadata:Metadata = {
     title:"GebetaMaps Pricing"
