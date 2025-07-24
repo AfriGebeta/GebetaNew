@@ -1,0 +1,187 @@
+---
+title: "Migration Guide: Google Maps to Gebeta Maps"
+date: "2025-07-15"
+excerpt: "A complete migration guide from Google Maps to Gebeta Maps, covering Web (Vanilla JS), React, and Flutter using vector tiles."
+coverImage: "/images/blog/gebeta-migration.jpg"
+coverImageCaption: "Gebeta Maps Tiles - Revolutionizing mapping for emerging markets"
+tags: ["map tiles", "geospatial", "google", "migration", "localization"]
+---
+
+# Migration Guide: Google Maps to Gebeta Maps
+
+A complete migration guide from Google Maps to Gebeta Maps, covering Web (Vanilla JS), React, and Flutter using vector tiles.
+
+---
+
+## Why Migrate?
+
+Gebeta Maps is purpose-built for developers targeting Africa and emerging markets:
+
+- ✔️ Affordable pricing
+- ✔️ Localized data (addresses, POIs, routing), for example, includes kebele information for Ethiopia
+- ✔️ Offline support
+- ✔️ Vector tile-based SDKs
+- ✔️ Open & modular
+
+---
+
+## Feature Comparison
+
+| Feature       | Google Maps              | Gebeta Maps                                                        |
+| ------------- | ------------------------ | ------------------------------------------------------------------ |
+| Map Tiles     | Vector (proprietary)     | Vector (Open, Style JSON)                                          |
+| Geocoding API | ✅                        | ✅                                                                  |
+| Routing API   | ✅                        | ✅                                                                  |
+| Places Search | ✅                        | ✅                                                                  |
+| JS SDK        | `google.maps`            | [`gebeta-tiles-js`](https://github.com/AfriGebeta/gebeta-tiles-js) |
+| React SDK     | `@react-google-maps/api` | [`@gebeta/tiles`](https://www.npmjs.com/package/@gebeta/tiles)     |
+| Flutter SDK   | `google_maps_flutter`    | [`gebeta_gl`](https://pub.dev/packages/gebeta_gl)                  |
+
+---
+
+## 1. JavaScript (Vanilla) Migration
+
+### Replacing Google:
+
+```html
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY"></script>
+<div id="map"></div>
+<script>
+  const map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 9.03, lng: 38.75 },
+    zoom: 13,
+  });
+  new google.maps.Marker({ position: { lat: 9.03, lng: 38.75 }, map });
+</script>
+```
+
+### With Gebeta:
+
+```html
+<link rel="stylesheet" href="https://tiles.gebeta.app/static/gebeta-maps-lib.css" />
+<script type="module" src="https://tiles.gebeta.app/static/gebeta-maps.umd.js"></script>
+<div id="map" style="height: 500px;"></div>
+<script>
+  const gebetaMap = new GebetaMaps({
+    apiKey: "YOUR_API_KEY"
+  });
+
+  const map = gebetaMap.init({
+    container: 'map',
+    center: [38.7685, 9.0161],
+    zoom: 15
+  });
+
+  map.addMarker({ lng: 38.75, lat: 9.03 });
+</script>
+```
+
+---
+
+## 2. React Migration
+
+### Replace Google:
+
+```jsx
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+
+<LoadScript googleMapsApiKey="YOUR_KEY">
+  <GoogleMap
+    center={{ lat: 9.03, lng: 38.75 }}
+    zoom={13}
+    mapContainerStyle={{ height: "400px", width: "100%" }}
+  >
+    <Marker position={{ lat: 9.03, lng: 38.75 }} />
+  </GoogleMap>
+</LoadScript>
+```
+
+### With Gebeta:
+
+```jsx
+import GebetaMap from "@gebeta/tiles/react/lib/GebetaMap";
+import { useRef } from "react";
+
+const MyMap = () => {
+  const mapRef = useRef(null);
+
+  const handleMapClick = (lngLat) => {
+    const marker = mapRef.current?.addMarker();
+    const mapInstance = mapRef.current?.getMapInstance();
+    if (marker && mapInstance) {
+      marker.setLngLat(lngLat).addTo(mapInstance);
+    }
+  };
+
+  return (
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <GebetaMap
+        ref={mapRef}
+        apiKey={import.meta.env.VITE_GEBETA_MAPS_API_KEY}
+        center={[38.7685, 9.0161]}
+        zoom={15}
+        onMapClick={handleMapClick}
+      />
+    </div>
+  );
+};
+```
+
+---
+
+## 3. Flutter Migration
+
+### Replace Google:
+
+```dart
+GoogleMap(
+  initialCameraPosition: CameraPosition(
+    target: LatLng(9.03, 38.75),
+    zoom: 13,
+  ),
+  markers: {
+    Marker(markerId: MarkerId('1'), position: LatLng(9.03, 38.75)),
+  },
+)
+```
+
+### With Gebeta:
+
+```dart
+GebetaMap(
+  accessToken: 'YOUR_API_KEY',
+  initialCameraPosition: CameraPosition(
+    target: LatLng(9.03, 38.75),
+    zoom: 13,
+  ),
+  styleString: 'https://tiles.gebeta.app/style.json',
+  onMapCreated: (controller) {
+    controller.addSymbol(
+      SymbolOptions(
+        geometry: LatLng(9.03, 38.75),
+        iconImage: 'marker-15',
+      ),
+    );
+  },
+)
+```
+
+---
+
+## Common API Migration
+
+| Task                        | Google Endpoint                                   | Gebeta Endpoint                                                                            |
+| --------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Geocoding / Places / Search | `https://maps.googleapis.com/maps/api/geocode`    | `https://mapapi.gebeta.app/api/v1/route/geocode`                                           |
+| Reverse Geocoding           | `...?latlng=...`                                  | `https://mapapi.gebeta.app/api/v1/route/revgeocoding?lat=...&lon=...`                      |
+| Routing                     | `https://maps.googleapis.com/maps/api/directions` | `https://mapapi.gebeta.app/api/route/direction/?origin=,&destination=,&apiKey=youapitoken` |
+
+---
+
+## Resources
+
+- Docs: [https://docs.gebeta.app](https://docs.gebeta.app)
+- JS SDK: [https://github.com/AfriGebeta/gebeta-tiles-js](https://github.com/AfriGebeta/gebeta-tiles-js)
+- React SDK: [https://www.npmjs.com/package/@gebeta/tiles](https://www.npmjs.com/package/@gebeta/tiles)
+- Flutter SDK: [https://pub.dev/packages/gebeta_gl](https://pub.dev/packages/gebeta_gl)
+- Support: [info@gebeta.app](mailto:info@gebeta.app)
