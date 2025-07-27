@@ -91,9 +91,10 @@ export const menuItems: Array<MegaMenu> = [
         ],
     },
     {title: "Company", link: "/company"},
+    {title: "Pricing", link: "/pricing"},
     {title: "Blog", link: "/blog"},
     {title: "Documentation", link: "https://docs.gebeta.app/"},
-    {title: "Pricing", link: "/pricing"},
+    {title: "Contact", link: "/contact"},
 ];
 
 //Features

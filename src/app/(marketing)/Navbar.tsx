@@ -46,7 +46,7 @@ export default function Navbar() {
                         </Link>
                     </div>
 
-                    <div className="sm:hidden">
+                    <div className="md:hidden">
                         <button
                             className="text-gray-600 dark:text-white focus:outline-none"
                             onClick={toggleMobileMenu}
@@ -65,7 +65,7 @@ export default function Navbar() {
                         </button>
                     </div>
 
-                    <div className="hidden sm:flex flex-grow justify-center">
+                    <div className="hidden md:flex flex-grow justify-center">
                         <ul className="flex text-[#2E384E] dark:text-white text-[14px] font-medium">
                             {menuItems.map((item, index) => (
                                 <li
@@ -91,7 +91,7 @@ export default function Navbar() {
                             ))}
                         </ul>
                     </div>
-                    <div className="hidden sm:flex gap-8">
+                    <div className="hidden md:flex gap-8">
                         <div className="flex items-center gap-[4px]">
                             <Image
                                 className="dark:fill-whitesmoke"
@@ -115,7 +115,7 @@ export default function Navbar() {
                 </nav>
 
                 {isMobileMenuOpen && (
-                    <div className="sm:hidden bg-white dark:bg-[#05050a] pb-4">
+                    <div className="xs:hidden bg-white dark:bg-[#05050a] pb-4">
                         <ul className="text-[#2E384E] dark:text-white text-[14px] font-medium">
                             {menuItems.map((item, index) => (
                                 <li key={index} className="px-4 py-2">
