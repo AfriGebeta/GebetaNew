@@ -68,7 +68,7 @@ const CustomLeftArrow = ({ onClick }: { onClick?: () => void }) => {
     return (
         <button
             onClick={onClick}
-            className="absolute bottom-8 left-4 md:bottom-auto md:left-0 lg:left-4 xl:left-[400px] md:top-1/2 md:-translate-y-1/2 z-10 bg-white dark:bg-[#0A0A0F] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFA500] border border-gray-100 dark:border-[#15151f]"
+            className="absolute hidden lg:block bottom-8 left-4 md:bottom-auto md:left-0 lg:left-4 xl:left-[400px] md:top-1/2 md:-translate-y-1/2 z-10 bg-white dark:bg-[#0A0A0F] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFA500] border border-gray-100 dark:border-[#15151f]"
             aria-label="Previous testimonial"
         >
             <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@ const CustomRightArrow = ({ onClick }: { onClick?: () => void }) => {
     return (
         <button
             onClick={onClick}
-            className="absolute bottom-8 right-4 md:bottom-auto md:right-0 lg:right-4 xl:right-[400px] md:top-1/2 md:-translate-y-1/2 z-10 bg-white dark:bg-[#0A0A0F] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFA500] border border-gray-100 dark:border-[#15151f]"
+            className="absolute hidden lg:block bottom-8 right-4 md:bottom-auto md:right-0 lg:right-4 xl:right-[400px] md:top-1/2 md:-translate-y-1/2 z-10 bg-white dark:bg-[#0A0A0F] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFA500] border border-gray-100 dark:border-[#15151f]"
             aria-label="Next testimonial"
         >
             <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
