@@ -50,9 +50,7 @@ export function Plans() {
     const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30)?.reverse() || [];
     const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365 && credit?.name !== "Developer") || [];
     const devPackage = data?.credit_bundles?.filter(credit => credit.expiredIn === 365 && credit?.name === "Developer")
-
-    console.log({devPackage})
-
+    
 
     return (
         <Container>
