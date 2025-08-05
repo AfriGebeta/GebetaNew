@@ -68,26 +68,26 @@ export default async function BlogPost({params}) {
                             {frontMatter.title}
                         </h1>
 
-                        <div className="text-gray-500 text-lg mb-6">
-                            {frontMatter.excerpt}
-                        </div>
+                        {frontMatter?.author && <span className="tex-sm block mb-2"><span
+                            className="text-gray-700">Written by</span> <span className="font-bold text-[#3f3f3f]">{frontMatter?.author}</span></span>}
 
-                        {frontMatter?.author && <span className="text-gray-500 tex-sm block mb-2"><span
-                            className="text-gray-700">Author</span>: {frontMatter?.author}</span>}
-                        <div className="flex items-center border-b border-gray-100 pb-8">
+                        <div className="flex items-center border-b border-gray-100 pb-4">
                             <div>
                                 <div className="text-gray-500 text-sm flex items-center space-x-1">
-                <span>
-                  {new Date(frontMatter.date).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                  })}
-                </span>
+                                    <span>
+                                      {new Date(frontMatter.date).toLocaleDateString('en-US', {
+                                          month: 'short',
+                                          day: 'numeric',
+                                          year: 'numeric',
+                                      })}
+                                    </span>
                                     <span>•</span>
                                     <span>{frontMatter.readingTime || '5 min read'}</span>
                                 </div>
                             </div>
+                        </div>
+                        <div className="text-gray-500 text-lg mb-6">
+                            {frontMatter.excerpt}
                         </div>
                     </header>
 
