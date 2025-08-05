@@ -72,6 +72,8 @@ export default async function BlogPost({params}) {
                             {frontMatter.excerpt}
                         </div>
 
+                        {frontMatter?.author && <span className="text-gray-500 tex-sm block mb-2"><span
+                            className="text-gray-700">Author</span>: {frontMatter?.author}</span>}
                         <div className="flex items-center border-b border-gray-100 pb-8">
                             <div>
                                 <div className="text-gray-500 text-sm flex items-center space-x-1">
