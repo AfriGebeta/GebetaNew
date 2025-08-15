@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import {useContext} from "react"
-import {BookOpen, CreditCard, LockKeyhole, ReceiptIcon, Settings2, SquareTerminal,} from "lucide-react"
+import {BookOpen, CreditCard, LockKeyhole, ReceiptIcon, Settings2, SquareTerminal, Building} from "lucide-react"
 
 import {NavMain} from "@/components/nav-main"
 import {NavUser} from "@/components/nav-user"
@@ -14,51 +14,54 @@ import Link from "next/link";
 import {AuthContext} from "@/providers/AuthProvider";
 import FreemiumCreditCard from "@/app/_component/FreemiumCreditCard";
 
-// This is sample data.
-const data = {
-    navMain: [
-        {
-          title: "Home",
-          url: "/dashboard",
-          icon:HomeIcon
-        },
-        {
-            title: "Usage",
-            url: "/dashboard/usage",
-            icon: SquareTerminal,
-        },
-        {
-            title: "API keys",
-            url: "/dashboard/api-token",
-            icon: LockKeyhole,
-        },
-        {
-            title: "My Subscription",
-            url: "/dashboard/plan",
-            icon: ReceiptIcon
-        },
-        {
-            title: "Billing",
-            url: "/dashboard/billing",
-            icon: CreditCard,
-        },
-        {
-            title: "Documentation",
-            url: "https://docs.gebeta.app",
-            icon: BookOpen,
-        },
-        {
-            title:"Account",
-            url:"/dashboard/account",
-            icon:Settings2
-        }
-    ],
-}
-
 
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
+
     const { currentUser } = useContext(AuthContext);
     const {open} = useSidebar()
+    const data = {
+        navMain: [
+            {
+                title: "Home",
+                url: "/dashboard",
+                icon:HomeIcon
+            },
+            {
+                title: "Usage",
+                url: "/dashboard/usage",
+                icon: SquareTerminal,
+            },
+            {
+                title: "API keys",
+                url: "/dashboard/api-token",
+                icon: LockKeyhole,
+            },
+            {
+                title: "My Subscription",
+                url: "/dashboard/plan",
+                icon: ReceiptIcon
+            },
+            currentUser?.user?.allow_image_upload === true ? { title: "Add Place", url: "/dashboard/add-place", icon: Building } : null,
+
+            {
+                title: "Billing",
+                url: "/dashboard/billing",
+                icon: CreditCard,
+            },
+            {
+                title: "Documentation",
+                url: "https://docs.gebeta.app",
+                icon: BookOpen,
+            },
+            {
+                title:"Account",
+                url:"/dashboard/account",
+                icon:Settings2
+            }
+        ],
+    }
+
+
 
     console.log("is opened", open)
 
