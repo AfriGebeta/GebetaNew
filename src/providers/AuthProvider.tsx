@@ -11,7 +11,6 @@ export const AuthProvider = ({children}) => {
     const [currentUser, setCurrentUser] = useLocalStorage('currentUser', null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const pathname = usePathname()
-    console.log(pathname);
 
     const UN_PROTECTED_ROUTES = [
         "/",

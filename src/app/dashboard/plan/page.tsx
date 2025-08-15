@@ -88,9 +88,6 @@ function PlanCard({plan, currentUser, key}) {
         ? currentUser?.user?.credits?.find(item => item.bundle_id === plan.id)
         : false;
 
-    console.log("plans :", plan)
-    console.log("user :", currentUser)
-
     const getButtonText = () => {
         if (isPurchased) return "Selected Plan";
         if (currentUser?.user?.credits?.length > 0) return "Upgrade";

@@ -60,8 +60,6 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
     const { currentUser } = useContext(AuthContext);
     const {open} = useSidebar()
 
-    console.log("is opened", open)
-
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>

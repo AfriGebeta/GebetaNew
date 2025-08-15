@@ -201,11 +201,9 @@ const PricingSlider = () => {
             }
         }
 
-        console.log("total cost", totalCost)
         return totalCost;
     };
     const formatPrice = (price, sliderValue) => {
-        console.log("price values", price)
         if (sliderValue === 10_000_000) {
             return (
                 <div className="flex items-center gap-2">

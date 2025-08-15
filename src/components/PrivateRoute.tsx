@@ -24,7 +24,6 @@ const ProtectedRoute = ({children}) => {
 
     // Show loading state only on client-side when not authenticated
     if (!currentUser) {
-        console.log("loading...")
         return <Spinner/>
     }
 

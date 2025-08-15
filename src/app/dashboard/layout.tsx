@@ -30,11 +30,9 @@ export default function DashboardLayout({children}: { children: React.ReactNode 
         staleTime: 5 * 60 * 1000,
     })
 
-    console.log("current user", data)
 
     useEffect(() => {
         if (isSuccess && data) {
-            console.log("me ,", data)
             // setCurrentUser(user)
         }
     }, [isSuccess, data]);

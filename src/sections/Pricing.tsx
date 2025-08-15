@@ -9,6 +9,7 @@ import {useRouter} from 'nextjs-toploader/app';
 import {queryClient} from "@/providers/QueryProvider";
 import {AuthContext} from "@/providers/AuthProvider";
 import useGeoLocation from "react-ipgeolocation";
+import Container from "@/sections/Container";
 
 export default function Pricing() {
     return (
@@ -47,11 +48,12 @@ export function Plans() {
     });
 
     const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30)?.reverse() || [];
-    const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365) || [];
-
+    const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365 && credit?.name !== "Developer") || [];
+    const devPackage = data?.credit_bundles?.filter(credit => credit.expiredIn === 365 && credit?.name === "Developer")
+    
 
     return (
-        <div className="px-12">
+        <Container>
             <div className="w-full pb-[40px]">
                 <div className="flex justify-center mt-12 mb-8">
                     <div className="bg-[#FFA500] p-1 rounded-full inline-flex">
@@ -99,12 +101,13 @@ export function Plans() {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col flex-wrap lg:flex-row mt-[45px] justify-center gap-x-6 gap-y-[32px]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 mt-[45px] gap-x-6 gap-y-[32px]">
                     {/*{*/}
                     {/*    pricing.map((item, pricingIndex) => (*/}
                     {/*    ))*/}
                     {/*}*/}
 
+                    <Plan data={devPackage?.[0]} index={data?.length || 1}/>
                     {
                         (activeTab === "monthly" ? monthlyPlans : yearlyPlans).map((credit, index) => (
                             <Plan data={credit} index={index} activeTab={activeTab} monthlyPlans={monthlyPlans}/>
@@ -113,7 +116,7 @@ export function Plans() {
                     <Plan data={enterprise} index={data?.length || 1}/>
                 </div>
             </div>
-        </div>
+        </Container>
     )
 }
 
@@ -146,7 +149,6 @@ export function Plan({data, index, activeTab, monthlyPlans}: {data?: any, index?
     const router = useRouter();
 
     const formatPrice = (price) => {
-        console.log({price})
         let displayPrice;
         if(isNaN(price)) {
             displayPrice = 0;
@@ -214,15 +216,11 @@ export function Plan({data, index, activeTab, monthlyPlans}: {data?: any, index?
         }
     };
 
-    const isPurchased = data.name !== 'Custom' ? currentUser?.user?.credits?.find(item => item.bundle_id === data.id) : false
+    const isPurchased = data?.name !== 'Custom' ? currentUser?.user?.credits?.find(item => item?.bundle_id === data?.id) : false
 
-    const getButtonText = () => {
-        if (data.name === "Custom") return "Enterprise";
-        if (isPurchased) return "Selected Plan";
-        return "Select Plan";
+    if(!data) {
+        return
     }
-
-    console.log("monthly plans", monthlyPlans)
     return (
         <>
             <div
@@ -230,14 +228,14 @@ export function Plan({data, index, activeTab, monthlyPlans}: {data?: any, index?
                 key={index}
             >
 
-                {data.name === "Start up" && (<div
+                {data?.name === "Start up" && (<div
                     className="absolute inset-0 -z-10 rounded-[16px] shadow-[0_8px_16px_rgba(255,165,0,0.15)] dark:shadow-[0_8px_16px_rgba(128,128,128,0.7)]"></div>)}
 
                 <div>
                     <div className="flex justify-between items-center">
-                        <h5 className="text-[#2E384E] dark:text-white text-[20px] font-semibold">{data.name}</h5>
+                        <h5 className="text-[#2E384E] dark:text-white text-[20px] font-semibold">{data?.name}</h5>
 
-                        {data.name === "Start up" &&
+                        {data?.name === "Start up" &&
                             <div
                                 className="flex items-center gap-[4px] rounded-[48px] px-[10px] py-[5px] bg-[#E5DFBC] dark:bg-zinc-900 text-[9px] text-[#969173] font-extrabold">
                                 <span>👑</span>
