@@ -317,7 +317,7 @@ export const footerLinks: Array<FooterLink> = [
 // ]
 
 
-type Properties = Record<string, any>;
+export type Properties = Record<string, any>;
 
 export enum TrackingEventNames {
     PRICING_PAGE_VIEW = "Pricing Page View",
