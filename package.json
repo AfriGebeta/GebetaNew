@@ -50,6 +50,7 @@
     "nodemailer": "^6.9.16",
     "pdf-lib": "^1.17.1",
     "plaiceholder": "^3.0.0",
+    "posthog-js": "^1.260.1",
     "react": "^18",
     "react-day-picker": "8.10.1",
     "react-dom": "^18",
@@ -84,5 +85,6 @@
     "typescript": "^5"
   },
   "module": "index.ts",
-  "type": "module"
+  "type": "module",
+  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748"
 }
