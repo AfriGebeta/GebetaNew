@@ -1,5 +1,6 @@
 #!/bin/bash
 
 cd ./gebeta-remade/current || exit 1
-yarn install
-yarn start
+npm install -g pnpm
+pnpm install
+pnpm start
