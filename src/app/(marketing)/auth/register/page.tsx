@@ -7,6 +7,7 @@ import {apiClient} from "@/service/apiClient";
 import {useRouter} from 'nextjs-toploader/app';
 import {AuthContext} from "@/providers/AuthProvider";
 import {BarLoader} from "react-spinners";
+import {trackUserAction} from "@/lib/track";
 
 interface RegistrationData {
     firstname?: string;
@@ -84,6 +85,10 @@ const Register: React.FC = () => {
         onSuccess: (data) => {
             login(); // Update authentication state
             setCurrentUser(data.data); // Store user data in local storage
+            trackUserAction.auth.loginSuccessful({
+                user_id: data?.data?.id,
+                username: data?.data?.username,
+            });
             router.push('/dashboard'); // Redirect to dashboard
         },
         onError: (error: any) => {
@@ -102,6 +107,11 @@ const Register: React.FC = () => {
                 await signInMutation.mutateAsync({
                     username: registrationData.username,
                     password: registrationData.password
+                });
+                trackUserAction.auth.registrationCompleted({
+                    username: registrationData.username,
+                    email: registrationData.email,
+                    user_type: accountType
                 });
             } catch (error) {
                 console.error('Sign-in after registration failed:', error);
