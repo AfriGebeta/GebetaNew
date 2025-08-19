@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import Container from "@/sections/Container";
 import {menuItems} from "@/constants";
+import {trackPageView} from "@/lib/track";
 import {useNavbarLogic} from "@/utils/useNavbarLogic";
 import {User2Icon} from "lucide-react";
 import {useRouter} from 'nextjs-toploader/app';
 import Announcement from "@/app/_component/Announcement";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {usePathname} from "next/navigation";
 
 export default function Navbar() {
@@ -29,6 +30,10 @@ export default function Navbar() {
     const [showAnnouncement, setShowAnnouncement] = useState(true)
 
     const router = useRouter()
+
+    useEffect(() => {
+        trackPageView(pathname)
+    },[pathname])
 
     return (
         <>
