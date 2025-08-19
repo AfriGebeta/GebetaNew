@@ -21,6 +21,8 @@ jobs:
           echo "NEXT_PUBLIC_BASE_URL=${{ secrets.BASE_URL }}" >> .env
           echo "NEXT_PUBLIC_EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
           echo "NEXT_PUBLIC_EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
+          echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.POSTHOG_KEY }}" >> .env
+          echo "NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.POSTHOG_HOST }}" >> .env
       - name: Verify .env file exists
         run: ls -la
       - name: Show .env file contents
