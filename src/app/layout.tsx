@@ -6,6 +6,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import {AuthProvider} from "@/providers/AuthProvider";
 import {ThemeProvider} from "@/providers/theme-provider";
 import NextTopLoader from 'nextjs-toploader';
+import {PostHogProvider} from "@/app/posthug-provider";
 
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -41,17 +42,19 @@ export default function RootLayout({
             color="#FFA500"
             showSpinner={false}
         />
-        <div className={
-            'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] flex flex-col min-h-screen'
-        }>
-            <ThemeProvider defaultTheme="light" storageKey="app-theme">
-                <AuthProvider>
-                    <QueryProvider>
-                        {children}
-                    </QueryProvider>
-                </AuthProvider>
-            </ThemeProvider>
-        </div>
+        <PostHogProvider>
+            <div className={
+                'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] flex flex-col min-h-screen'
+            }>
+                <ThemeProvider defaultTheme="light" storageKey="app-theme">
+                    <AuthProvider>
+                        <QueryProvider>
+                            {children}
+                        </QueryProvider>
+                    </AuthProvider>
+                </ThemeProvider>
+            </div>
+        </PostHogProvider>
         </body>
         </html>
     );
