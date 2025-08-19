@@ -48,7 +48,7 @@ interface FooterLink {
     link: string
 }
 
-interface MegaMenu {
+export interface MegaMenu {
     title: string;
     link?: string | ""
     submenu?: {
@@ -315,3 +315,68 @@ export const footerLinks: Array<FooterLink> = [
 //     {name: "Zubeyr Anwar", role: "Frontend Developer", img: "/assets/zubeyr.jpg"},
 //     {name: "Tsegaw Tesfaye", role: "Graphic Designer", img: "/assets/tsegaw.png"},
 // ]
+
+
+type Properties = Record<string, any>;
+
+export enum TrackingEventNames {
+    PRICING_PAGE_VIEW = "Pricing Page View",
+    CONTACT_PAGE_VIEW = "Contact Page View",
+    SIGNIN_PAGE_VIEW = "Sign In Page View",
+    REGISTER_PAGE_VIEW = "Register Page View",
+    PASSWORD_RESET_PAGE_VIEW = "Password Reset Page View",
+
+    // User Actions
+    REGISTRATION_COMPLETED = "Registration Completed",
+    LOGIN_SUCCESSFUL = "Login Successful",
+    PASSWORD_RESET_REQUESTED = "Password Reset Requested",
+    PASSWORD_RESET_COMPLETED = "Password Reset Completed",
+    PROFILE_UPDATED = "Profile Updated",
+    SUBSCRIPTION_CHANGED = "Subscription Changed",
+    BUTTON_CLICKED = "Button Clicked",
+    FORM_SUBMITTED = "Form Submitted"
+}
+
+interface TrackableEvent {
+    event_name: TrackingEventNames;
+    properties?: Properties | null;
+    path: string;
+}
+
+export const trackableRoutes: TrackableEvent[] = [
+    {
+        event_name: TrackingEventNames.PRICING_PAGE_VIEW,
+        path: "/pricing",
+        properties: {
+            source: "pricing_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.CONTACT_PAGE_VIEW,
+        path: "/contact",
+        properties: {
+            source: "contact_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.SIGNIN_PAGE_VIEW,
+        path: "/auth/signin",
+        properties: {
+            source: "signin_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.REGISTER_PAGE_VIEW,
+        path: "/auth/register",
+        properties: {
+            source: "registration_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.PASSWORD_RESET_PAGE_VIEW,
+        path: "/auth/reset-password",
+        properties: {
+            source: "password_reset_page"
+        }
+    }
+];
