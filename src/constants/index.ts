@@ -9,6 +9,7 @@ export interface Features {
         height: number
     }
     link: string
+    blurData?: string
 }
 
 interface Pricing {
