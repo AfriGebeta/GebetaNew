@@ -325,7 +325,7 @@ const PricingSlider = () => {
                             const unit = productConfigs[feature].unit;
 
                             return (
-                                <div className="relative h-[260px] space-y-2">
+                                <div className="relative h-fit space-y-2">
                                     {/*<div className="bg-red-900 h-[200px] w-10 absolute -left-10">*/}
                                     {/*</div>*/}
                                     <div key={feature}
@@ -375,7 +375,7 @@ const PricingSlider = () => {
                                                         {freeQuota > 0 && (
                                                             <>
                                                                 <div
-                                                                    className="h-2 bg-green-500 mt-1 rounded-l-lg flex-shrink-0 z-20 w-[40%] md:w-[25%] lg:w-[25%]"
+                                                                    className="h-[8px] bg-green-500 mt-1 rounded-l-lg flex-shrink-0 z-20 w-[40%] md:w-[25%] lg:w-[25%]"
                                                                 ></div>
                                                                 <div
                                                                     className="text-xs text-gray-600 mt-1 absolute top-[130%] left-[38%] md:left-[24%]">
