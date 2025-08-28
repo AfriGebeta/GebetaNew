@@ -2,22 +2,23 @@
 import {Features} from "@/constants";
 import Link from "next/link";
 import Image from "next/image";
+import {useState} from "react";
 
 interface FeatureCardProps {
     feature: Features
     index: number
 }
 
-export default function FeatureCard({feature,index}:FeatureCardProps) {
+export default function FeatureCard({feature, index}: FeatureCardProps) {
+    const [imageLoaded, setImageLoaded] = useState(false);
+
     return (
         <div className="w-full mt-6 md:mt-20" key={index}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className={`w-full flex flex-col lg:flex-row gap-10 lg:justify-between ${
+                <div className={`w-full flex flex-col lg:flex-row gap-[40px] lg:justify-between ${
                     (index + 1) % 2 === 0 ? "lg:flex-row-reverse" : ""
                 } mt-32 z-50`}>
-                    <div
-                        className="w-full md:w-1/2"
-                    >
+                    <div className="w-full md:w-1/2">
                         <h5 className="w-fit whitespace-nowrap px-8 py-4 bg-[#FFF7E8] dark:bg-zinc-900 rounded-2xl text-xs text-[#FFA500] font-extrabold tracking-wider uppercase">
                             {feature.subtitle}
                         </h5>
@@ -44,16 +45,24 @@ export default function FeatureCard({feature,index}:FeatureCardProps) {
                         </div>
                     </div>
 
-                    <div
-                        className="w-full md:w-1/2"
-                    >
-                        <div className="relative w-full aspect-video rounded-2xl overflow-hidden">
-                            <Image
-                                className="object-cover"
-                                src={feature.image.source}
-                                fill
-                                alt={feature.image.alt}
-                            />
+                    <div className="w-full md:w-1/2">
+                        <div
+                            className="relative w-full rounded-2xl overflow-hidden bg-[#f5f5f52b] backdrop-blur-[80px]">
+                            <div className={`transition-all duration-700 ${
+                                imageLoaded ? 'scale-100 blur-0' : 'scale-105 blur-lg'
+                            }`}>
+                                <Image
+                                    className="object-cover"
+                                    src={feature.image.source}
+                                    width={600}
+                                    height={600}
+                                    alt={feature.image.alt}
+                                    placeholder="blur"
+                                    blurDataURL={feature.blurData}
+                                    onLoadingComplete={() => setImageLoaded(true)}
+                                    priority
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
