@@ -9,7 +9,7 @@ export default function Footer() {
 
     return (
         <footer
-            className="w-full mt-[80px] bg-[#FFF7E8] dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-900 text-zinc-700 dark:text-white text-[14px] relative h-[560px]"
+            className="w-full mt-[80px] bg-[#FFF7E8] dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-900 text-zinc-700 dark:text-white text-[14px] relative h-[800px] md:h-[560px]"
             style={{clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)"}}
         >
             <div className="fixed bottom-0 w-full">
@@ -26,27 +26,36 @@ export default function Footer() {
                                 <h6 className="text-[16px] font-bold">Products</h6>
                                 <ul className="mt-[16px] space-y-2">
                                     <li>
-                                        <Link href="https://docs.gebeta.app/docs/geocoding/geocoding">Geocoding</Link>
+                                        <Link href="https://docs.gebeta.app/docs/geocoding/geocoding"
+                                              className="hover:underline">Geocoding</Link>
                                     </li>
-                                    <li><Link href="https://docs.gebeta.app/docs/direction">Direction</Link></li>
-                                    <li><Link href="https://docs.gebeta.app/docs/matrix">Matrix</Link></li>
-                                    <li><Link href="https://docs.gebeta.app/docs/route-optimization">Route
+                                    <li><Link href="https://docs.gebeta.app/docs/direction"
+                                              className="hover:underline">Direction</Link></li>
+                                    <li><Link href="https://docs.gebeta.app/docs/matrix"
+                                              className="hover:underline">Matrix</Link></li>
+                                    <li><Link href="https://docs.gebeta.app/docs/route-optimization"
+                                              className="hover:underline">Route
                                         optimization</Link></li>
-                                    <li><Link href="https://docs.gebeta.app/docs/onm">ONM</Link></li>
+                                    <li><Link href="https://docs.gebeta.app/docs/onm"
+                                              className="hover:underline">ONM</Link></li>
                                 </ul>
                             </div>
                             <div>
                                 <h6 className="text-[16px] font-bold">Resources</h6>
                                 <ul className="mt-[16px] space-y-2">
-                                    <li><Link href="https://gebeta.app/blog">Blog</Link></li>
-                                    <li><Link href="https://docs.gebeta.app/">Documentation</Link></li>
+                                    <li><Link href="https://gebeta.app/blog"
+                                              className="hover:underline">Blog</Link></li>
+                                    <li><Link href="https://docs.gebeta.app/"
+                                              className="hover:underline">Documentation</Link></li>
                                 </ul>
                             </div>
                             <div>
                                 <h6 className="text-[16px] font-bold">Legal</h6>
                                 <ul className="mt-[16px] space-y-2">
-                                    <li><Link href="/terms">Terms of Service</Link></li>
-                                    <li><Link href="/privacy">Privacy Policy</Link></li>
+                                    <li><Link href="/terms"
+                                              className="hover:underline">Terms of Service</Link></li>
+                                    <li><Link href="/privacy"
+                                              className="hover:underline">Privacy Policy</Link></li>
                                 </ul>
                             </div>
                             <div>
@@ -54,21 +63,21 @@ export default function Footer() {
                                 <ul className="mt-[16px] space-y-2">
                                     <li>
                                         <Link href="https://www.instagram.com/gebetamaps"
-                                              className="flex items-center gap-3">
+                                              className="flex items-center gap-3 hover:underline">
                                             Instagram
                                             <ExternalLink className="text-[#ffa500] w-5 h-5"/>
                                         </Link>
                                     </li>
                                     <li>
                                         <Link href="https://twitter.com/GebetaMaps"
-                                              className="flex items-center gap-3">
+                                              className="flex items-center gap-3 hover:underline">
                                             Twitter
                                             <ExternalLink className="text-[#ffa500] w-5 h-5"/>
                                         </Link>
                                     </li>
                                     <li>
                                         <Link href="https://et.linkedin.com/company/gebetamaps"
-                                              className="flex items-center gap-3">
+                                              className="flex items-center gap-3 hover:underline">
                                             Linkedin
                                             <ExternalLink className="text-[#ffa500] w-5 h-5"/>
                                         </Link>
@@ -85,9 +94,9 @@ export default function Footer() {
                             </div>
                         </div>
                     </div>
-                    <div className="flex gap-[16px] items-center justify-center">
-                        <Icon className="w-[120px] h-[120px]"/>
-                        <h3 className="text-[160px] spacing tracking-wide">GebetaMaps</h3>
+                    <div className="w-full flex gap-[16px] items-center justify-center">
+                        <Icon className="hidden md:block md:w-[120px] md:h-[120px]"/>
+                        <h3 className="text-[80px] md:text-[160px] spacing tracking-wide">GebetaMaps</h3>
                     </div>
                 </Container>
             </div>
