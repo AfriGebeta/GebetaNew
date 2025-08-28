@@ -187,7 +187,7 @@ export default function Navbar() {
 
                 {activeMenu && menuItems.find((item) => item.title === activeMenu)?.submenu && (
                     <div
-                        className="absolute left-0 top-20 w-full bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700"
+                        className="absolute left-0 top-20 w-full bg-white dark:bg-gray-800 border-t border-b dark:border-b-0 border-gray-200 dark:border-gray-700"
                         onMouseEnter={() => handleMouseEnter(activeMenu)}
                         onMouseLeave={handleMouseLeave}
                     >
@@ -203,6 +203,9 @@ export default function Navbar() {
                                         key={index}
                                         className="block space-y-2 p-3 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md"
                                     >
+                                        {subItem.icon && (
+                                            <subItem.icon className="w-6 h-6 text-[#ffa500] mb-4"/>
+                                        )}
                                         <h3 className="text-[14px] font-semibold">{subItem.title}</h3>
                                         <p className="text-[12px] text-gray-600 dark:text-gray-400">{subItem.description}</p>
                                     </a>
