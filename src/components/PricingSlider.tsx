@@ -11,14 +11,14 @@ const PricingSlider = () => {
 
     // Define product configurations with their specific free tiers
     const productConfigs = {
-        Autocomplete: { freeTier: 0, min: 0, unit: "Requests" },
-        ReverseGeocoding: { freeTier: 0, min: 0, unit: "Requests" },
-        Direction: { freeTier: 0, min: 0, unit: "Requests" },
-        Matrix: { freeTier: 0, min: 0, unit: "Requests" },
-        ONM: { freeTier: 0, min: 0, unit: "Requests" },
-        RouteOptimization: { freeTier: 0, min: 0, unit: "Requests" },
-        FleetRouting: { freeTier: 0, min: 0, unit: "Requests" },
-        Tile: { freeTier: 50000, min: 0, unit: "Map Loads" },
+        Autocomplete: {freeTier: 0, min: 0, unit: "Requests"},
+        ReverseGeocoding: {freeTier: 0, min: 0, unit: "Requests"},
+        Direction: {freeTier: 0, min: 0, unit: "Requests"},
+        Matrix: {freeTier: 0, min: 0, unit: "Requests"},
+        ONM: {freeTier: 0, min: 0, unit: "Requests"},
+        RouteOptimization: {freeTier: 0, min: 0, unit: "Requests"},
+        FleetRouting: {freeTier: 0, min: 0, unit: "Requests"},
+        Tile: {freeTier: 50000, min: 0, unit: "Map Loads"},
     };
 
     const [sliderValues, setSliderValues] = useState({
@@ -130,9 +130,9 @@ const PricingSlider = () => {
             Tile: 0.45
         };
 
-        if(rawCalls <= 20_000 && rawCalls > 0) {
-            if(feature === "Tile") {
-                if(rawCalls <= 50_000) return 0;
+        if (rawCalls <= 20_000 && rawCalls > 0) {
+            if (feature === "Tile") {
+                if (rawCalls <= 50_000) return 0;
             } else {
                 return first20kPricing[feature] * 20;
             }
@@ -141,76 +141,76 @@ const PricingSlider = () => {
         // Pricing tiers (cost PER 1000 CALLS)
         const pricingTiers = {
             Autocomplete: [
-                { range: [0, 100], price: 2 },       // $2 per 1000 for 0-100k calls
-                { range: [100, 500], price: 1.589 }, // $1.589 per 1000 for 100k-500k
-                { range: [500, 1000], price: 1.19 }, // $1.19 per 1000 for 500k-1M
-                { range: [1000, 5000], price: 0.595 }, // $0.595 per 1000 for 1M-5M
-                { range: [5000, 10000], price: 0.147 } // $0.147 per 1000 for 5M-10M
+                {range: [0, 100], price: 2},       // $2 per 1000 for 0-100k calls
+                {range: [100, 500], price: 1.589}, // $1.589 per 1000 for 100k-500k
+                {range: [500, 1000], price: 1.19}, // $1.19 per 1000 for 500k-1M
+                {range: [1000, 5000], price: 0.595}, // $0.595 per 1000 for 1M-5M
+                {range: [5000, 10000], price: 0.147} // $0.147 per 1000 for 5M-10M
             ],
             ReverseGeocoding: [
-                { range: [0, 100], price: 3.6 },
-                { range: [100, 500], price: 2.48 },
-                { range: [500, 1000], price: 1.86 },
-                { range: [1000, 5000], price: 0.93 },
-                { range: [5000, 10000], price: 0.2356 }
+                {range: [0, 100], price: 3.6},
+                {range: [100, 500], price: 2.48},
+                {range: [500, 1000], price: 1.86},
+                {range: [1000, 5000], price: 0.93},
+                {range: [5000, 10000], price: 0.2356}
             ],
             Direction: [
-                { range: [0, 100], price: 3.6 },
-                { range: [100, 500], price: 2.48 },
-                { range: [500, 1000], price: 1.86 },
-                { range: [1000, 5000], price: 0.93 },
-                { range: [5000, 10000], price: 0.2356 }
+                {range: [0, 100], price: 3.6},
+                {range: [100, 500], price: 2.48},
+                {range: [500, 1000], price: 1.86},
+                {range: [1000, 5000], price: 0.93},
+                {range: [5000, 10000], price: 0.2356}
             ],
             Matrix: [
-                { range: [0, 100], price: 3.6 },
-                { range: [100, 500], price: 2.2 },
-                { range: [500, 1000], price: 1.65 },
-                { range: [1000, 5000], price: 0.825 },
-                { range: [5000, 10000], price: 0.209 }
+                {range: [0, 100], price: 3.6},
+                {range: [100, 500], price: 2.2},
+                {range: [500, 1000], price: 1.65},
+                {range: [1000, 5000], price: 0.825},
+                {range: [5000, 10000], price: 0.209}
             ],
             ONM: [
-                { range: [0, 100], price: 3.6 },
-                { range: [100, 500], price: 2.2 },
-                { range: [500, 1000], price: 1.65 },
-                { range: [1000, 5000], price: 0.825 },
-                { range: [5000, 10000], price: 0.209 }
+                {range: [0, 100], price: 3.6},
+                {range: [100, 500], price: 2.2},
+                {range: [500, 1000], price: 1.65},
+                {range: [1000, 5000], price: 0.825},
+                {range: [5000, 10000], price: 0.209}
             ],
             RouteOptimization: [
-                { range: [0, 100], price: 6 },
-                { range: [100, 500], price: 2.2 },
-                { range: [500, 1000], price: 1.1 },
-                { range: [1000, 5000], price: 0.44 },
-                { range: [5000, 10000], price: 0.385 }
+                {range: [0, 100], price: 6},
+                {range: [100, 500], price: 2.2},
+                {range: [500, 1000], price: 1.1},
+                {range: [1000, 5000], price: 0.44},
+                {range: [5000, 10000], price: 0.385}
             ],
             FleetRouting: [
-                { range: [0, 100], price: 17 },
-                { range: [100, 500], price: 7.7 },
-                { range: [500, 1000], price: 3.3 },
-                { range: [1000, 5000], price: 1.32 },
-                { range: [5000, 10000], price: 1.155 }
+                {range: [0, 100], price: 17},
+                {range: [100, 500], price: 7.7},
+                {range: [500, 1000], price: 3.3},
+                {range: [1000, 5000], price: 1.32},
+                {range: [5000, 10000], price: 1.155}
             ],
             Tile: [
-                { range: [0, 50], price: 0 },
-                { range: [50, 100], price: 0.45 },
-                { range: [100, 500], price: 0.45 },
-                { range: [500, 1000], price: 0.45 },
-                { range: [1000, 5000], price: 0.336 },
-                { range: [5000, 10000], price: 0.252 },
-                { range: [10000, 50000], price: 0.126 },
-                { range: [50000, 100000], price: 0.0315 }
+                {range: [0, 50], price: 0},
+                {range: [50, 100], price: 0.45},
+                {range: [100, 500], price: 0.45},
+                {range: [500, 1000], price: 0.45},
+                {range: [1000, 5000], price: 0.336},
+                {range: [5000, 10000], price: 0.252},
+                {range: [10000, 50000], price: 0.126},
+                {range: [50000, 100000], price: 0.0315}
             ]
         };
 
         // Special conditions (thresholds in units of 1000 calls)
         const specialConditions = {
-            Autocomplete: { threshold: 150, adjustedPrice: 1.981 }, // 150k calls
-            ReverseGeocoding: { threshold: 150, adjustedPrice: 3.1 },
-            Direction: { threshold: 150, adjustedPrice: 3.1 },
-            Matrix: { threshold: 150, adjustedPrice: 2.75 },
-            ONM: { threshold: 150, adjustedPrice: 2.75 },
-            RouteOptimization: { threshold: 150, adjustedPrice: 5.5 },
-            FleetRouting: { threshold: 150, adjustedPrice: 16.5 },
-            Tile: { threshold: 1500, adjustedPrice: 0.42 }
+            Autocomplete: {threshold: 150, adjustedPrice: 1.981}, // 150k calls
+            ReverseGeocoding: {threshold: 150, adjustedPrice: 3.1},
+            Direction: {threshold: 150, adjustedPrice: 3.1},
+            Matrix: {threshold: 150, adjustedPrice: 2.75},
+            ONM: {threshold: 150, adjustedPrice: 2.75},
+            RouteOptimization: {threshold: 150, adjustedPrice: 5.5},
+            FleetRouting: {threshold: 150, adjustedPrice: 16.5},
+            Tile: {threshold: 1500, adjustedPrice: 0.42}
         };
 
         let totalCost = 0;
@@ -304,12 +304,13 @@ const PricingSlider = () => {
 
     return (
         <Container>
-            <div className="flex flex-col md:flex-row justify-between gap-8">
+            <div className="flex flex-col md:flex-row justify-between gap-8 mb-40">
                 <div className="w-full">
                     <div className="bg-[#FFA500]/5 dark:bg-[#FFA500]/10 p-6 rounded-xl mb-8">
                         <p className="text-md text-gray-700 dark:text-gray-300">
                             The Routes API uses a pay-as-you-go pricing model. The Gebeta maps APIs are billed by usage.
-                            Cost is calculated using tiered pricing based on usage volume. Use our Pricing and Usage calculator to
+                            Cost is calculated using tiered pricing based on usage volume. Use our Pricing and Usage
+                            calculator to
                             estimate your usage cost per API.
                         </p>
                     </div>
@@ -324,137 +325,147 @@ const PricingSlider = () => {
                             const unit = productConfigs[feature].unit;
 
                             return (
-                                <div className="relative h-[200px]">
+                                <div className="relative h-[260px] space-y-2">
                                     {/*<div className="bg-red-900 h-[200px] w-10 absolute -left-10">*/}
                                     {/*</div>*/}
-                                <div key={feature} className="relative mb-6 bg-white dark:bg-[#111116] px-6 py-4 rounded-xl w-full border 'border-gray-200 dark:border-gray-800">
-                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                                        <div className="mb-4 md:mb-0">
-                                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                                {/*{feature === "ONM" ? "Places" : feature === "Tile" ? "Maps" : feature.replace(/([A-Z])/g, ' $1').trim()}*/}
-                                            </div>
-                                            <div className="text-lg font-semibold text-[#1B1E2B] dark:text-white">
-                                                <Link
-                                                    href="#"
-                                                    target="_blank"
-                                                    className="hover:underline text-[#1B1E2B]]"
-                                                >
-                                                    {feature === "ONM" ? "Places API" :
-                                                        feature === "Tile" ? "Maps" :
-                                                            feature.replace(/([A-Z])/g, ' $1').trim()}
-                                                </Link>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-4 h-4">
-                                            <div className="text-right">
-                                                <div className="text-2xl font-bold text-[#1B1E2B] dark:text-white">
-                                                    {formatPrice(price, sliderValues[feature])}
+                                    <div key={feature}
+                                         className="relative mb-6 bg-white dark:bg-[#111116] px-6 py-4 rounded-xl w-full border 'border-gray-200 dark:border-gray-800">
+                                        <div
+                                            className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                                            <div className="mb-4 md:mb-0">
+                                                <div
+                                                    className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                                    {/*{feature === "ONM" ? "Places" : feature === "Tile" ? "Maps" : feature.replace(/([A-Z])/g, ' $1').trim()}*/}
                                                 </div>
-                                                {/*<div className="text-sm text-gray-500 dark:text-gray-400">*/}
-                                                {/*    per month (estimate)*/}
-                                                {/*</div>*/}
+                                                <div className="text-lg font-semibold text-[#1B1E2B] dark:text-white">
+                                                    <Link
+                                                        href="#"
+                                                        target="_blank"
+                                                        className="hover:underline text-[#1B1E2B]]"
+                                                    >
+                                                        {feature === "ONM" ? "Places API" :
+                                                            feature === "Tile" ? "Maps" :
+                                                                feature.replace(/([A-Z])/g, ' $1').trim()}
+                                                    </Link>
+                                                </div>
                                             </div>
-                                            {/*<button*/}
-                                            {/*    className={`px-4 py-2 rounded text-sm font-medium ${isSelected ? 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white' : 'bg-[#1A73E8] text-white hover:bg-blue-700'}`}*/}
-                                            {/*    onClick={() => toggleProductSelection(feature)}*/}
-                                            {/*>*/}
-                                            {/*    {isSelected ? 'Remove' : 'Add'}*/}
-                                            {/*</button>*/}
+
+                                            <div className="flex items-center gap-4 h-4">
+                                                <div className="text-right">
+                                                    <div className="text-2xl font-bold text-[#1B1E2B] dark:text-white">
+                                                        {formatPrice(price, sliderValues[feature])}
+                                                    </div>
+                                                    {/*<div className="text-sm text-gray-500 dark:text-gray-400">*/}
+                                                    {/*    per month (estimate)*/}
+                                                    {/*</div>*/}
+                                                </div>
+                                                {/*<button*/}
+                                                {/*    className={`px-4 py-2 rounded text-sm font-medium ${isSelected ? 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white' : 'bg-[#1A73E8] text-white hover:bg-blue-700'}`}*/}
+                                                {/*    onClick={() => toggleProductSelection(feature)}*/}
+                                                {/*>*/}
+                                                {/*    {isSelected ? 'Remove' : 'Add'}*/}
+                                                {/*</button>*/}
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
-                                        <div className="flex flex-col md:flex-row md:items-center gap-4">
-                                            <div className="flex-1">
-                                                <div className="relative mb-1 flex items-center">
-                                                    {freeQuota > 0 && (
-                                                        <>
-                                                            <div
-                                                                className="h-2 bg-green-500 mt-1 rounded-l-lg flex-shrink-0 z-20 w-[40%] md:w-[25%] lg:w-[25%]"
-                                                            ></div>
-                                                            <div className="text-xs text-gray-600 mt-1 absolute top-[130%] left-[38%] md:left-[24%]">
-                                                                {formatNumber(freeQuota).toLocaleString()}
-                                                            </div>
-                                                            <div className="flex flex-col items-start absolute top-8 left-[4%]">
-                                                                <div className="text-xs text-green-700 font-medium bg-green-100 px-2 py-0.5 rounded-mds">
-                                                                    Included
+                                        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
+                                            <div className="flex flex-col md:flex-row md:items-center gap-4">
+                                                <div className="flex-1">
+                                                    <div className="relative mb-1 flex items-center">
+                                                        {freeQuota > 0 && (
+                                                            <>
+                                                                <div
+                                                                    className="h-2 bg-green-500 mt-1 rounded-l-lg flex-shrink-0 z-20 w-[40%] md:w-[25%] lg:w-[25%]"
+                                                                ></div>
+                                                                <div
+                                                                    className="text-xs text-gray-600 mt-1 absolute top-[130%] left-[38%] md:left-[24%]">
+                                                                    {formatNumber(freeQuota).toLocaleString()}
                                                                 </div>
-                                                            </div>
-                                                        </>
-                                                    )}
+                                                                <div
+                                                                    className="flex flex-col items-start absolute top-8 left-[4%]">
+                                                                    <div
+                                                                        className="text-xs text-green-700 font-medium bg-green-100 px-2 py-0.5 rounded-mds">
+                                                                        Included
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )}
 
-                                                    <div className="flex-grow relative">
-                                                        <input
-                                                            type="range"
-                                                            min={min}
-                                                            max={max}
-                                                            step="25000"
-                                                            value={sliderValues[feature]}
-                                                            onChange={(e) => handleSliderChange(e, feature)}
-                                                            className="custom-range z-1000 w-full h-2 mt-0 bg-gray-200 rounded-r-lg appearance-none cursor-pointer dark:bg-gray-700"
-                                                            style={{
-                                                                background: `linear-gradient(to right, 
+                                                        <div className="flex-grow relative">
+                                                            <input
+                                                                type="range"
+                                                                min={min}
+                                                                max={max}
+                                                                step="25000"
+                                                                value={sliderValues[feature]}
+                                                                onChange={(e) => handleSliderChange(e, feature)}
+                                                                className="custom-range z-1000 w-full h-2 mt-0 bg-gray-200 rounded-r-lg appearance-none cursor-pointer dark:bg-gray-700"
+                                                                style={{
+                                                                    background: `linear-gradient(to right, 
             #1A73E8 0%, 
             #1A73E8 ${((sliderValues[feature] - (freeQuota > 0 ? freeQuota : 0)) / (max - (freeQuota > 0 ? freeQuota : 0))) * 100}%, 
             #e5e7eb ${((sliderValues[feature] - (freeQuota > 0 ? freeQuota : 0)) / (max - (freeQuota > 0 ? freeQuota : 0))) * 100}%)`
-                                                            }}
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div
+                                                        className="flex items-center justify-between mt-3 text-xs text-gray-600 dark:text-gray-400">
+                                                        <span>0</span>
+                                                        <span>10M</span>
+                                                    </div>
+
+                                                </div>
+
+                                                <div className="flex flex-col items-center">
+                                                    <div className="relative">
+                                                        <input
+                                                            type="text"
+                                                            value={sliderValues[feature].toLocaleString()}
+                                                            onChange={(e) => handleInputChange(e, feature)}
+                                                            className="w-32 px-3 py-2 border border-gray-300 rounded text-center dark:bg-gray-800 dark:border-gray-700 dark:text-white text-sm"
                                                         />
+                                                        <div className="absolute right-1 top-0.5 flex flex-col">
+                                                            <button
+                                                                onClick={() => incrementValue(feature)}
+                                                                className="h-3 w-5 flex items-center justify-center rounded-t hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                                tabIndex={0}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="6"
+                                                                     height="3" viewBox="0 0 6 3" fill="none">
+                                                                    <path d="M3 0L0 3H6L3 0Z" fill="#3C4043"></path>
+                                                                </svg>
+                                                            </button>
+                                                            <button
+                                                                onClick={() => decrementValue(feature)}
+                                                                className="h-3 w-5 flex items-center justify-center rounded-b hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                                tabIndex={0}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="6"
+                                                                     height="3" viewBox="0 0 6 3" fill="none">
+                                                                    <path d="M3 3L6 0L-2.62268e-07 5.24537e-07L3 3Z"
+                                                                          fill="#3C4043"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div className="flex items-center justify-between mt-3 text-xs text-gray-600 dark:text-gray-400">
-                                                    <span>0</span>
-                                                    <span>10M</span>
-                                                </div>
-
-                                            </div>
-
-                                            <div className="flex flex-col items-center">
-                                                <div className="relative">
-                                                    <input
-                                                        type="text"
-                                                        value={sliderValues[feature].toLocaleString()}
-                                                        onChange={(e) => handleInputChange(e, feature)}
-                                                        className="w-32 px-3 py-2 border border-gray-300 rounded text-center dark:bg-gray-800 dark:border-gray-700 dark:text-white text-sm"
-                                                    />
-                                                    <div className="absolute right-1 top-0.5 flex flex-col">
-                                                        <button
-                                                            onClick={() => incrementValue(feature)}
-                                                            className="h-3 w-5 flex items-center justify-center rounded-t hover:bg-gray-100 dark:hover:bg-gray-700"
-                                                            tabIndex={0}
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="6" height="3" viewBox="0 0 6 3" fill="none">
-                                                                <path d="M3 0L0 3H6L3 0Z" fill="#3C4043"></path>
-                                                            </svg>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => decrementValue(feature)}
-                                                            className="h-3 w-5 flex items-center justify-center rounded-b hover:bg-gray-100 dark:hover:bg-gray-700"
-                                                            tabIndex={0}
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="6" height="3" viewBox="0 0 6 3" fill="none">
-                                                                <path d="M3 3L6 0L-2.62268e-07 5.24537e-07L3 3Z" fill="#3C4043"></path>
-                                                            </svg>
-                                                        </button>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                        {unit}
                                                     </div>
-                                                </div>
-                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                    {unit}
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/*<div className="mt-4 text-sm text-gray-500 dark:text-gray-400">*/}
-                                    {/*    {feature === "Tile"*/}
-                                    {/*        ? "Customize and style static maps with markers, paths, and styles for embedding in applications."*/}
-                                    {/*        : feature === "ONM"*/}
-                                    {/*            ? "Access to data about millions of places including businesses, landmarks, and geographic locations."*/}
-                                    {/*            : `Advanced ${feature.replace(/([A-Z])/g, ' $1').trim()} capabilities for your applications.`*/}
-                                    {/*    }*/}
-                                    {/*</div>*/}
-                                </div>
+                                        {/*<div className="mt-4 text-sm text-gray-500 dark:text-gray-400">*/}
+                                        {/*    {feature === "Tile"*/}
+                                        {/*        ? "Customize and style static maps with markers, paths, and styles for embedding in applications."*/}
+                                        {/*        : feature === "ONM"*/}
+                                        {/*            ? "Access to data about millions of places including businesses, landmarks, and geographic locations."*/}
+                                        {/*            : `Advanced ${feature.replace(/([A-Z])/g, ' $1').trim()} capabilities for your applications.`*/}
+                                        {/*    }*/}
+                                        {/*</div>*/}
+                                    </div>
                                 </div>
                             );
                         })}
