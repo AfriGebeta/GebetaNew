@@ -1,4 +1,4 @@
-interface Features {
+export interface Features {
     title: string
     subtitle: string
     description: string
