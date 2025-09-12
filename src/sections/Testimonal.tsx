@@ -48,51 +48,53 @@ const testimonials = [
 
 const responsive = {
     desktop: {
-        breakpoint: { max: 3000, min: 1024 },
+        breakpoint: {max: 3000, min: 1024},
         items: 1,
         slidesToSlide: 1
     },
     tablet: {
-        breakpoint: { max: 1024, min: 464 },
+        breakpoint: {max: 1024, min: 464},
         items: 1,
         slidesToSlide: 1
     },
     mobile: {
-        breakpoint: { max: 464, min: 0 },
+        breakpoint: {max: 464, min: 0},
         items: 1,
         slidesToSlide: 1
     }
 };
 
-const CustomLeftArrow = ({ onClick }: { onClick?: () => void }) => {
+const CustomLeftArrow = ({onClick}: { onClick?: () => void }) => {
     return (
         <button
             onClick={onClick}
             className="absolute hidden xl:block bottom-0 left-4 md:bottom-auto md:left-0 lg:left-4 xl:left-[400px] md:top-1/2 md:-translate-y-1/2 z-10 bg-white dark:bg-[#0A0A0F] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFA500] border border-gray-100 dark:border-[#15151f]"
             aria-label="Previous testimonial"
         >
-            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
+                 viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
             </svg>
         </button>
     );
 };
 
-const CustomRightArrow = ({ onClick }: { onClick?: () => void }) => {
+const CustomRightArrow = ({onClick}: { onClick?: () => void }) => {
     return (
         <button
             onClick={onClick}
             className="absolute hidden xl:block bottom-0 right-4 md:bottom-auto md:right-0 lg:right-4 xl:right-[400px] md:top-1/2 md:-translate-y-1/2 z-10 bg-white dark:bg-[#0A0A0F] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFA500] border border-gray-100 dark:border-[#15151f]"
             aria-label="Next testimonial"
         >
-            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
+                 viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
             </svg>
         </button>
     );
 };
 
-const CustomDot = ({ onClick, active }: { onClick?: () => void; active?: boolean }) => {
+const CustomDot = ({onClick, active}: { onClick?: () => void; active?: boolean }) => {
     return (
         <button
             onClick={onClick}
@@ -133,10 +135,10 @@ export default function Testimonial() {
                     deviceType="desktop"
                     dotListClass="flex justify-center mt-8 space-x-2"
                     itemClass="carousel-item-padding-40-px"
-                    customLeftArrow={<CustomLeftArrow />}
-                    customRightArrow={<CustomRightArrow />}
+                    customLeftArrow={<CustomLeftArrow/>}
+                    customRightArrow={<CustomRightArrow/>}
                     showDots={true}
-                    customDot={<CustomDot />}
+                    customDot={<CustomDot/>}
                     pauseOnHover={true}
                     swipeable={true}
                     draggable={true}
@@ -150,11 +152,13 @@ export default function Testimonial() {
                 >
                     {testimonials.map((item, index) => (
                         <div key={index} className="px-4 md:px-8">
-                            <div className="max-w-4xl mx-auto bg-white dark:bg-[#0A0A0F] rounded-xl p-6 md:p-8 md:py-4 mb-6 transition-all duration-300 border border-gray-100/50 dark:border-[#15151f]">
+                            <div
+                                className="max-w-4xl mx-auto bg-white dark:bg-[#0A0A0F] rounded-xl p-6 md:p-8 md:py-4 mb-6 transition-all duration-300 border border-gray-100/50 dark:border-[#15151f]">
 
                                 <div className="flex items-center justify-between mb-6">
                                     <div className="w-[80px] h-[30px] rounded-lg flex items-center justify-center">
-                                        <Image src={item.company.logo} alt={item.company.name} width={item.company.width} height={item.company.height}/>
+                                        <Image src={item.company.logo} alt={item.company.name}
+                                               width={item.company.width} height={item.company.height}/>
                                     </div>
                                     <div className="flex gap-0.5">
                                         {[...Array(5)].map((_, i) => (
@@ -164,20 +168,23 @@ export default function Testimonial() {
                                                 fill="currentColor"
                                                 viewBox="0 0 20 20"
                                             >
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                <path
+                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                             </svg>
                                         ))}
                                     </div>
                                 </div>
 
-                                <blockquote className="text-gray-700 dark:text-gray-200 text-sm md:text-base leading-relaxed mb-6">
+                                <blockquote
+                                    className="text-gray-700 dark:text-gray-200 text-sm md:text-base leading-relaxed mb-6">
                                     "{item.message}"
                                 </blockquote>
 
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 rounded-full flex items-center justify-center">
                                         <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                            <Image src={item.author.image} alt={item.author.name} width={40} height={40} className="object-contain"/>
+                                            <Image src={item.author.image} alt={item.author.name} width={40} height={40}
+                                                   className="object-cover h-auto aspect-square"/>
                                         </span>
                                     </div>
                                     <div>
