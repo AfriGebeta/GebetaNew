@@ -31,7 +31,7 @@ export default function Post({post, isFeatured}: any) {
                         })}
                       </span>
                                 <span>•</span>
-                                <span>{post.readingTime || '5 min read'}</span>
+                                <span>{post.readingDuration.text || '5 min read'}</span>
                             </div>
                         </div>
                     </div>

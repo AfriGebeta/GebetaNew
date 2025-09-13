@@ -6,6 +6,8 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import {compileMDX} from 'next-mdx-remote/rsc';
 import {MDXComponents} from "@/app/(marketing)/blog/_components/MDXComponent";
+import readingTime from "reading-time";
+
 
 const contentDirectory = path.join(process.cwd(), 'src/content');
 
@@ -13,10 +15,10 @@ export async function getPostBySlug(slug) {
     const filePath = path.join(contentDirectory, 'blog', `${slug}.mdx`);
     const fileContent = fs.readFileSync(filePath, 'utf8');
 
-    const { data, content } = matter(fileContent);
-    const readingTime = calculateReadingTime(content);
+    const {data, content} = matter(fileContent);
+    const readingDuration = readingTime(content);
 
-    const { content: mdxContent } = await compileMDX({
+    const {content: mdxContent} = await compileMDX({
         source: content,
         options: {
             mdxOptions: {
@@ -32,16 +34,10 @@ export async function getPostBySlug(slug) {
         frontMatter: {
             ...data,
             slug,
-            readingTime,
+            readingDuration,
         },
-        mdxSource: { content: mdxContent },
+        mdxSource: {content: mdxContent},
     };
-}
-function calculateReadingTime(text) {
-    const wordsPerMinute = 200;
-    const wordCount = text.split(/\s+/).length;
-    const readingTime = Math.ceil(wordCount / wordsPerMinute);
-    return `${readingTime} min read`;
 }
 
 export function getAllPosts() {
@@ -53,13 +49,13 @@ export function getAllPosts() {
         .map(filename => {
             const filePath = path.join(postsDirectory, filename);
             const fileContent = fs.readFileSync(filePath, 'utf8');
-            const { data, content } = matter(fileContent);
-            const readingTime = calculateReadingTime(content);
+            const {data, content} = matter(fileContent);
+            const readingDuration = readingTime(content);
 
             return {
                 ...data,
                 slug: filename.replace('.mdx', ''),
-                readingTime,
+                readingDuration,
             };
         })
         .sort((post1, post2) => new Date(post2.date) - new Date(post1.date));
