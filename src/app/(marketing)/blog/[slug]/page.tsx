@@ -69,7 +69,8 @@ export default async function BlogPost({params}) {
                         </h1>
 
                         {frontMatter?.author && <span className="tex-sm block mb-2"><span
-                            className="text-gray-700">Written by</span> <span className="font-bold text-[#3f3f3f]">{frontMatter?.author}</span></span>}
+                            className="text-gray-700">Written by</span> <span
+                            className="font-bold text-[#3f3f3f]">{frontMatter?.author}</span></span>}
 
                         <div className="flex items-center border-b border-gray-100 pb-4">
                             <div>
@@ -82,7 +83,7 @@ export default async function BlogPost({params}) {
                                       })}
                                     </span>
                                     <span>•</span>
-                                    <span>{frontMatter.readingTime || '5 min read'}</span>
+                                    <span>{frontMatter.readingDuration.text}</span>
                                 </div>
                             </div>
                         </div>
