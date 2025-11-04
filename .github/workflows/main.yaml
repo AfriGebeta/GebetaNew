@@ -59,29 +59,26 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Verify standalone build structure
+      - name: Remove packageManager field from package.json
         run: |
-          echo "Checking standalone build structure..."
-          ls -la .next/standalone/
-          echo "Checking for node_modules..."
-          ls -la .next/standalone/node_modules/ | head -20
-          echo "Checking for .next directory..."
-          ls -la .next/standalone/.next/ | head -10
+          sed -i '/"packageManager"/d' package.json
 
-      - name: Copy public folder to standalone if not present
+      - name: Prepare deployment package
         run: |
-          if [ ! -d ".next/standalone/public" ]; then
-            echo "Copying public folder to standalone..."
-            cp -r public .next/standalone/public
-          fi
-
-      - name: Copy start.sh to standalone
-        run: cp start.sh .next/standalone/start.sh && chmod +x .next/standalone/start.sh
+          # Create deployment directory with necessary files
+          mkdir -p deploy
+          cp -r .next deploy/
+          cp -r public deploy/
+          cp package.json deploy/
+          cp pnpm-lock.yaml deploy/
+          cp next.config.mjs deploy/
+          cp start.sh deploy/
+          chmod +x deploy/start.sh
 
       - uses: actions/upload-artifact@v4
         with:
           name: build
-          path: .next/standalone
+          path: deploy
           include-hidden-files: true
 
   deploy:
@@ -104,12 +101,14 @@ jobs:
         run: |
           echo "Verifying build artifact structure..."
           ls -la build/
-          echo "Checking for node_modules in build..."
-          if [ -d "build/node_modules" ]; then
-            echo "node_modules found, checking Next.js..."
-            ls -la build/node_modules/ | grep -E "(next|react)" | head -10
-          else
-            echo "ERROR: node_modules not found in build!"
+          echo "Checking for .next directory..."
+          if [ ! -d "build/.next" ]; then
+            echo "ERROR: .next directory not found in build!"
+            exit 1
+          fi
+          echo "Checking for package.json..."
+          if [ ! -f "build/package.json" ]; then
+            echo "ERROR: package.json not found in build!"
             exit 1
           fi
       - name: Deploy to Azure
