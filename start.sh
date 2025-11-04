@@ -1,5 +1,4 @@
 #!/bin/bash
 
-cd ./gebeta-remade/current || exit 1
-yarn install
-yarn start
+cd /root/gebeta-remade/current || exit 1
+node server.js
