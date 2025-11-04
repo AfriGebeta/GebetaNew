@@ -61,6 +61,11 @@ jobs:
       - name: Build / Export
         run: pnpm run export
 
+      - name: Copy start.sh to build output
+        run: |
+          cp start.sh out/start.sh
+          chmod +x out/start.sh
+
       - uses: actions/upload-artifact@v4
         with:
           name: build
