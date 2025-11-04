@@ -54,10 +54,26 @@ jobs:
           path: .
 
       - name: Install dependencies (pnpm)
-        run: pnpm install
+        run: pnpm install --frozen-lockfile --prod=false
 
       - name: Build
         run: pnpm run build
+
+      - name: Verify standalone build structure
+        run: |
+          echo "Checking standalone build structure..."
+          ls -la .next/standalone/
+          echo "Checking for node_modules..."
+          ls -la .next/standalone/node_modules/ | head -20
+          echo "Checking for .next directory..."
+          ls -la .next/standalone/.next/ | head -10
+
+      - name: Copy public folder to standalone if not present
+        run: |
+          if [ ! -d ".next/standalone/public" ]; then
+            echo "Copying public folder to standalone..."
+            cp -r public .next/standalone/public
+          fi
 
       - name: Copy start.sh to standalone
         run: cp start.sh .next/standalone/start.sh && chmod +x .next/standalone/start.sh
@@ -66,6 +82,7 @@ jobs:
         with:
           name: build
           path: .next/standalone
+          include-hidden-files: true
 
   deploy:
     needs: lint-and-build
@@ -83,6 +100,18 @@ jobs:
           path: build
       - name: Show directory contents
         run: ls -la
+      - name: Verify build artifact structure
+        run: |
+          echo "Verifying build artifact structure..."
+          ls -la build/
+          echo "Checking for node_modules in build..."
+          if [ -d "build/node_modules" ]; then
+            echo "node_modules found, checking Next.js..."
+            ls -la build/node_modules/ | grep -E "(next|react)" | head -10
+          else
+            echo "ERROR: node_modules not found in build!"
+            exit 1
+          fi
       - name: Deploy to Azure
         env:
           AZURE_SERVER_USER: ${{ secrets.AZURE_SERVER_USER }}
@@ -97,11 +126,8 @@ jobs:
           NEW_VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
           ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION"
           
-          # Copy files to the new version directory
-          scp -o StrictHostKeyChecking=no -r build/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION
-          
-          # Copy files to the new version directory
-          rsync -avz --progress --delete \
+          # Copy files to the new version directory (using rsync with symlink preservation)
+          rsync -avzL --progress --delete \
             -e "ssh -o StrictHostKeyChecking=no" \
             build/ $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION/
           
