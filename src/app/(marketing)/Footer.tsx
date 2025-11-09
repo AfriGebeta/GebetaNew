@@ -96,7 +96,7 @@ export default function Footer() {
                     </div>
                     <div className="w-full flex gap-[16px] items-center justify-center">
                         <Icon className="hidden md:block md:w-[120px] md:h-[120px]"/>
-                        <h3 className="text-[80px] md:text-[160px] spacing tracking-wide">GebetaMaps</h3>
+                        <h3 className="text-[40px] md:text-[120px] lg:text-[160pxs] spacing tracking-wide">GebetaMaps</h3>
                     </div>
                 </Container>
             </div>

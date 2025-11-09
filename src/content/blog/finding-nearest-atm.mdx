@@ -1,0 +1,117 @@
+---
+title: "Finding the Nearest ATM in Hawassa, A Telegram Bot Powered by Gebeta Maps"
+date: "2025-11-9"
+excerpt: "Finding the Nearest ATM in Hawassa, A Telegram Bot Powered by Gebeta Maps"
+coverImage: "/images/blog/hawassa.png"
+coverImageCaption: "Hawassa"
+---
+
+# Finding the Nearest ATM in Hawassa, A Telegram Bot Powered by Gebeta Maps
+
+Picture this:
+
+You just arrived in Hawassa for work. It's late, stores are closing, and
+your guest house doesn't take card payments. You reach for your wallet,
+only to realize you've got almost no cash left. You don't know the city.
+You don't know the directions. You just need an ATM. Fast. That's
+exactly the problem this project tries to solve. I built a Hawassa ATM
+Locator Bot, a Telegram bot that helps anyone quickly find the 5 nearest
+ATMs to their current location or by typing the name of the
+neighborhood.
+
+## **How Did I Build This?**
+
+One Sunday afternoon, I drove across Hawassa collecting ATM
+locations---street by street, sub-city by sub-city. A friend of mine
+joined and finished the other half.
+
+- We tried to cover every corner
+
+- We documented each location carefully
+
+- We ended up with 99 ATM spots in Hawassa
+
+The data lives in a CSV file:
+
+> id,name,locationa,locationb
+>
+> 1,CBE ATM - Shafeta,7.029828,38.488396
+>
+> 2,Sidama Bank ATM - Tabor Shafeta,7.029735,38.488440
+
+\...
+
+**What the Bot Does**
+
+The bot is straight forward. It lets you share your Telegram location OR
+type area name.
+
+If location is sent:
+
+- Haversine formula finds the closest 10 ATMs
+
+- Gebeta Maps ONM API finds real road distance between you the machines
+
+- Bot returns the closest 5 ATMs
+
+If name is sent:
+
+- Fuzzy search matches spelling
+
+- Bot returns nearest 5 matches
+
+You might be thinking, why haversine? Haversine calculates the shortest
+straight-line distance between two points by accounting for the
+curvature of the Earth. But it doesn't account for mountains, valleys
+and roads. That's where Gebeta maps one-to-many API becomes handy.
+
+## Why ONM Matters
+
+Haversine gives straight-line distance, while Gebeta ONM calculates real
+driving and walking roads.
+
+In our case, Hawassa has two hills (Tabor/Dume & Alamura). Straight-line
+might say "2 minutes walk." But the actual road might take more than 20
+minutes around a mountain.
+
+Gebeta ONM only takes 10 destinations. So, the bot uses haversine for
+shortlisting 10 ATMs relatively close to you and it uses ONM for real
+accuracy, to sort them as the top 5.
+
+| Method    | Result Type   | Accurate in Real Life?                    |
+|-----------|---------------|-------------------------------------------|
+| Haversine | Straight line | ❌ No (mountains, blocked roads, detours) |
+| ONM       | Road distance | ✅ Yes (humans don't fly... yet)          |
+
+## Tech Stack
+
+\- Node.js
+
+\- grammY.js
+
+\- Gebeta Maps ONM API
+
+\- CSV dataset of ATMs
+
+## Final Output Example
+
+![](media/image1.png){width="2.140153105861767in"
+height="2.3332709973753283in"}
+![](media/image2.png){width="1.8605150918635172in"
+height="2.3274245406824146in"}
+![](media/image3.png){width="1.9314031058617673in"
+height="2.2940496500437444in"}
+
+This fun project is just a beginning. You can extend the same codebase
+to map clinics, restaurants, fuel stations, pharmacies or any other
+essential places people might need. You might even expand the idea to
+other cities. The foundation is ready\... now it's your turn to build on
+it. Happy hacking!
+
+## Links:  {#links}
+
+<https://github.com/realtseg/atmfelagibot>
+
+<https://t.me/hawassaATMbot>
+
+<https://docs.gebeta.app/docs/onm>
