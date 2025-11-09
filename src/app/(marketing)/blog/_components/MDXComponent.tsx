@@ -44,9 +44,12 @@ export const MDXComponents = {
         <table {...props} className="w-full border-collapse mb-4" />
     ),
     th: (props: React.ThHTMLAttributes<HTMLTableCellElement>) => (
-        <th {...props} className="border border-gray-700 px-4 py-2 bg-gray-800 text-white" />
+        <th {...props} className="border border-gray-700 px-4 py-2  bg-[#ffa500] text-white" />
     ),
     td: (props: React.TdHTMLAttributes<HTMLTableCellElement>) => (
-        <td {...props} className="border border-gray-700 px-4 py-2 text-gray-300" />
+        <td {...props} className="border border-gray-700 px-4 py-2" />
     ),
+    img: (props: React.HTMLAttributes<HTMLImageElement>) => (
+        <img {...props} className="w-full object-cover object-center" />
+    )
 };
