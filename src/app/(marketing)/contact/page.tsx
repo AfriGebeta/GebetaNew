@@ -8,6 +8,7 @@ export default function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         subject: '',
         message: ''
     });
@@ -37,7 +38,7 @@ export default function Contact() {
             }
 
             setStatus({ loading: false, error: null, success: true });
-            setFormData({ name: '', email: '', subject: '', message: '' }); // Reset form
+            setFormData({ name: '', email: '', phone: '', subject: '', message: '' }); // Reset form
 
             // Clear success message after 5 seconds
             setTimeout(() => {
@@ -92,6 +93,23 @@ export default function Contact() {
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             disabled={status.loading}
                             placeholder="your.email@example.com"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="phone" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
+                            Phone Number
+                        </label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            required
+                            minLength={10}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1B1E2B] dark:bg-gray-800 dark:border-gray-700 dark:text-white transition duration-200"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            disabled={status.loading}
+                            placeholder="Your Phone Number"
                         />
                     </div>
 

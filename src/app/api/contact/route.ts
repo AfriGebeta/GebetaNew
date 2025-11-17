@@ -2,7 +2,7 @@
 
 export async function POST(req) {
     try {
-        const { name, email, subject, message } = await req.json();
+        const { name, email, phone, subject, message } = await req.json();
 
         const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
         const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
@@ -17,6 +17,7 @@ export async function POST(req) {
 
     *Name:* ${name}
     *Email:* ${email}
+    *Phone:* ${phone}
     *Subject:* ${subject}
 
     *Message:*
