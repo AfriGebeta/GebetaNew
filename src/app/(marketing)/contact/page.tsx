@@ -1,13 +1,14 @@
 //@ts-nocheck
 'use client';
 
-import {useState} from 'react';
+import { useState } from 'react';
 import Container from "@/sections/Container";
 
 export default function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         subject: '',
         message: ''
     });
@@ -17,17 +18,36 @@ export default function Contact() {
         success: false
     });
 
-    const handleSubmit = async (e:any) => {
+    const handlePhoneChange = (e: any) => {
+        const value = e.target.value;
+        const digitsOnly = value.replace(/\D/g, '');
+        const limitedDigits = digitsOnly.slice(0, 9);
+        setFormData({ ...formData, phone: limitedDigits });
+    };
+
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
+
+        if (formData.phone.length !== 9) {
+            setStatus({ loading: false, error: 'Phone number must be exactly 9 digits', success: false });
+            return;
+        }
+
         setStatus({ loading: true, error: null, success: false });
 
         try {
+        
+            const submissionData = {
+                ...formData,
+                phone: `+251${formData.phone}`
+            };
+
             const response = await fetch('/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(submissionData),
             });
 
             const data = await response.json();
@@ -37,7 +57,7 @@ export default function Contact() {
             }
 
             setStatus({ loading: false, error: null, success: true });
-            setFormData({ name: '', email: '', subject: '', message: '' }); // Reset form
+            setFormData({ name: '', email: '', phone: '', subject: '', message: '' }); // Reset form
 
             // Clear success message after 5 seconds
             setTimeout(() => {
@@ -93,6 +113,30 @@ export default function Contact() {
                             disabled={status.loading}
                             placeholder="your.email@example.com"
                         />
+                    </div>
+
+                    <div>
+                        <label htmlFor="phone" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
+                            Phone Number
+                        </label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                                +251
+                            </span>
+                            <input
+                                type="tel"
+                                id="phone"
+                                required
+                                pattern="[0-9]{9}"
+                                maxLength={9}
+                                className="w-full pl-16 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1B1E2B] dark:bg-gray-800 dark:border-gray-700 dark:text-white transition duration-200"
+                                value={formData.phone}
+                                onChange={handlePhoneChange}
+                                disabled={status.loading}
+                                placeholder="900000000"
+                            />
+                        </div>
+                        
                     </div>
 
                     <div>
