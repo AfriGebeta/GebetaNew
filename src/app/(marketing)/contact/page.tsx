@@ -3,6 +3,9 @@
 
 import { useState } from 'react';
 import Container from "@/sections/Container";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
 
 export default function Contact() {
     const [formData, setFormData] = useState({
@@ -18,28 +21,14 @@ export default function Contact() {
         success: false
     });
 
-    const handlePhoneChange = (e: any) => {
-        const value = e.target.value;
-        const digitsOnly = value.replace(/\D/g, '');
-        const limitedDigits = digitsOnly.slice(0, 9);
-        setFormData({ ...formData, phone: limitedDigits });
-    };
-
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-
-        if (formData.phone.length !== 9) {
-            setStatus({ loading: false, error: 'Phone number must be exactly 9 digits', success: false });
-            return;
-        }
-
         setStatus({ loading: true, error: null, success: false });
 
         try {
-        
             const submissionData = {
                 ...formData,
-                phone: `+251${formData.phone}`
+                phone: `+${formData.phone}`
             };
 
             const response = await fetch('/api/contact', {
@@ -119,24 +108,34 @@ export default function Contact() {
                         <label htmlFor="phone" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
                             Phone Number
                         </label>
-                        <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
-                                +251
-                            </span>
-                            <input
-                                type="tel"
-                                id="phone"
-                                required
-                                pattern="[0-9]{9}"
-                                maxLength={9}
-                                className="w-full pl-16 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1B1E2B] dark:bg-gray-800 dark:border-gray-700 dark:text-white transition duration-200"
-                                value={formData.phone}
-                                onChange={handlePhoneChange}
-                                disabled={status.loading}
-                                placeholder="900000000"
-                            />
-                        </div>
-                        
+                        <PhoneInput
+                            country={'et'}
+                            value={formData.phone}
+                            onChange={(phone) => setFormData({ ...formData, phone })}
+                            disabled={status.loading}
+                            inputProps={{
+                                required: true,
+                                id: 'phone'
+                            }}
+                            enableSearch={true}
+                            searchPlaceholder="Search country"
+                            placeholder="your phone number"
+                            containerStyle={{
+                                width: '100%'
+                            }}
+                            inputStyle={{
+                                width: '100%',
+                                height: '42px',
+                                fontSize: '14px',
+                                paddingLeft: '48px',
+                                borderRadius: '6px',
+                                border: '1px solid #d1d5db'
+                            }}
+                            buttonStyle={{
+                                borderRadius: '6px 0 0 6px',
+                                border: '1px solid #d1d5db'
+                            }}
+                        />
                     </div>
 
                     <div>
