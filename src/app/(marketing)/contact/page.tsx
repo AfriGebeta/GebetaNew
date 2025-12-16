@@ -11,15 +11,26 @@ export default function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '',
+        phone: '251', 
         subject: '',
-        message: ''
+        message: '',
+        company: '' //honeypot
     });
     const [status, setStatus] = useState({
         loading: false,
         error: null,
         success: false
     });
+
+    const handlePhoneChange = (value, country) => {
+        const countryCode = country.dialCode;
+        if (!value || value.length < countryCode.length) {
+           //delete country code, restore it
+            setFormData({ ...formData, phone: countryCode });
+        } else {
+            setFormData({ ...formData, phone: value });
+        }
+    };
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -46,9 +57,8 @@ export default function Contact() {
             }
 
             setStatus({ loading: false, error: null, success: true });
-            setFormData({ name: '', email: '', phone: '', subject: '', message: '' }); // Reset form
+            setFormData({ name: '', email: '', phone: '251', subject: '', message: '', company: '' }); 
 
-            // Clear success message after 5 seconds
             setTimeout(() => {
                 setStatus(prev => ({ ...prev, success: false }));
             }, 5000);
@@ -56,7 +66,6 @@ export default function Contact() {
         } catch (error) {
             setStatus({ loading: false, error: error.message, success: false });
 
-            // Clear error message after 5 seconds
             setTimeout(() => {
                 setStatus(prev => ({ ...prev, error: null }));
             }, 100000);
@@ -65,7 +74,7 @@ export default function Contact() {
 
     return (
         <Container>
-            <div className="mt-[80px] max-w-2xl mx-auto px-4 mt-[120px]">
+            <div className="mt-[80px] max-w-2xl mx-auto px-4 ">
                 <h1 className="text-[48px] text-center text-[#1B1E2B] dark:text-white leading-60 mb-[40px]">
                     Contact Us
                 </h1>
@@ -111,7 +120,7 @@ export default function Contact() {
                         <PhoneInput
                             country={'et'}
                             value={formData.phone}
-                            onChange={(phone) => setFormData({ ...formData, phone })}
+                            onChange={handlePhoneChange}
                             disabled={status.loading}
                             inputProps={{
                                 required: true,
@@ -120,6 +129,7 @@ export default function Contact() {
                             enableSearch={true}
                             searchPlaceholder="Search country"
                             placeholder="your phone number"
+                            countryCodeEditable={false}
                             containerStyle={{
                                 width: '100%'
                             }}
@@ -171,6 +181,17 @@ export default function Contact() {
                             placeholder="Your message here..."
                         />
                     </div>
+
+                    {/* for honeypot- hidden from users */}
+                    <input
+                        type="text"
+                        name="company"
+                        value={formData.company}
+                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                        style={{ display: 'none' }}
+                        tabIndex={-1}
+                        autoComplete="off"
+                    />
 
                     <button
                         type="submit"
