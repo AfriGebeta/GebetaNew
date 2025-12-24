@@ -1,8 +1,13 @@
 import React from "react"
+import {cn} from "@/lib/utils";
 
-const Container = ({ children }: {children:React.ReactNode}) => {
+interface ContainerProps {
+    className?: string
+    children?: React.ReactNode
+}
+const Container = ({ className, children  }:ContainerProps) => {
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full overflow-hidden">
+        <div className={cn("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full overflow-hidden", className)}>
             {children}
         </div>
     );

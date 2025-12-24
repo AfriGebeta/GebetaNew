@@ -1,0 +1,220 @@
+---
+title: "Guess the Tile: A Map Game Built with Gebeta Maps"
+date: "2025-09-14"
+excerpt: "Guess the Tile: A Map Game Built with Gebeta Maps"
+coverImage: "/images/blog/map-game.png"
+coverImageCaption: "Intlstring"
+---
+
+# Guess the Tile: A Map Game Built with Gebeta Maps
+
+Can you recognize a corner of Ethiopia just from its roads?
+
+That’s the premise behind **Guess the Tile**—a tiny mapping game we hacked together using the Gebeta Maps SDK. The rules are simple: you get dropped into a random Ethiopian map tile and have to figure out where it came from.
+
+No satellite imagery.
+No Street View.
+Just raw vector tiles, your spatial instincts, and maybe a bit of luck.
+
+Think GeoGuessr, but stripped down to the essentials—vector tiles and vibes.
+
+---
+
+## Why Build This?
+
+Sometimes side projects start with “what if?”
+In this case: *what if we tried to make a guessing game on top of Gebeta Maps with as little UI as possible?*
+
+It turned out to be a fun way to show off what the SDK can do and to rediscover just how recognizable (or not!) road networks can be.
+
+---
+
+## Project Setup
+
+We bootstrapped the project with [Vite](https://vitejs.dev/) and React:
+
+```bash
+npm create vite@latest geoguessr-clone -- --template react-ts
+cd geoguessr-clone
+npm install
+```
+
+Then pulled in Gebeta Maps:
+
+```bash
+npm install @gebeta/tiles
+```
+
+Drop your API key into a `.env` file:
+> (if you dont have one yet go to [the gebeta website](https://gebeta.app)) and get yours now
+
+```bash
+VITE_GEBETA_MAPS_API_KEY=your_gebeta_maps_api_key_here
+```
+
+That’s all the boilerplate—on to the fun part.
+
+---
+
+## Our First Map
+
+Here’s the bare minimum to get a Gebeta map on screen:
+
+```tsx
+import { useRef } from 'react'
+import GebetaMap from '@gebeta/tiles'
+import type { GebetaMapRef } from '@gebeta/tiles'
+
+function App() {
+  const mapRef = useRef<GebetaMapRef>(null)
+
+  const handleMapClick = (lngLat: [number, number]) => {
+    console.log('Clicked:', lngLat)
+  }
+
+  return (
+    <div className="App">
+      <GebetaMap
+        ref={mapRef}
+        apiKey={import.meta.env.VITE_GEBETA_MAPS_API_KEY}
+        center={[38.7685, 9.0161]} // Addis Ababa
+        zoom={10}
+        onMapClick={handleMapClick}
+        style={{ width: '100vw', height: '100vh' }}
+      />
+    </div>
+  )
+}
+
+export default App
+```
+
+Add some CSS so it fills the screen:
+
+```css
+.App {
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+```
+
+Fire up `npm run dev` and you should see Addis Ababa in all its tiled glory.
+
+---
+
+## Game Flow
+
+The game loop is dead simple:
+
+1. **Menu** – start a game
+2. **Tile view** – zoom into one tile, no panning/zooming
+3. **Countdown** – 5 seconds to memorize what you see
+4. **Map view** – the whole of Ethiopia, place your guess
+5. **Results** – score + distance revealed
+
+We used a small state machine to manage the phases:
+
+```ts
+export interface GameState {
+  phase: 'menu' | 'tile-view' | 'countdown' | 'map-view' | 'results'
+  currentLocation: [number, number] | null
+  userGuess: [number, number] | null
+  score: number
+  round: number
+}
+```
+
+---
+
+## Scoring
+
+To keep it fair (and fun), we went with:
+
+- **1000 points** to start
+- **-50 per km** you’re off
+- **Never below 0**
+
+That means you can score big if you nail it—or get humbled fast if you’re way off.
+
+The distance math is classic Haversine formula:
+
+```ts
+const distance = calculateDistance(actualLat, actualLng, guessLat, guessLng)
+const roundScore = Math.max(0, 1000 - distance * 50)
+```
+
+We draw both markers, connect them with a red line, and zoom the map to fit the view.
+
+---
+
+## Picking Locations
+
+Ethiopia is big. Drop someone into the middle of a rural tile and it’ll just look like empty space.
+So instead, we sample from major cities:
+
+```ts
+export const ETHIOPIAN_CITIES = [
+  { name: 'Addis Ababa', coordinates: [38.7685, 9.0161], population: 3352000 },
+  { name: 'Dire Dawa', coordinates: [41.8667, 9.6000], population: 493000 },
+  { name: 'Mekelle', coordinates: [39.4667, 13.5000], population: 323700 },
+  // ...
+]
+```
+
+Weighted random picks keep the game interesting: more roads, more landmarks, less empty farmland.
+
+---
+
+## Loading States
+
+A little UX polish: show a spinner while tiles load. Nothing fancy:
+
+```tsx
+{isLoading && (
+  <div className="loading">
+    <div className="spinner"></div>
+    <p>Loading map…</p>
+  </div>
+)}
+```
+
+This avoids the awkward “blank white screen” moment.
+
+---
+
+## Wrap Up
+
+In a weekend we ended up with:
+
+- A working GeoGuessr-lite built on Gebeta Maps
+- Memorization → guess → reveal loop
+- Scoring system based on real distances
+- Randomized city tiles for replayability
+- Simple UX touches like loading indicators and non-interactive countdowns
+
+The heavy lifting—tile rendering, interactions, coordinates—was handled by the Gebeta SDK. We just added a little game logic on top.
+
+---
+
+## Where Next?
+
+But perhaps we'll leave what's next to you, dear reader... you could
+- Improve the UI. (the ui now is a bit basic)
+- Add Leaderboards and accounts
+- Add Multiplayer guessing (race against friends!)
+- Add Difficulty levels (zoomed-out vs zoomed-in)
+- choose to port this to another platform/language
+
+There are GebetaMap SDKs for **Flutter**, **React Native**, and plain **JavaScript**, so this could easily extend beyond the web.
+
+If you want to poke around the code yourself, check out the repo on [GitHub](https://github.com/rav3n11/gebeta_geogussr)—and if you’re curious about Gebeta Maps, dive into the [docs](https://www.npmjs.com/package/@gebeta/tiles).
+you can try a live demo [here](https://gebeta-geogussr.onrender.com/)
+
+---
+
+Guess the Tile started as a side experiment, but it turned into a surprisingly fun way to get lost (and found) in Ethiopia’s map tiles.

@@ -1,4 +1,7 @@
-interface Features {
+//@ts-nocheck
+import {Icons} from "@/components/icons";
+
+export interface Features {
     title: string
     subtitle: string
     description: string
@@ -9,6 +12,7 @@ interface Features {
         height: number
     }
     link: string
+    blurData?: string
 }
 
 interface Pricing {
@@ -48,13 +52,14 @@ interface FooterLink {
     link: string
 }
 
-interface MegaMenu {
+export interface MegaMenu {
     title: string;
     link?: string | ""
     submenu?: {
         title: string;
         link: string;
         description: string;
+        icon: Element;
     }[];
 }
 
@@ -69,24 +74,34 @@ export const menuItems: Array<MegaMenu> = [
         title: "Products",
         submenu: [
             {
+                title: "Tile",
+                link: "https://docs.gebeta.app/docs/geocoding/geocoding",
+                description: "Access map tiles for custom mapping applications and visualization",
+                icon: Icons.globe
+            },
+            {
                 title: "Geocoding",
                 link: "https://docs.gebeta.app/docs/geocoding/geocoding",
-                description: "Convert addresses to coordinates and vice versa"
+                description: "Convert addresses to coordinates and vice versa",
+                icon: Icons.mapPin
             },
             {
                 title: "Route Optimization",
                 link: "https://docs.gebeta.app/docs/route-optimization",
-                description: "Find the most efficient routes for multiple stops"
+                description: "Find the most efficient routes for multiple stops",
+                icon: Icons.direction
             },
             {
                 title: "Directions",
                 link: "https://docs.gebeta.app/docs/direction",
-                description: "Get turn-by-turn navigation for various transportation modes"
+                description: "Get turn-by-turn navigation for various transportation modes",
+                icon: Icons.navigation
             },
             {
                 title: "Matrix",
                 link: "https://docs.gebeta.app/docs/matrix",
-                description: "Calculate travel times and distances between multiple origins and destinations"
+                description: "Calculate travel times and distances between multiple origins and destinations",
+                icon: Icons.matrix
             },
         ],
     },
@@ -124,17 +139,6 @@ export const features: Array<Features> = [
         },
         link: "https://docs.gebeta.app/docs/route-optimization"
     },
-    // {
-    //     title: "Optimized Navigation Routes",
-    //     subtitle: "Direction",
-    //     description: "API ensures seamless routing, offering the fastest and most efficient paths. Whether for web or mobile applications, we simplify navigation, so users can reach their destinations swiftly and hassle-free, every time.",
-    //     image: {
-    //         source: "/assets/geocoding.webp",
-    //         alt: "searching places",
-    //         width: 586,
-    //         height: 494
-    //     }
-    // },
     {
         title: "Map Multiple Routes",
         subtitle: "ONM",
@@ -315,3 +319,68 @@ export const footerLinks: Array<FooterLink> = [
 //     {name: "Zubeyr Anwar", role: "Frontend Developer", img: "/assets/zubeyr.jpg"},
 //     {name: "Tsegaw Tesfaye", role: "Graphic Designer", img: "/assets/tsegaw.png"},
 // ]
+
+
+export type Properties = Record<string, any>;
+
+export enum TrackingEventNames {
+    PRICING_PAGE_VIEW = "Pricing Page View",
+    CONTACT_PAGE_VIEW = "Contact Page View",
+    SIGNIN_PAGE_VIEW = "Sign In Page View",
+    REGISTER_PAGE_VIEW = "Register Page View",
+    PASSWORD_RESET_PAGE_VIEW = "Password Reset Page View",
+
+    // User Actions
+    REGISTRATION_COMPLETED = "Registration Completed",
+    LOGIN_SUCCESSFUL = "Login Successful",
+    PASSWORD_RESET_REQUESTED = "Password Reset Requested",
+    PASSWORD_RESET_COMPLETED = "Password Reset Completed",
+    PROFILE_UPDATED = "Profile Updated",
+    SUBSCRIPTION_CHANGED = "Subscription Changed",
+    BUTTON_CLICKED = "Button Clicked",
+    FORM_SUBMITTED = "Form Submitted"
+}
+
+interface TrackableEvent {
+    event_name: TrackingEventNames;
+    properties?: Properties | null;
+    path: string;
+}
+
+export const trackableRoutes: TrackableEvent[] = [
+    {
+        event_name: TrackingEventNames.PRICING_PAGE_VIEW,
+        path: "/pricing",
+        properties: {
+            source: "pricing_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.CONTACT_PAGE_VIEW,
+        path: "/contact",
+        properties: {
+            source: "contact_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.SIGNIN_PAGE_VIEW,
+        path: "/auth/signin",
+        properties: {
+            source: "signin_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.REGISTER_PAGE_VIEW,
+        path: "/auth/register",
+        properties: {
+            source: "registration_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.PASSWORD_RESET_PAGE_VIEW,
+        path: "/auth/reset-password",
+        properties: {
+            source: "password_reset_page"
+        }
+    }
+];
