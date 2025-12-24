@@ -5,7 +5,7 @@ import React from "react";
 type MetricCardProps = {
     description: string;
     title: React.ReactNode;
-    footer: string;
+    footer?: string;
     badgeLabel: string;
     icon: React.ReactNode;
 };
