@@ -23,8 +23,8 @@
     :root {
         --background: 0 0% 100%;
         --foreground: 0 0% 0%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 0%;
+        --card: oklch(1 0 0);
+        --card-foreground: oklch(0.3211 0 0);
         --popover: 0 0% 100%;
         --popover-foreground: 0 0% 0%;
         --primary: 39 100% 50%;
@@ -54,13 +54,31 @@
         --sidebar-accent-foreground: 0 0% 0%;
         --sidebar-border: 39 30% 90%;
         --sidebar-ring: 39 100% 50%;
+        --shadow-color: oklch(0 0 0);
+        --shadow-opacity: 0.1;
+        --shadow-blur: 3px;
+        --shadow-spread: 0px;
+        --shadow-offset-x: 0;
+        --shadow-offset-y: 1px;
+        --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+        --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+        --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
+        0 1px 2px -1px hsl(0 0% 0% / 0.1);
+        --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+        --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
+        0 2px 4px -1px hsl(0 0% 0% / 0.1);
+        --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
+        0 4px 6px -1px hsl(0 0% 0% / 0.1);
+        --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
+        0 8px 10px -1px hsl(0 0% 0% / 0.1);
+        --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
     }
 
     .dark {
         --background: 39 30% 10%;
         --foreground: 0 0% 100%;
-        --card: 39 30% 10%;
-        --card-foreground: 0 0% 100%;
+        --card: oklch(0.321 0.0078 223.6661);
+        --card-foreground: oklch(0.9219 0 0);
         --popover: 39 30% 10%;
         --popover-foreground: 0 0% 100%;
         --primary: 39 100% 50%;
@@ -89,6 +107,24 @@
         --sidebar-accent-foreground: 0 0% 100%;
         --sidebar-border: 39 30% 25%;
         --sidebar-ring: 39 100% 50%;
+        --shadow-color: oklch(0 0 0);
+        --shadow-opacity: 0.1;
+        --shadow-blur: 3px;
+        --shadow-spread: 0px;
+        --shadow-offset-x: 0;
+        --shadow-offset-y: 1px;
+        --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+        --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+        --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
+        0 1px 2px -1px hsl(0 0% 0% / 0.1);
+        --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+        --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
+        0 2px 4px -1px hsl(0 0% 0% / 0.1);
+        --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
+        0 4px 6px -1px hsl(0 0% 0% / 0.1);
+        --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
+        0 8px 10px -1px hsl(0 0% 0% / 0.1);
+        --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
     }
 }
 
