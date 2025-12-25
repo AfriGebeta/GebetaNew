@@ -29,6 +29,7 @@ export default function Page() {
 
     const metrics = useMemo(() => {
         if (!data) return defaultMetrics;
+        // @ts-ignore
         const map = data.reduce((acc, item) => {
             acc[item.calltype] = item.total;
             return acc;

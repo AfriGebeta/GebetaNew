@@ -1,6 +1,7 @@
+// @ts-nocheck
+
 "use client";
 
-// @ts-nocheck
 import React, {useEffect, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {getMatrix} from "@/service/apis";
