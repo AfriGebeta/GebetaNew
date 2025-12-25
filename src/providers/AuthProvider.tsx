@@ -3,8 +3,21 @@
 import React, {createContext, useEffect, useState} from 'react';
 import useLocalStorage from "../hooks/use-local-storage";
 import {usePathname, useRouter} from "next/navigation";
+import {User} from "@/types/user";
 
-export const AuthContext = createContext();
+
+interface AuthContextType {
+    isAuthenticated: boolean;
+    currentUser: User;
+    setCurrentUser: (user: User) => void;
+    login: (user: User) => void;
+    logout: () => void;
+}
+
+export const AuthContext = createContext<AuthContextType>({
+    isAuthenticated: false,
+    currentUser: null,
+});
 
 export const AuthProvider = ({children}) => {
     const router = useRouter();
