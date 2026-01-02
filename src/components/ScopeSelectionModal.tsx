@@ -22,7 +22,6 @@ interface ScopeSelectionModalProps {
 }
 
 const availableScopes = [
-    "FEATURE_ALL",
     "MATRIX",
     "ONM",
     "TILE",
@@ -56,10 +55,10 @@ export default function ScopeSelectionModal({
             <DialogContent className="sm:max-w-lg bg-white dark:bg-[#0a0a0f] border-gray-200 dark:border-gray-800">
                 <DialogHeader>
                     <DialogTitle className="text-[#1B1E2B] dark:text-white text-xl">
-                        Set Token with Scopes
+                        Restrict access
                     </DialogTitle>
                     <DialogDescription className="text-gray-600 dark:text-gray-400">
-                        Select the scopes for your token
+                        Choose what this token can access
                     </DialogDescription>
                 </DialogHeader>
 
@@ -97,7 +96,7 @@ export default function ScopeSelectionModal({
                             id="identifierName"
                             value={identifierName}
                             onChange={(e) => setIdentifierName(e.target.value)}
-                            placeholder="e.g., Your App"
+                            placeholder="e.g., Your App Name"
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
                                      bg-white dark:bg-gray-800 text-[#1B1E2B] dark:text-white
                                      focus:outline-none focus:ring-2 focus:ring-[#FFA500] focus:border-transparent
