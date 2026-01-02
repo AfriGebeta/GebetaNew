@@ -17,13 +17,18 @@ export const getUser = async (apiToken) => {
     }
 };
 
-export const setToken = async ({apiToken, userId}) => {
+export const setToken = async ({apiToken, userId, scopes, identifierName }) => {
     try {
+        const scopesString = Array.isArray(scopes)
+            ? scopes.join(',')
+            : scopes || "DIRECTION,GEOCODING,TILE,MATRIX,ONM,TSS";
+
         const {data} = await apiClient.patch(
             `/user/updatetoken`,
             {
                 userId,
-                scopes : "FEATURE_ALL"
+                scopes: scopesString,
+                identifierName: identifierName || "Unnamed Token"
             },
             {
                 headers: {
@@ -35,17 +40,34 @@ export const setToken = async ({apiToken, userId}) => {
         return {
             success: true,
             data: data.data,
+            message: data.msg || 'Token created successfully',
         };
     } catch (error) {
+        const errorData = error.response?.data?.error;
+        let errorMessage = 'Failed to create token';
+
+        if (errorData?.code === 'HE00008' && errorData?.additional?.body?.scopes) {
+            const invalidScope = errorData.additional.body.scopes[1];
+            errorMessage = `You don't have permission to use ${invalidScope}`;
+        } else if (errorData?.message) {
+            errorMessage = errorData.message;
+        }
+
         return {
             success: false,
-            message: error.response?.data.message || 'Failed to create token',
+            message: errorMessage,
+            error: errorData,
         };
     }
 };
 
 export const revokeToken = async (apiToken, token) => {
     try {
+        console.log('revoking token:', {
+            endpoint: `/user/revoke-token?token=${token.substring(0, 20)}...`,
+            authToken: apiToken.substring(0, 20) + '...'
+        });
+
         const {data} = await apiClient.patch(
             `/user/revoke-token?token=${token}`,
             {},
@@ -56,14 +78,24 @@ export const revokeToken = async (apiToken, token) => {
             }
         )
 
+        console.log('revoke successful:', data);
+
         return {
             success: true,
             data: data.data,
         }
     } catch (error) {
+        console.error('revoke error details:', {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            message: error.message
+        });
+
         return {
             success: false,
-            message: error.response?.data.message || 'Failed to revoke token',
+            message: error.response?.data?.message || error.response?.data?.error?.message || 'Failed to revoke token',
+            error: error.response?.data
         }
     }
 }
