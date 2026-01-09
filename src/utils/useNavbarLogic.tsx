@@ -10,7 +10,7 @@ export const useNavbarLogic = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0);
+            setIsScrolled(window.scrollY > -20);
         };
 
         const handleClickOutside = (event) => {

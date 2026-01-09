@@ -15,76 +15,123 @@ jobs:
   create-dot-env:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Create .env file
-      run: |
-        echo "NEXT_PUBLIC_BASE_URL=${{ secrets.BASE_URL }}" >> .env
-        echo "NEXT_PUBLIC_EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
-        echo "NEXT_PUBLIC_EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env 
-    - name: Verify .env file exists
-      run: ls -la
-    - name: Show .env file contents
-      run: cat .env
-    - name: Upload .env file
-      uses: actions/upload-artifact@v4
-      with:
-        include-hidden-files: true
-        name: dot-env
-        path: .env
+      - uses: actions/checkout@v4
+      - name: Create .env file
+        run: |
+          echo "NEXT_PUBLIC_BASE_URL=${{ secrets.BASE_URL }}" >> .env
+          echo "NEXT_PUBLIC_EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+          echo "NEXT_PUBLIC_EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
+          echo "NEXT_PUBLIC_TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
+          echo "NEXT_PUBLIC_TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}" >> .env
+      - name: Verify .env file exists
+        run: ls -la
+      - name: Show .env file contents
+        run: cat .env
+      - name: Upload .env file
+        uses: actions/upload-artifact@v4
+        with:
+          include-hidden-files: true
+          name: dot-env
+          path: .env
 
   lint-and-build:
     needs: create-dot-env
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-    - name: Download .env file
-      uses: actions/download-artifact@v4
-      with:
-        name: dot-env
-        path: .
-    - run: npm install
-    - run: npm run export
-    - uses: actions/upload-artifact@v4
-      with:
-        name: build
-        path: out
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Download .env file
+        uses: actions/download-artifact@v4
+        with:
+          name: dot-env
+          path: .
+
+      - name: Install dependencies (pnpm)
+        run: pnpm install --frozen-lockfile --prod=false
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Remove packageManager field from package.json
+        run: |
+          node -e "const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')); delete pkg.packageManager; fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');"
+
+      - name: Prepare deployment package
+        run: |
+          # Create deployment directory with necessary files
+          mkdir -p deploy
+          cp -r .next deploy/
+          cp -r public deploy/
+          cp package.json deploy/
+          cp pnpm-lock.yaml deploy/
+          cp next.config.mjs deploy/
+          cp start.sh deploy/
+          chmod +x deploy/start.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: deploy
+          include-hidden-files: true
 
   deploy:
     needs: lint-and-build
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
-    - name: Setup SSH Key
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.AZURE_SERVER_SSH_KEY }}
-    - name: Download artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: build
-        path: build
-    - name: Show directory contents
-      run: ls -la
-    - name: Deploy to Azure
-      env:
-        AZURE_SERVER_USER: ${{ secrets.AZURE_SERVER_USER }}
-        AZURE_SERVER_IP: ${{ secrets.AZURE_SERVER_IP }}
-      run: |
-        echo "Deploying to Azure"
-        echo "Downloaded artifact..."
-        ls -la
-        echo "Current working directory:"
-        pwd
-        # Create a directory for the new version
-        NEW_VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
-        ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION"
-
-        # Copy files to the new version directory
-        scp -o StrictHostKeyChecking=no -r build/* $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION
-        
-        # Update the symlink to point to the new version
-        ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "ln -sfn ~/gebeta-remade/releases/$NEW_VERSION ~/gebeta-remade/current"
+      - name: Setup SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.AZURE_SERVER_SSH_KEY }}
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build
+      - name: Show directory contents
+        run: ls -la
+      - name: Verify build artifact structure
+        run: |
+          echo "Verifying build artifact structure..."
+          ls -la build/
+          echo "Checking for .next directory..."
+          if [ ! -d "build/.next" ]; then
+            echo "ERROR: .next directory not found in build!"
+            exit 1
+          fi
+          echo "Checking for package.json..."
+          if [ ! -f "build/package.json" ]; then
+            echo "ERROR: package.json not found in build!"
+            exit 1
+          fi
+      - name: Deploy to Azure
+        env:
+          AZURE_SERVER_USER: ${{ secrets.AZURE_SERVER_USER }}
+          AZURE_SERVER_IP: ${{ secrets.AZURE_SERVER_IP }}
+        run: |
+          echo "Deploying to Azure"
+          echo "Downloaded artifact..."
+          ls -la
+          echo "Current working directory:"
+          pwd
+          # Create a directory for the new version
+          NEW_VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
+          ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "mkdir -p ~/gebeta-remade/releases/$NEW_VERSION"
+          
+          # Copy files to the new version directory (using rsync with symlink preservation)
+          rsync -avzL --progress --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            build/ $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION/
+          
+          # Update the symlink to point to the new version
+          ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "ln -sfn ~/gebeta-remade/releases/$NEW_VERSION ~/gebeta-remade/current"
+          
+          # Restart the server
+          ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "pm2 restart all"

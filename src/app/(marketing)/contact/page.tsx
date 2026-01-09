@@ -1,15 +1,20 @@
 //@ts-nocheck
 'use client';
 
-import {useState} from 'react';
+import { useState } from 'react';
 import Container from "@/sections/Container";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
 
 export default function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '251', 
         subject: '',
-        message: ''
+        message: '',
+        company: '' //honeypot
     });
     const [status, setStatus] = useState({
         loading: false,
@@ -17,17 +22,32 @@ export default function Contact() {
         success: false
     });
 
-    const handleSubmit = async (e:any) => {
+    const handlePhoneChange = (value, country) => {
+        const countryCode = country.dialCode;
+        if (!value || value.length < countryCode.length) {
+           //delete country code, restore it
+            setFormData({ ...formData, phone: countryCode });
+        } else {
+            setFormData({ ...formData, phone: value });
+        }
+    };
+
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         setStatus({ loading: true, error: null, success: false });
 
         try {
+            const submissionData = {
+                ...formData,
+                phone: `+${formData.phone}`
+            };
+
             const response = await fetch('/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(submissionData),
             });
 
             const data = await response.json();
@@ -37,9 +57,8 @@ export default function Contact() {
             }
 
             setStatus({ loading: false, error: null, success: true });
-            setFormData({ name: '', email: '', subject: '', message: '' }); // Reset form
+            setFormData({ name: '', email: '', phone: '251', subject: '', message: '', company: '' }); 
 
-            // Clear success message after 5 seconds
             setTimeout(() => {
                 setStatus(prev => ({ ...prev, success: false }));
             }, 5000);
@@ -47,7 +66,6 @@ export default function Contact() {
         } catch (error) {
             setStatus({ loading: false, error: error.message, success: false });
 
-            // Clear error message after 5 seconds
             setTimeout(() => {
                 setStatus(prev => ({ ...prev, error: null }));
             }, 100000);
@@ -56,7 +74,7 @@ export default function Contact() {
 
     return (
         <Container>
-            <div className="mt-[80px] max-w-2xl mx-auto px-4">
+            <div className="mt-[80px] max-w-2xl mx-auto px-4 ">
                 <h1 className="text-[48px] text-center text-[#1B1E2B] dark:text-white leading-60 mb-[40px]">
                     Contact Us
                 </h1>
@@ -96,6 +114,41 @@ export default function Contact() {
                     </div>
 
                     <div>
+                        <label htmlFor="phone" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
+                            Phone Number
+                        </label>
+                        <PhoneInput
+                            country={'et'}
+                            value={formData.phone}
+                            onChange={handlePhoneChange}
+                            disabled={status.loading}
+                            inputProps={{
+                                required: true,
+                                id: 'phone'
+                            }}
+                            enableSearch={true}
+                            searchPlaceholder="Search country"
+                            placeholder="your phone number"
+                            countryCodeEditable={false}
+                            containerStyle={{
+                                width: '100%'
+                            }}
+                            inputStyle={{
+                                width: '100%',
+                                height: '42px',
+                                fontSize: '14px',
+                                paddingLeft: '48px',
+                                borderRadius: '6px',
+                                border: '1px solid #d1d5db'
+                            }}
+                            buttonStyle={{
+                                borderRadius: '6px 0 0 6px',
+                                border: '1px solid #d1d5db'
+                            }}
+                        />
+                    </div>
+
+                    <div>
                         <label htmlFor="subject" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
                             Subject
                         </label>
@@ -128,6 +181,17 @@ export default function Contact() {
                             placeholder="Your message here..."
                         />
                     </div>
+
+                    {/* for honeypot- hidden from users */}
+                    <input
+                        type="text"
+                        name="company"
+                        value={formData.company}
+                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                        style={{ display: 'none' }}
+                        tabIndex={-1}
+                        autoComplete="off"
+                    />
 
                     <button
                         type="submit"

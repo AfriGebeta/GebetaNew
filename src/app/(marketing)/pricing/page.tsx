@@ -1,8 +1,8 @@
 import {Plans} from "@/sections/Pricing";
-import Container from "@/sections/Container";
 import PricingSlider from "@/components/PricingSlider";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Building2, CircleDollarSign, Scale, Shield} from 'lucide-react';
+import Container from "@/sections/Container";
 
 export default function PricingPage() {
     const features = [
@@ -44,35 +44,37 @@ export default function PricingPage() {
     ];
 
     return (
-        <div className=" dark:from-[#05050a] dark:to-[#05050a]">
-            <Container>
+        <div className=" dark:from-[#05050a] dark:to-[#05050a] mt-[120px]">
+            <div className="px-12">
                 <div className="md:pb-[60px]">
                     <div className="text-center mb-[80px]">
                         <h2 className="text-[48px] text-[#1B1E2B] dark:text-white leading-[1.2] mb-[20px]">Pricing</h2>
                         <p className="text-gray-600 dark:text-gray-400 max-w-[600px] mx-auto text-lg mb-[40px]">
                             Choose the perfect plan for your mapping needs
                         </p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-[60px]">
-                            {features.map((feature, index) => (
-                                <div key={index} className="bg-white dark:bg-[#111116] p-6 rounded-xl shadow-lg">
-                                    <div className="w-12 h-12 bg-[#FFA500]/10 rounded-full flex items-center justify-center mb-4 mx-auto">
-                                        <feature.icon className="w-6 h-6 text-[#FFA500]" />
+                        <Container>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-[60px]">
+                                {features.map((feature, index) => (
+                                    <div key={index} className="bg-white dark:bg-[#111116] p-6 rounded-xl border">
+                                        <div className="w-12 h-12 bg-[#FFA500]/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                            <feature.icon className="w-6 h-6 text-[#FFA500]" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-[#1B1E2B] dark:text-white mb-2">
+                                            {feature.title}
+                                        </h3>
+                                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                            {feature.description}
+                                        </p>
                                     </div>
-                                    <h3 className="text-lg font-semibold text-[#1B1E2B] dark:text-white mb-2">
-                                        {feature.title}
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                                        {feature.description}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        </Container>
+
                     </div>
 
                     <Plans />
 
-                    <div className="bg-white dark:bg-[#111116] rounded-2xl shadow-lg p-8 mb-[60px]">
+                    <div className="bg-white dark:bg-[#111116] rounded-2xl md:px-8 mb-[60px]">
                         <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white mb-6 text-center">
                             Calculate Your Usage Cost
                         </h3>
@@ -97,7 +99,7 @@ export default function PricingPage() {
                         </Accordion>
                     </div>
                 </div>
-            </Container>
+            </div>
         </div>
     );
 }

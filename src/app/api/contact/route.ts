@@ -1,54 +1,99 @@
 //@ts-nocheck
-import nodemailer from 'nodemailer';
+
+function isValidSubmission({ name, email, subject, message, company }) {
+    //honeypot
+    if (company) return false;
+
+    if (!name || name.length < 2) return false;
+    if (!subject || subject.length < 3) return false;
+    if (!message || message.length < 10) return false;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return false;
+
+    const wordCount = message.trim().split(/\s+/).length;
+    if (wordCount < 3) return false;
+
+
+    const randomStringRegex = /^[A-Za-z0-9]{10,}$/;
+    if (
+        randomStringRegex.test(subject) ||
+        randomStringRegex.test(message)
+    ) return false;
+
+    return true;
+}
 
 export async function POST(req) {
     try {
-        const { name, email, subject, message } = await req.json();
+        const { name, email, phone, subject, message, company } = await req.json();
 
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
-            auth: {
-                user: process.env.NEXT_PUBLIC_EMAIL_USER,
-                pass: process.env.NEXT_PUBLIC_EMAIL_PASS
+        if (!isValidSubmission({ name, email, subject, message, company })) {
+            return new Response(JSON.stringify({ error: 'Invalid submission' }), {
+                status: 400,
+            });
+        }
+
+        const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+        const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
+
+        if (!botToken || !chatId) {
+            throw new Error('telegram credentials not configured');
+        }
+
+
+        const telegramMessage = `
+ *New contact form submission*
+
+    *Name:* ${name}
+    *Email:* ${email}
+    *Phone:* ${phone}
+    *Subject:* ${subject}
+
+    *Message:*
+${message}
+        `.trim();
+
+        const telegramApiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); //15 second
+
+        try {
+            const response = await fetch(telegramApiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: telegramMessage,
+                    parse_mode: 'Markdown',
+                }),
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
+            const data = await response.json();
+
+            if (!data.ok) {
+                throw new Error(data.description || 'failed to send message')
             }
-        });
-
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: 'webgoat12@gmail.com',
-            subject: `Contact Form: ${subject}`,
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #333;">
-                    <div style="background-color: #4CAF50; padding: 15px; border-radius: 5px 5px 0 0; text-align: center; color: white;">
-                        <h2 style="margin: 0;">New Contact Form Submission</h2>
-                    </div>
-                    
-                    <div style="padding: 20px; background-color: white; border-radius: 0 0 5px 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);">
-                        <p style="margin: 0 0 10px;"><strong>Name:</strong> ${name}</p>
-                        <p style="margin: 0 0 10px;"><strong>Email:</strong> ${email}</p>
-                        <p style="margin: 0 0 10px;"><strong>Subject:</strong> ${subject}</p>
-                        <p style="margin: 20px 0;"><strong>Message:</strong></p>
-                        <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; color: #555;">
-                            ${message}
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 20px; text-align: center; font-size: 12px; color: #aaa;">
-                        <p style="margin: 0;">This message was sent from your website's contact form.</p>
-                    </div>
-                </div>
-            `
-        };
-
-        await transporter.sendMail(mailOptions);
+        } catch (fetchError) {
+            clearTimeout(timeoutId);
+            if (fetchError.name === 'AbortError') {
+                throw new Error('api timeout - please check your network connection');
+            }
+            throw new Error(`api error: ${fetchError.message}`);
+        }
 
         return new Response(JSON.stringify({ success: true }), {
             status: 200,
         });
 
     } catch (error) {
+        console.error('telegram error:', error);
         return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
         });

@@ -4,9 +4,10 @@ import React, {useContext, useEffect, useState} from 'react';
 import Link from "next/link";
 import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
-import {useRouter} from 'next/navigation';
+import {useRouter} from 'nextjs-toploader/app';
 import {AuthContext} from "@/providers/AuthProvider";
 import {BarLoader} from "react-spinners";
+import {trackUserAction} from "@/lib/track";
 
 interface RegistrationData {
     firstname?: string;
@@ -18,6 +19,7 @@ interface RegistrationData {
     phone: string;
     otp: string;
     is_organization?: boolean;
+    coupon?: string
 }
 
 interface CountryCode {
@@ -44,7 +46,8 @@ const Register: React.FC = () => {
         username: "",
         password: "",
         companyname: "",
-        phone: ""
+        phone: "",
+        coupon: ""
     });
 
     const countryCodes: CountryCode[] = [
@@ -82,6 +85,10 @@ const Register: React.FC = () => {
         onSuccess: (data) => {
             login(); // Update authentication state
             setCurrentUser(data.data); // Store user data in local storage
+            trackUserAction.auth.loginSuccessful({
+                user_id: data?.data?.id,
+                username: data?.data?.username,
+            });
             router.push('/dashboard'); // Redirect to dashboard
         },
         onError: (error: any) => {
@@ -100,6 +107,11 @@ const Register: React.FC = () => {
                 await signInMutation.mutateAsync({
                     username: registrationData.username,
                     password: registrationData.password
+                });
+                trackUserAction.auth.registrationCompleted({
+                    username: registrationData.username,
+                    email: registrationData.email,
+                    user_type: accountType
                 });
             } catch (error) {
                 console.error('Sign-in after registration failed:', error);
@@ -151,6 +163,7 @@ const Register: React.FC = () => {
         const fullPhoneNumber = `${selectedCountryCode}${registrationData.phone}`;
         const sendData: RegistrationData = {
             email: registrationData.email,
+            coupon: registrationData.coupon,
             username: registrationData.username,
             password: registrationData.password,
             phone: fullPhoneNumber,
@@ -218,6 +231,23 @@ const Register: React.FC = () => {
                         onChange={(e) => setRegistrationData({...registrationData, email: e.target.value})}
                         required
                         placeholder="john@workmail.com"
+                        className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
+                           focus:outline-none focus:ring focus:ring-[#FFA500]
+                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
+                           dark:text-gray-300 transition duration-200 ease-in-out"
+                    />
+                </div>
+
+                <div className="w-[160px]">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Coupon
+                    </label>
+                    <input
+                        type="coupon"
+                        id="coupon"
+                        value={registrationData.coupon}
+                        onChange={(e) => setRegistrationData({...registrationData, coupon: e.target.value})}
+                        placeholder="Optional"
                         className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
                            focus:outline-none focus:ring focus:ring-[#FFA500]
                            focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
@@ -404,7 +434,8 @@ const Register: React.FC = () => {
                             disabled={!canResend}
                             className={`text-sm text-[#FFA500] ${canResend ? '' : 'opacity-50 cursor-not-allowed'}`}
                         >
-                            Resend OTP {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
+                            Resend
+                            OTP {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
                         </button>
                     </div>
                 </form>
@@ -430,6 +461,7 @@ const Register: React.FC = () => {
                                 value="Business"
                                 onChange={() => setAccountType("Business")}
                                 defaultChecked
+                                className="accent-[#FFA500]"
                             />
                             <label className="text-[14px]">Business - for your work, school or organization</label>
                         </div>

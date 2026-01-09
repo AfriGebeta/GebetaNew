@@ -1,9 +1,6 @@
 //@ts-nocheck
 import {getAllPosts, getPostBySlug} from '@/lib/mdx';
 import Image from 'next/image';
-import Link from 'next/link';
-import Footer from "@/app/(marketing)/Footer";
-import Navbar from "@/app/(marketing)/Navbar";
 import Container from "@/sections/Container";
 
 export async function generateMetadata({params}) {
@@ -64,7 +61,6 @@ export default async function BlogPost({params}) {
 
     return (
         <div className="w-full antialiased pt-32 flex flex-col min-h-screen dark:bg-[#05050a]">
-            <Navbar/>
             <Container>
                 <article className="max-w-[680px] mx-auto px-4 pt-10 pb-20">
                     <header className="mb-8">
@@ -72,24 +68,27 @@ export default async function BlogPost({params}) {
                             {frontMatter.title}
                         </h1>
 
-                        <div className="text-gray-500 text-lg mb-6">
-                            {frontMatter.excerpt}
-                        </div>
+                        {frontMatter?.author && <span className="tex-sm block mb-2"><span
+                            className="text-gray-700">Written by</span> <span
+                            className="font-bold text-[#3f3f3f]">{frontMatter?.author}</span></span>}
 
-                        <div className="flex items-center border-b border-gray-100 pb-8">
+                        <div className="flex items-center border-b border-gray-100 pb-4">
                             <div>
                                 <div className="text-gray-500 text-sm flex items-center space-x-1">
-                <span>
-                  {new Date(frontMatter.date).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                  })}
-                </span>
+                                    <span>
+                                      {new Date(frontMatter.date).toLocaleDateString('en-US', {
+                                          month: 'short',
+                                          day: 'numeric',
+                                          year: 'numeric',
+                                      })}
+                                    </span>
                                     <span>•</span>
-                                    <span>{frontMatter.readingTime || '5 min read'}</span>
+                                    <span>{frontMatter.readingDuration.text}</span>
                                 </div>
                             </div>
+                        </div>
+                        <div className="text-gray-500 text-lg mb-6">
+                            {frontMatter.excerpt}
                         </div>
                     </header>
 
@@ -134,10 +133,6 @@ export default async function BlogPost({params}) {
                     {/*)}*/}
                 </article>
             </Container>
-
-
-            <Footer/>
-
         </div>
     );
 }

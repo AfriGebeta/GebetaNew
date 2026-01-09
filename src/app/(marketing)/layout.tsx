@@ -1,8 +1,7 @@
 import Navbar from "@/app/(marketing)/Navbar";
 import Footer from "@/app/(marketing)/Footer";
-import {Suspense} from "react";
-import Loading from "./loading"
-import Announcement from "@/app/_component/Announcement";
+import React from "react";
+import LenisScrollProvider from "@/providers/lenis-provider";
 
 
 export default function RootLayout({
@@ -11,18 +10,16 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <Suspense fallback={<Loading/>}>
-            <Announcement />
+        <LenisScrollProvider>
             <div
-                className="w-full antialiased pt-32 flex flex-col min-h-screen dark:bg-[#05050a]"
+                className="relative w-full antialiased pt-[50px] flex flex-col min-h-screen dark:bg-[#05050a]"
             >
                 <Navbar/>
                 <div className="flex-1">
-
                     {children}
                 </div>
                 <Footer/>
             </div>
-        </Suspense>
+        </LenisScrollProvider>
     );
 }

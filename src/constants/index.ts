@@ -1,4 +1,7 @@
-interface Features {
+//@ts-nocheck
+import {Icons} from "@/components/icons";
+
+export interface Features {
     title: string
     subtitle: string
     description: string
@@ -9,13 +12,14 @@ interface Features {
         height: number
     }
     link: string
+    blurData?: string
 }
 
 interface Pricing {
     title: string
     subtitle: string
-    price: number | string
-    features: {
+    price?: number | string
+    features?: {
         service: string
         credit: number | string
         showInfo?: boolean
@@ -48,13 +52,14 @@ interface FooterLink {
     link: string
 }
 
-interface MegaMenu {
+export interface MegaMenu {
     title: string;
     link?: string | ""
     submenu?: {
         title: string;
         link: string;
         description: string;
+        icon: Element;
     }[];
 }
 
@@ -69,31 +74,42 @@ export const menuItems: Array<MegaMenu> = [
         title: "Products",
         submenu: [
             {
+                title: "Tile",
+                link: "https://docs.gebeta.app/docs/geocoding/geocoding",
+                description: "Access map tiles for custom mapping applications and visualization",
+                icon: Icons.globe
+            },
+            {
                 title: "Geocoding",
                 link: "https://docs.gebeta.app/docs/geocoding/geocoding",
-                description: "Convert addresses to coordinates and vice versa"
+                description: "Convert addresses to coordinates and vice versa",
+                icon: Icons.mapPin
             },
             {
                 title: "Route Optimization",
                 link: "https://docs.gebeta.app/docs/route-optimization",
-                description: "Find the most efficient routes for multiple stops"
+                description: "Find the most efficient routes for multiple stops",
+                icon: Icons.direction
             },
             {
                 title: "Directions",
                 link: "https://docs.gebeta.app/docs/direction",
-                description: "Get turn-by-turn navigation for various transportation modes"
+                description: "Get turn-by-turn navigation for various transportation modes",
+                icon: Icons.navigation
             },
             {
                 title: "Matrix",
                 link: "https://docs.gebeta.app/docs/matrix",
-                description: "Calculate travel times and distances between multiple origins and destinations"
+                description: "Calculate travel times and distances between multiple origins and destinations",
+                icon: Icons.matrix
             },
         ],
     },
     {title: "Company", link: "/company"},
+    {title: "Pricing", link: "/pricing"},
     {title: "Blog", link: "/blog"},
     {title: "Documentation", link: "https://docs.gebeta.app/"},
-    {title: "Pricing", link: "/pricing"},
+    {title: "Contact", link: "/contact"},
 ];
 
 //Features
@@ -104,47 +120,36 @@ export const features: Array<Features> = [
         subtitle: "Geocoding",
         description: "makes it effortless to access and integrate detailed local data. Whether for web or mobile platforms, we empower you to customize and include all the data you need, ensuring your users get the most relevant and up-to-date information.",
         image: {
-            source: "assets/gc.gif",
+            source: "/assets/geocoding.jpg",
             alt: "searching places",
             width: 586,
             height: 494
         },
-        link:"https://docs.gebeta.app/docs/geocoding/geocoding"
+        link: "https://docs.gebeta.app/docs/geocoding/geocoding"
     },
     {
         title: "Smart Route Optimization",
         subtitle: "Route Optimization",
         description: "API provides your users with the most optimal routes, making navigation easy. Whether you're developing for web or mobile, we ensure streamlined navigation, helping users save time and reach their destinations faster.",
         image: {
-            source: "assets/ro.gif",
+            source: "/assets/route-optimization.jpg",
             alt: "searching places",
             width: 586,
             height: 494
         },
-        link:"https://docs.gebeta.app/docs/route-optimization"
+        link: "https://docs.gebeta.app/docs/route-optimization"
     },
-    // {
-    //     title: "Optimized Navigation Routes",
-    //     subtitle: "Direction",
-    //     description: "API ensures seamless routing, offering the fastest and most efficient paths. Whether for web or mobile applications, we simplify navigation, so users can reach their destinations swiftly and hassle-free, every time.",
-    //     image: {
-    //         source: "/assets/geocoding.webp",
-    //         alt: "searching places",
-    //         width: 586,
-    //         height: 494
-    //     }
-    // },
     {
         title: "Map Multiple Routes",
         subtitle: "ONM",
         description: "API one-to-many routing feature allows you to easily generate optimized routes from a single point to multiple destinations. Whether managing deliveries, planning logistics, or mapping out multiple stops, our API ensures that your users receive the most efficient paths to all their endpoints in one go",
         image: {
-            source: "assets/onm.gif",
+            source: "/assets/onm.jpg",
             alt: "searching places",
             width: 586,
             height: 494
         },
-        link:"https://docs.gebeta.app/docs/onm"
+        link: "https://docs.gebeta.app/docs/onm"
     },
 ]
 
@@ -152,8 +157,8 @@ export const features: Array<Features> = [
 
 export const pricing: Array<Pricing> = [
     {
-        title: "Individual",
-        subtitle: "Best choice for your location based software",
+        title: "Start up",
+        subtitle: "Best for your early-stage startup affordable and flexible.",
         price: 500,
         features: [
             {
@@ -173,8 +178,8 @@ export const pricing: Array<Pricing> = [
         ]
     },
     {
-        title: "Start up",
-        subtitle: "Best choice for your startup get your api key and use today!",
+        title: "Premium",
+        subtitle: "Best for growth-stage startups or enterprises with moderate usage.",
         price: 1000,
         features: [
             {
@@ -202,8 +207,12 @@ export const pricing: Array<Pricing> = [
         ]
     },
     {
+        title: "Developer",
+        subtitle: "Great fit for individual developers and idea testing",
+    },
+    {
         title: "Enterprise",
-        subtitle: "Talk to Us to Create a Pricing Model That Fits Your Needs, Only Paying for What You Use!",
+        subtitle: "Best choice for high usage by any organization.",
         price: "Let's Talk",
         features: [
             {
@@ -310,3 +319,68 @@ export const footerLinks: Array<FooterLink> = [
 //     {name: "Zubeyr Anwar", role: "Frontend Developer", img: "/assets/zubeyr.jpg"},
 //     {name: "Tsegaw Tesfaye", role: "Graphic Designer", img: "/assets/tsegaw.png"},
 // ]
+
+
+export type Properties = Record<string, any>;
+
+export enum TrackingEventNames {
+    PRICING_PAGE_VIEW = "Pricing Page View",
+    CONTACT_PAGE_VIEW = "Contact Page View",
+    SIGNIN_PAGE_VIEW = "Sign In Page View",
+    REGISTER_PAGE_VIEW = "Register Page View",
+    PASSWORD_RESET_PAGE_VIEW = "Password Reset Page View",
+
+    // User Actions
+    REGISTRATION_COMPLETED = "Registration Completed",
+    LOGIN_SUCCESSFUL = "Login Successful",
+    PASSWORD_RESET_REQUESTED = "Password Reset Requested",
+    PASSWORD_RESET_COMPLETED = "Password Reset Completed",
+    PROFILE_UPDATED = "Profile Updated",
+    SUBSCRIPTION_CHANGED = "Subscription Changed",
+    BUTTON_CLICKED = "Button Clicked",
+    FORM_SUBMITTED = "Form Submitted"
+}
+
+interface TrackableEvent {
+    event_name: TrackingEventNames;
+    properties?: Properties | null;
+    path: string;
+}
+
+export const trackableRoutes: TrackableEvent[] = [
+    {
+        event_name: TrackingEventNames.PRICING_PAGE_VIEW,
+        path: "/pricing",
+        properties: {
+            source: "pricing_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.CONTACT_PAGE_VIEW,
+        path: "/contact",
+        properties: {
+            source: "contact_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.SIGNIN_PAGE_VIEW,
+        path: "/auth/signin",
+        properties: {
+            source: "signin_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.REGISTER_PAGE_VIEW,
+        path: "/auth/register",
+        properties: {
+            source: "registration_page"
+        }
+    },
+    {
+        event_name: TrackingEventNames.PASSWORD_RESET_PAGE_VIEW,
+        path: "/auth/reset-password",
+        properties: {
+            source: "password_reset_page"
+        }
+    }
+];

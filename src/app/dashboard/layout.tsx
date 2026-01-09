@@ -14,10 +14,28 @@ import {
 } from "@/components/ui/breadcrumb";
 import {Toaster} from "@/components/ui/toaster"
 import PrivateRoute from "@/components/PrivateRoute";
+import {useQuery} from "@tanstack/react-query";
+import {getUser} from "@/service/apis";
+import {useContext, useEffect} from "react";
+import {AuthContext} from "@/providers/AuthProvider";
 
 export default function DashboardLayout({children}: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const {currentUser, setCurrentUser} = useContext(AuthContext)
 
+    const {data, isSuccess} = useQuery({
+        queryKey: ["me"],
+        queryFn: () => getUser(currentUser.token),
+        enabled: !!currentUser?.token,
+        staleTime: 5 * 60 * 1000,
+    })
+
+
+    useEffect(() => {
+        if (isSuccess && data) {
+            // setCurrentUser(user)
+        }
+    }, [isSuccess, data]);
     // Create breadcrumb items from the pathname
     const breadcrumbItems = pathname
         .split('/')
@@ -39,7 +57,7 @@ export default function DashboardLayout({children}: { children: React.ReactNode 
                 <SidebarInset className="dark:bg-[#05050a]">
                     <header
                         className="flex h-fit shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-fit">
-                        <div className="flex items-center gap-2 px-4">
+                        <div className="flex items-center gap-2 px-4 pt-2">
                             <SidebarTrigger className="-ml-1"/>
                             <Separator orientation="vertical" className="mr-2 h-4"/>
                             <Breadcrumb>

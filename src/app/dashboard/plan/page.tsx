@@ -1,15 +1,15 @@
 //@ts-nocheck
 "use client";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { getAllCredits, buyCredit } from "@/service/apis";
-import { useContext, useState } from "react";
-import { AuthContext } from "@/providers/AuthProvider";
-import { Check } from "lucide-react";
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {useQuery} from "@tanstack/react-query";
+import {buyCredit, getAllCredits} from "@/service/apis";
+import {useContext, useState} from "react";
+import {AuthContext} from "@/providers/AuthProvider";
+import {Check} from "lucide-react";
 import {useToast} from "@/hooks/use-toast"
 import {queryClient} from "@/providers/QueryProvider";
-import {useRouter} from "next/navigation";
+import {useRouter} from 'nextjs-toploader/app';
 
 export default function UserPlan() {
     const enterprise = {

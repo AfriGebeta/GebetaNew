@@ -1,0 +1,129 @@
+---
+title: "A tale about IntlString: how a typealias and an office inside-joke helps us approach internationalization"
+date: "2025-09-13"
+excerpt: "A tale about IntlString: how a typealias and an office inside-joke helps us approach internationalization"
+coverImage: "/images/blog/intlstring.png"
+coverImageCaption: "Intlstring"
+---
+
+# A tale about IntlString: how a typealias and an office inside-joke helps us approach internationalization
+
+![globe image](https://images.unsplash.com/photo-1614107151491-6876eecbff89?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)
+
+Almost every team has its inside jokes. Ours happens to be about… internationalization. Yes, the thing most developers dread: endless translation files, locale fallbacks, and mysterious i18n bugs. But for us, whenever someone says “IntlString”, there’s always a little laugh. it sounds like “እንጥል ስትሪንግ” — which literally means uvula. Once you’ve heard that, you can’t un-hear it.
+
+## How IntlString was born
+
+we started with the classic approach to translations. Different frameworks, different conventions, and too much boilerplate. *“Do we really need this much machinery just to store some text in different languages?”*
+
+So we stripped it down to the basics. IntlString is just a map of locale → text. Nothing more.
+But the beauty is: we can use the exact same idea everywhere in our stack.
+
+## In Kotlin: with composition locales
+
+On Android, we define:
+
+```kotlin
+typealias IntlString = Map<SupportedLocale, String>
+```
+
+Our `SupportedLocale` enum holds values like `EN_US` and `AM` Then we can just write:
+
+```kotlin
+val title: IntlString = mapOf(
+    SupportedLocale.EN_US to "Hello",
+    SupportedLocale.AM to "ሰላም"
+)
+
+Text(title.getValue(LocalSupportedLocale.current))
+```
+
+No complex framework, no magic. If a locale is missing, we fall back to English. Done.
+
+## In React: plain and simple
+
+On the frontend, we keep the same spirit with TypeScript:
+```typescript
+export type Locale =
+  | "EN"
+  | "AM"
+  | "EN-US"
+  | "AM-ET"
+  | "en"
+  | "en-us"
+  | "am-et";
+
+export type IntlString = Record<Locale, string>;
+```
+
+Then, in component:
+
+```tsx
+const title: IntlString = {
+  "en": "Hello",
+  "am-et": "ሰላም"
+};
+
+return <h1>{title[userLocale]}</h1>;
+```
+
+It’s almost too simple to explain — and that’s exactly the point.
+
+## In Go: keeping it minimal
+
+Go doesn’t have type aliases in the same way, but a map works perfectly:
+```go
+type IntlString map[string]string
+```
+
+And then we can do:
+
+```go
+title["en-us"]
+title["am-et"]
+```
+
+No fuss, no ceremony.
+
+## In Prisma: JSON fields to the rescue
+
+Even in our database models, we try to keep the same format. In Prisma we use Json fields:
+
+```prisma
+model Subscription {
+  id          BigInt   @id @default(autoincrement())
+  label       Json
+  description Json?
+  duration    Int
+  basePrice   Float
+  tier        Int
+  specs       Json?
+  active      Boolean
+  visible     Boolean
+}
+```
+
+So a subscription label can look like:
+
+```json
+{
+  "en": "Premium Subscription",
+  "am-et": "ፕሪሚየም አባልነት"
+}
+```
+
+From database to frontend to mobile — the same IntlString travels unchanged.
+
+## Why we love it
+
+IntlString started as a quick hack and an office joke.
+But it ended up becoming a unifying concept across our stack. Instead of dealing with heavy i18n frameworks in each layer, we agreed on one thing:
+
+**Texts are just maps from locale to string.**
+
+That tiny agreement saved us countless hours and made the code easier to follow. And, honestly, it kept the mood light. Because no matter how tough the sprint is, it’s hard to stay too serious when someone says:
+
+“Did you remember to update the እንጥል ስትሪንግ?”
+
+Sometimes, the simplest ideas bring both the most joy and the most clarity.
+IntlString is our little reminder of that.

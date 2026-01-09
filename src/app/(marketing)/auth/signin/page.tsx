@@ -2,7 +2,7 @@
 "use client";
 import React, {useContext, useState} from 'react';
 import Link from "next/link";
-import {useRouter} from 'next/navigation';
+import {useRouter} from 'nextjs-toploader/app';
 import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
 import {AuthContext} from "@/providers/AuthProvider";

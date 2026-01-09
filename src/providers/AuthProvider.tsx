@@ -2,18 +2,45 @@
 "use client";
 import React, {createContext, useEffect, useState} from 'react';
 import useLocalStorage from "../hooks/use-local-storage";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
+import {User} from "@/types/user";
 
-export const AuthContext = createContext();
+
+interface AuthContextType {
+    isAuthenticated: boolean;
+    currentUser: User;
+    setCurrentUser: (user: User) => void;
+    login: (user: User) => void;
+    logout: () => void;
+}
+
+export const AuthContext = createContext<AuthContextType>({
+    isAuthenticated: false,
+    currentUser: null,
+});
 
 export const AuthProvider = ({children}) => {
     const router = useRouter();
     const [currentUser, setCurrentUser] = useLocalStorage('currentUser', null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const pathname = usePathname()
+
+    const UN_PROTECTED_ROUTES = [
+        "/",
+        "/auth/signin",
+        "/auth/register",
+        "/auth/reset-password",
+    ]
 
     useEffect(() => {
-        setIsAuthenticated(JSON.parse(localStorage.getItem('isAuthenticated')))
+        setIsAuthenticated(JSON.parse(localStorage.getItem('isAuthenticated') as string))
     }, []);
+
+    useEffect(() => {
+        if(isAuthenticated && UN_PROTECTED_ROUTES.includes(pathname)) {
+            router.push('/dashboard');
+        }
+    }, [isAuthenticated]);
 
 
     const login = (user) => {

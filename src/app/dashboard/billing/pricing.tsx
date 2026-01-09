@@ -6,7 +6,7 @@ import Container from "@/sections/Container";
 import {useContext, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {buyCredit, getAllCredits} from "@/service/apis";
-import {useRouter} from "next/navigation";
+import {useRouter} from 'nextjs-toploader/app';
 import {queryClient} from "@/providers/QueryProvider";
 import {AuthContext} from "@/providers/AuthProvider";
 
@@ -15,9 +15,10 @@ export default function Pricing() {
     const enterprise = {
         name: "Custom",
         price: "",
+        description: "Best choice for high usage by any organization.",
         expiredIn: 30,
-        call_caps: ["Unlimited", "Unlimited", "Unlimited", "Unlimited"],
-        included_call_types: ["Geocoding", "Direction", "Matrix", "Route"],
+        call_caps: ["Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited"],
+        included_call_types: ["Geocoding", "Direction", "Matrix", "TSS", "ONM", "Tile"],
     };
 
     const [activeTab, setActiveTab] = useState("monthly");
@@ -31,8 +32,8 @@ export default function Pricing() {
         staleTime: 5 * 60 * 1000,
     });
 
-    const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30) || [];
-    const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365) || [];
+    const monthlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 30)?.reverse() || [];
+    const yearlyPlans = data?.credit_bundles?.filter(credit => credit.expiredIn === 365)?.reverse() || [];
 
     return (
         <Container>
@@ -141,7 +142,8 @@ function Plan({data, index}) {
                             window.open(response.data.data.Data.checkout_url, '_blank');
                         }
                     })
-                    .catch(err => {});
+                    .catch(err => {
+                    });
             } else {
                 router.push('/contact')
             }
@@ -183,9 +185,9 @@ function Plan({data, index}) {
                             (<>
                                 {data.price}<span className="text-[14px]">/month</span>
 
-                            </> ) ): "Pay as you go"}
+                            </>)) : "Pay as you go"}
                     </h3>
-                    <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{pricing[index].subtitle}</p>
+                    <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{data.name !== "Custom" ? pricing[index].subtitle : data.description }</p>
 
                     <ul className="relative text-[#62677F] dark:text-gray-400 text-[14px] font-semibold leading-17 mt-[30px] mb-[30px] space-y-[12px]">
                         {
@@ -199,7 +201,7 @@ function Plan({data, index}) {
                                         width={36}
                                         height={36}
                                     />
-                                    <li>{data.call_caps[featureIndex] + " " + feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase()} calls</li>
+                                    <li>{data.call_caps[featureIndex] + " " + feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase() + " calls" + `${feature === "TILE" ? " (daily limit)" : ""}`}</li>
                                     {feature.showInfo &&
                                         <div className="relative">
                                             <Image

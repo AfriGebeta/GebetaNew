@@ -3,11 +3,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {AuthContext} from "@/providers/AuthProvider";
-import Loading from "@/app/(marketing)/loading";
+import Spinner from "@/components/Spinner";
 
 const ProtectedRoute = ({children}) => {
     const router = useRouter();
-    const { currentUser } = useContext(AuthContext);
+    const {currentUser} = useContext(AuthContext);
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
@@ -24,7 +24,7 @@ const ProtectedRoute = ({children}) => {
 
     // Show loading state only on client-side when not authenticated
     if (!currentUser) {
-        return <Loading />
+        return <Spinner/>
     }
 
     return <>{children}</>;
