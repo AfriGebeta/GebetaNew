@@ -9,12 +9,22 @@ import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {Calendar} from "@/components/ui/calendar";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {CalendarIcon} from "lucide-react";
+import {CalendarIcon, Check, ChevronDown } from "lucide-react";
 import {useQuery} from "@tanstack/react-query";
 import {MetricCard, MetricCardSkeleton} from "@/components/metric-card";
 import APIUsage from "./APIUsage";
 import {Icons} from "@/components/icons";
+
+const CALL_TYPES = [
+    { value: "GEOCODING", label: "Geocoding" },
+    { value: "REVERSEGEOCODING", label: "Reverse Geocoding" },
+    { value: "DIRECTION", label: "Direction" },
+    { value: "ONM", label: "ONM" },
+    { value: "MATRIX", label: "Matrix" },
+    { value: "TSS", label: "TSS" },
+    { value: "TILE", label: "Tile" },
+    { value: "VRP", label: "VRP" },
+];
 
 export default function Usage() {
     const { currentUser } = useContext(AuthContext);
@@ -26,11 +36,12 @@ export default function Usage() {
 
     const [startingDate, setStartingDate] = useState(thirtyDaysAgo);
     const [endingDate, setEndingDate] = useState(currentDate);
-    const [selected, setSelected] = useState("All");
+    const [selectedTypes, setSelectedTypes] = useState(CALL_TYPES.map(t => t.value)); 
     const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const { data: usageData, isLoading: usageLoading } = useQuery({
-        queryKey: ["usage", currentUser.token, selected, startingDate, endingDate],
+        queryKey: ["usage", currentUser.token, selectedTypes, startingDate, endingDate],
         queryFn: () => getUserUsage(startingDate, endingDate, currentUser.token),
         staleTime: 5 * 60 * 1000,
     });
@@ -62,9 +73,10 @@ export default function Usage() {
 
     const getGraphData = async () => {
         setLoading(true);
-        if (startingDate && endingDate) {
+        if (startingDate && endingDate && selectedTypes.length > 0) {
             try {
-                const response = await getUserUsageForGraph(selected.toUpperCase(), startingDate, endingDate, currentUser.token);
+                const typesParam = selectedTypes.join(',');
+                const response = await getUserUsageForGraph(typesParam, startingDate, endingDate, currentUser.token);
                 if (!response.error) setGraphData(response);
             } catch (error) {
                 console.error("Error fetching graph data:", error);
@@ -74,12 +86,19 @@ export default function Usage() {
     };
 
     useEffect(() => {
-        if (startingDate && endingDate) getGraphData();
-    }, [startingDate, endingDate, selected]);
+        if (startingDate && endingDate && selectedTypes.length > 0) getGraphData();
+    }, [startingDate, endingDate, selectedTypes]);
 
     const handleStartChange = (date) => setStartingDate(date ? format(date, "yyyy-MM-dd") : thirtyDaysAgo);
     const handleEndChange = (date) => setEndingDate(date ? format(date, "yyyy-MM-dd") : currentDate);
-    const handleChange = (value) => setSelected(value);
+
+    const toggleType = (type) => {
+        setSelectedTypes(prev =>
+            prev.includes(type)
+                ? prev.filter(t => t !== type)
+                : [...prev, type]
+        );
+    };
 
     // Add Total card
     const cards = [
@@ -107,22 +126,39 @@ export default function Usage() {
             <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex items-center gap-4">
                     <p>Select endpoints:</p>
-                    <Select onValueChange={handleChange} defaultValue="All">
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select endpoint" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem value="All">All</SelectItem>
-                                <SelectItem value="TILE">Tile</SelectItem>
-                                <SelectItem value="GEOCODING">Geocoding</SelectItem>
-                                <SelectItem value="DIRECTION">Direction</SelectItem>
-                                <SelectItem value="MATRIX">Matrix</SelectItem>
-                                <SelectItem value="ONM">ONM</SelectItem>
-                                <SelectItem value="TSS">TSS</SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                    <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-[280px] justify-between">
+                                {selectedTypes.length === CALL_TYPES.length
+                                    ? "All endpoints"
+                                    : selectedTypes.length === 0
+                                        ? "Select endpoints"
+                                        : `${selectedTypes.length} selected`}
+                                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[280px] p-2">
+                            <div className="space-y-1 max-h-64 overflow-auto">
+                                {CALL_TYPES.map((type) => (
+                                    <div
+                                        key={type.value}
+                                        className="flex items-center space-x-2 rounded-sm px-2 py-1.5 cursor-pointer hover:bg-accent"
+                                        onClick={() => toggleType(type.value)}
+                                    >
+                                        <div className={cn(
+                                            "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                            selectedTypes.includes(type.value)
+                                                ? "bg-primary text-primary-foreground"
+                                                : "opacity-50"
+                                        )}>
+                                            {selectedTypes.includes(type.value) && <Check className="h-3 w-3" />}
+                                        </div>
+                                        <span className="text-sm">{type.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
 
                 <div className="flex items-center gap-4">
