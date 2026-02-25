@@ -43,7 +43,7 @@ export default function Announcement({
                     <svg viewBox="0 0 2 2" className="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
                         <circle cx="1" cy="1" r="1" />
                     </svg>
-                    We've updated our pricing to better serve our customers.
+                    We've updated our pricing.
                 </p>
                 <Link
                     href="/blog/price-change"
