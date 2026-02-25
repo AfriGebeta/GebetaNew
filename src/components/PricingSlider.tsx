@@ -190,14 +190,17 @@ const PricingSlider = () => {
                 {range: [5000, 10000], price: 1.155}
             ],
             Tile: [
-                {range: [0, 50], price: 0},
-                {range: [50, 100], price: 0.45},
-                {range: [100, 500], price: 0.45},
-                {range: [500, 1000], price: 0.45},
-                {range: [1000, 5000], price: 0.336},
-                {range: [5000, 10000], price: 0.252},
-                {range: [10000, 50000], price: 0.126},
-                {range: [50000, 100000], price: 0.0315}
+                { range: [0, 50], price: 0 },
+                { range: [50, 100], price: 0.45 },
+                { range: [100, 250], price: 1.8 },
+                { range: [250, 500], price: 3.0 },
+                { range: [500, 1000], price: 4 },
+                { range: [1000, 2000], price: 3.2 },
+                { range: [2000, 3500], price: 2.0 },
+                { range: [3500, 5000], price: 1.0 },
+                { range: [5000, 10000], price: 0.252 },
+                { range: [10000, 50000], price: 0.226 },
+                { range: [50000, 100000], price: 0.0315}
             ]
         };
 
