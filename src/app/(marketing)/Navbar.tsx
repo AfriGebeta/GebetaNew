@@ -97,7 +97,8 @@ export default function Navbar() {
                             </ul>
                         </div>
                         <div className="hidden md:flex gap-8">
-                            <div className="flex items-center gap-[4px]">
+                            <div className="flex items-center gap-[4px] cursor-pointer"
+                                onClick={() => router.push("/auth/signin")}>
                                 <Image
                                     className="dark:fill-whitesmoke"
                                     src="/assets/user.svg"
@@ -105,15 +106,14 @@ export default function Navbar() {
                                     width={24}
                                     height={24} />
                                 <a
-                                    className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400 cursor-pointer"
-                                    onClick={() => router.push("/auth/signin")}
+                                    className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400"
                                 >Sign In</a>
                             </div>
                             <div
-                                className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">
+                                className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap cursor-pointer"
+                                onClick={() => router.push("/auth/register")}>
                                 <a
-                                    className="font-bold cursor-pointer"
-                                    onClick={() => router.push("/auth/register")}
+                                    className="font-bold"
                                 >Get Started</a>
                             </div>
                         </div>
