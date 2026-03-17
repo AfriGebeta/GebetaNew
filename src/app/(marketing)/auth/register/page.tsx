@@ -57,13 +57,41 @@ const Register: React.FC = () => {
     ];
 
     const requestOtpMutation = useMutation({
-        mutationFn: (email: string) =>
-            apiClient.post("/auth/request/otp", {
+        mutationFn: (email: string) => {
+            const fullPhoneNumber = `${selectedCountryCode}${registrationData.phone}`;
+            const requestData = {
+                contactType: "EMAIL",
                 contact: email,
-                contactType: "EMAIL"
-            }, {
+                additional: {
+                    requestedOtpFor: "registration",
+                    data: {
+                        email: email,
+                        coupon: registrationData.coupon || "",
+                        username: registrationData.username,
+                        password: registrationData.password,
+                        phone: fullPhoneNumber,
+                        otp: "",
+                        ...(accountType === "Business"
+                            ? {
+                                companyname: registrationData.companyname,
+                                is_organization: true,
+                                firstname: "",
+                                lastname: ""
+                            }
+                            : {
+                                firstname: registrationData.firstname,
+                                lastname: registrationData.lastname,
+                                companyname: "",
+                                is_organization: false,
+                            }
+                        )
+                    }
+                }
+            };
+            return apiClient.post("/auth/request/otp", requestData, {
                 headers: {"Content-Type": "application/json"}
-            }),
+            });
+        },
         onSuccess: () => {
             setStep(2);
             setError("");
