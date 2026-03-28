@@ -11,7 +11,7 @@ export default function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '251', 
+        phone: '251',
         subject: '',
         message: '',
         company: '' //honeypot
@@ -34,6 +34,13 @@ export default function Contact() {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
+
+        // validate after country code
+        if (formData.phone.length <= 3) {
+            setStatus({ loading: false, error: 'Please enter a valid phone number', success: false });
+            return;
+        }
+
         setStatus({ loading: true, error: null, success: false });
 
         try {
@@ -57,7 +64,7 @@ export default function Contact() {
             }
 
             setStatus({ loading: false, error: null, success: true });
-            setFormData({ name: '', email: '', phone: '251', subject: '', message: '', company: '' }); 
+            setFormData({ name: '', email: '', phone: '251', subject: '', message: '', company: '' });
 
             setTimeout(() => {
                 setStatus(prev => ({ ...prev, success: false }));
@@ -124,12 +131,19 @@ export default function Contact() {
                             disabled={status.loading}
                             inputProps={{
                                 required: true,
-                                id: 'phone'
+                                id: 'phone',
+                                minLength: 10
                             }}
                             enableSearch={true}
                             searchPlaceholder="Search country"
                             placeholder="your phone number"
                             countryCodeEditable={false}
+                            isValid={(value, country) => {
+                                if (value.length <= country.dialCode.length) {
+                                    return false;
+                                }
+                                return true;
+                            }}
                             containerStyle={{
                                 width: '100%'
                             }}
