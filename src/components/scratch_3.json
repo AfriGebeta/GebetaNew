@@ -1,0 +1,520 @@
+{
+  "Tile": {
+    "billableEventLabel": "Map Loads",
+    "freeQuota": 50000,
+    "info": "",
+    "initialValue": 50000,
+    "maxValue": 10000000,
+    "minValue": 0,
+    "tieredPricing": [
+      {
+        "unitCost": 5,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 3.6,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost": 2.2,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 1.1,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 0.53,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost": 0.53,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 0.23,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 0.23,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 0.53,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 0.53,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "Tile"
+  },
+
+  "Matrix": {
+    "billableEventLabel": "Elements",
+    "freeQuota": 0,
+    "info": "",
+    "initialValue": 0,
+    "maxValue": 10000000,
+    "minValue": 0,
+
+
+    "tieredPricing": [
+      {
+        "unitCost": 3.6,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 2.2,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost": 1.65,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 0.825,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 0.38,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 0.38,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 0.38,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "Matrix"
+  },
+
+  "ONM": {
+    "billableEventLabel": "Elements",
+    "freeQuota": 0,
+    "info": "",
+    "initialValue": 0,
+    "maxValue": 10000000,
+    "minValue": 0,
+
+
+    "tieredPricing": [
+      {
+        "unitCost": 3.6,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 2.2,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost": 1.65,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 0.825,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 0.38,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 0.38,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 0.38,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "ONM"
+  },
+
+  "Direction": {
+   "billableEventLabel": "Requests",
+    "freeQuota": 0,
+    "info": "",
+    "initialValue": 0,
+    "maxValue": 10000000,
+    "minValue": 0,
+
+
+
+    "tieredPricing": [
+      {
+        "unitCost": 3.6,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 2.2,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost": 1.65,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 0.825,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost":0.209,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 0.209,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "Direction"
+  },
+
+
+  "RouteOptimization": {
+   "billableEventLabel": "Elements",
+    "freeQuota": 0,
+    "info": "",
+    "initialValue": 0,
+    "maxValue": 10000000,
+    "minValue": 0,
+
+    "tieredPricing": [
+      {
+        "unitCost": 6,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 2.2,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost": 1.1,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 0.44,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 0.385,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost": 0.385,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 0.385,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 0.385,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 0.385,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 0.385,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "Route Optimization"
+  },
+
+  "FleetRouting": {
+   "billableEventLabel": "Elements",
+    "freeQuota": 0,
+    "info": "",
+    "initialValue": 0,
+    "maxValue": 10000000,
+    "minValue": 0,
+    "tieredPricing": [
+      {
+        "unitCost": 17,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 7.7,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost": 3.3,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 1.32,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 1.155,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost": 1.155,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 1.155,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 1.155,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 1.155,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 1.155,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "Fleet Routing"
+  },
+
+  "Autocomplete": {
+    "billableEventLabel": "Requests",
+    "freeQuota": 0,
+    "info": "",
+    "initialValue": 0,
+    "maxValue": 10000000,
+    "minValue": 0,
+    "tieredPricing": [
+      {
+        "unitCost": 2,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 2.48,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost":  1.86,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 0.93,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 0.23561,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "Autocomplete"
+  },
+
+  "Reverse Geocoding": {
+    "billableEventLabel": "Requests",
+    "freeQuota": 0,
+    "info": "",
+    "initialValue": 0,
+    "maxValue": 10000000,
+    "minValue": 0,
+
+
+
+    "tieredPricing": [
+      {
+        "unitCost": 3.6,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 2.48,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost": 1.86,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 0.93,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 0.2356,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "Reverse Geocoding"
+  }
+
+
+
+}
