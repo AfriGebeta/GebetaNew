@@ -8,11 +8,13 @@ export default function Partners() {
                 <p className="text-[12px] text-[#979BAA] tracking-20 leading-15 font-bold uppercase text-center">Clients and Partners</p>
                 <div className="w-full flex gap-[32px] md:justify-between flex-wrap items-center mt-[40px]">
                     <div className="fade-x h-[160px] w-full overflow-hidden opacity-100 dark:opacity-1 dark:grayscale">
-                        <div className="animate-scroll-x h-full w-full bg-[length:200%_auto]"
+                        <div
+                            className="animate-scroll-x h-full w-full bg-[length:auto_80px] md:bg-[length:auto_140px]"
                             style={{
                                 backgroundRepeat: "repeat-x",
-                                backgroundImage: "url(/assets/partner.png)"
-                            }}></div>
+                                backgroundImage: "url(/assets/partner.png)",
+                            }}
+                        ></div>
                     </div>
                 </div>
             </div>
