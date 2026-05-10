@@ -202,7 +202,7 @@ export const buyCredit = async (apiToken, id) => {
 export const getAllCredits = async ({page, limit}) => {
     try {
         const data = await apiClient.get(
-            `/credit-bundle/getAll?page=${page}&limit=${limit}`,
+            `/credit-bundle/?page=${page}&limit=${limit}`,
         );
         return data.data.data;
     } catch (error) {
