@@ -53,6 +53,7 @@ const DURATIONS = ["Daily", "Weekly", "Monthly"];
 
 const QUOTA_CALL_TYPES = [
     { value: "GEOCODING", label: "Geocoding" },
+    { value: "REVERSEGEOCODING", label: "Reverse Geocoding" },
     { value: "DIRECTION", label: "Direction" },
     { value: "ONM", label: "ONM" },
     { value: "MATRIX", label: "Matrix" },
