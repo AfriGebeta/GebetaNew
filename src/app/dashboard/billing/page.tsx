@@ -5,14 +5,17 @@ import {getAllBilling, getUser, verifyPayment} from "@/service/apis";
 import Image from "next/image";
 import {useQuery} from "@tanstack/react-query";
 import {queryClient} from "@/providers/QueryProvider";
-import toast from "react-hot-toast";
 import {Button} from "@/components/ui/button";
+import {useToast} from "@/hooks/use-toast";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
 import {AuthContext} from "@/providers/AuthProvider";
 import Spinner from "@/components/Spinner";
 
 export default function BillingHistory() {
     const {currentUser, setCurrentUser} = useContext(AuthContext)
+    const {toast} = useToast()
 
     function formatDate(inputDate) {
         const date = new Date(inputDate);
@@ -21,6 +24,10 @@ export default function BillingHistory() {
 
     const [currentPage, setCurrentPage] = useState(1);
     const limit = 4;
+
+
+    const [capAmountInput, setCapAmountInput] = useState("");
+    const [isSettingCap, setIsSettingCap] = useState(false);
 
     const { data, isLoading } = useQuery({
         queryKey: ["history", currentUser.token, currentPage],
@@ -36,14 +43,56 @@ export default function BillingHistory() {
             queryClient.invalidateQueries("history");
             const response = await getUser(currentUser.token)
             setCurrentUser(response.data)
-            toast.success("Successfully Verified");
+            toast({description: "Successfully Verified"});
         } else {
-            toast.error("Payment not verified");
+            toast({description: "Payment not verified", variant: "destructive"});
         }
+    };
+
+    const handleSetCap = async () => {
+        if (!capAmountInput || Number(capAmountInput) <= 0) {
+            toast({description: "Please enter a valid cap amount", variant: "destructive"});
+            return;
+        }
+        setIsSettingCap(true);
+        // todo: backend not ready
+        setCapAmountInput("");
+        toast({description: "Spending cap set successfully"});
+        setIsSettingCap(false);
     };
 
     return (
         <div className="p-4 rounded-lg min-h-[60vh]">
+
+            {/*for spending cap*/}
+            <h2 className="text-xl text-white font-semibold mb-4 ">Spending Cap</h2>
+            <div className="border border-dashed rounded-lg p-6 mb-8 max-w-md">
+                <p className="text-sm text-[#aaa] mb-4">
+                    Set a maximum spending limit to avoid unexpected charges.
+                </p>
+                <div className="space-y-3">
+                    <div className="space-y-1">
+                        <Label htmlFor="cap-amount">Cap Amount (ETB)</Label>
+                        <Input
+                            id="cap-amount"
+                            type="number"
+                            min="1"
+                            placeholder="e.g. 500"
+                            value={capAmountInput}
+                            onChange={(e) => setCapAmountInput(e.target.value)}
+                            className="max-w-xs"
+                        />
+                    </div>
+                    <Button
+                        className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
+                        onClick={handleSetCap}
+                        disabled={isSettingCap}
+                    >
+                        {isSettingCap ? "Setting..." : "Set Cap"}
+                    </Button>
+                </div>
+            </div>
+
             <h2 className="text-xl text-white font-semibold mb-4 mt-[40px]">Billing History</h2>
             {isLoading ? (
                 <Spinner />
