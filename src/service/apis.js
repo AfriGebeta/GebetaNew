@@ -1,4 +1,4 @@
-import {apiClient} from "@/service/apiClient";
+import { apiClient } from "@/service/apiClient";
 
 
 export const getUser = async (apiToken) => {
@@ -334,14 +334,47 @@ export const deleteUsageQuota = async (apiToken, id) => {
     }
 };
 
-// billing Cap---placeholder for now
-export const createBillingCap = async (apiToken, { userId, capAmount }) => {
+// billing Cap
+export const getBillingCaps = async (apiToken, page = 1, limit = 20) => {
     try {
-        const { data } = await apiClient.post('/billing/cap', { userId, capAmount }, {
+        const { data } = await apiClient.get(`/billing/cap?limit=${limit}&page=${page}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message || 'Failed to fetch billing caps' };
+    }
+};
+
+export const createBillingCap = async (apiToken, capAmount) => {
+    try {
+        const { data } = await apiClient.post('/billing/cap', { cap_amount: capAmount }, {
             headers: { Authorization: `Bearer ${apiToken}` },
         });
         return { success: true, data: data.data };
     } catch (error) {
         return { success: false, message: error.response?.data?.message || 'Failed to set billing cap' };
+    }
+};
+
+export const updateBillingCap = async (apiToken, { id, max_calls }) => {
+    try {
+        const { data } = await apiClient.patch('/billing/cap', { id, max_calls }, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message || 'Failed to update billing cap' };
+    }
+};
+
+export const deleteBillingCap = async (apiToken, id) => {
+    try {
+        await apiClient.delete(`/billing/cap?id=${id}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message || 'Failed to delete billing cap' };
     }
 };
