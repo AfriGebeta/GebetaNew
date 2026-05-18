@@ -227,3 +227,121 @@ export const claimFreemium = async (apiToken) => {
         return error?.response?.data?.error?.additional.claim?.[0];
     }
 }
+
+//dns lock
+export const getDomainLocks = async (apiToken, page = 0, limit = 10) => {
+    if (!apiToken) return [];
+    try {
+        const { data } = await apiClient.get(`/domain/?page=${page}&limit=${limit}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        const payload = data?.data ?? data;
+        const list = payload?.Domains ?? payload?.domains;
+        return Array.isArray(list) ? list : [];
+    } catch (error) {
+        return [];
+    }
+};
+
+export const createDomainLock = async (apiToken, { userId, domain }) => {
+    try {
+        const { data } = await apiClient.post('/domain', { userId, domain, apiKey: null }, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to add domain lock';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to add domain lock' };
+    }
+};
+
+export const deleteDomainLock = async (apiToken, id) => {
+    try {
+        await apiClient.delete(`/domain?id=${id}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true };
+    } catch (error) {
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || 'Failed to delete domain lock';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to delete domain lock' };
+    }
+};
+
+export const updateDomainLock = async (apiToken, { id, domain }) => {
+    try {
+        const { data } = await apiClient.patch('/domain', { id, domain }, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message || 'Failed to update domain lock' };
+    }
+};
+
+//api usage quota
+export const getUsageQuotas = async (apiToken, page = 1, limit = 20) => {
+    try {
+        const { data } = await apiClient.get(`/apicap/quota?limit=${limit}&page=${page}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return data.data?.quotas || [];
+    } catch (error) {
+        return [];
+    }
+};
+
+export const createUsageQuota = async (apiToken, { call_type, max_calls, duration, next_reset_at }) => {
+    try {
+        const body = { max_calls, duration };
+        if (call_type) body.call_type = call_type;
+        if (next_reset_at) body.next_reset_at = next_reset_at;
+        const { data } = await apiClient.post('/apicap/quota', body, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to create quota';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to create quota' };
+    }
+};
+
+export const updateUsageQuota = async (apiToken, { id, max_calls }) => {
+    try {
+        const { data } = await apiClient.patch('/apicap/quota', { id, max_calls }, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to update quota';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to update quota' };
+    }
+};
+
+export const deleteUsageQuota = async (apiToken, id) => {
+    try {
+        await apiClient.delete(`/apicap/quota?id=${id}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true };
+    } catch (error) {
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to delete quota';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to delete quota' };
+    }
+};
+
+// billing Cap---placeholder for now
+export const createBillingCap = async (apiToken, { userId, capAmount }) => {
+    try {
+        const { data } = await apiClient.post('/billing/cap', { userId, capAmount }, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message || 'Failed to set billing cap' };
+    }
+};
