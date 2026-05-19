@@ -38,28 +38,66 @@ interface ApiResponse {
 const API_URL = "https://valhalla.gebeta.app/uptime/api/uptime";
 
 function statusColor(status: string, uptime: number) {
-    if (status === "Major Outage" || uptime < 90) return "bg-[hsl(0,75%,55%)]";
-    if (status === "Minor Incident" || uptime < 99) return "bg-[hsl(35,95%,55%)]";
-    if (uptime < 99.7) return "bg-[hsl(48,95%,55%)]";
+    if (status ===  "Scheduled Maintenance")
+        return "bg-[hsl(210,95%,55%)]"; // blue
+
+    if (status === "Major Outage" || uptime < 90)
+        return "bg-[hsl(0,75%,55%)]";
+
+    if (status === "Minor Incident" || uptime < 99)
+        return "bg-[hsl(35,95%,55%)]";
+
+    if (uptime < 99.7)
+        return "bg-[hsl(48,95%,55%)]";
+
     return "bg-[hsl(140,60%,45%)]";
 }
 
 function overallStatusForService(days: ServiceDay[]) {
     const latest = days[days.length - 1];
-    if (!latest) return { label: "Unknown", color: "text-gray-500" };
+
+    if (!latest)
+        return {
+            label: "Unknown",
+            color: "text-gray-500",
+        };
+
+    if (latest.status === "Server Upgrade")
+        return {
+            label: "Server Upgrade",
+            color: "text-[hsl(210,95%,45%)]",
+        };
+
     if (latest.status === "Major Outage")
-        return { label: "Major Outage", color: "text-[hsl(0,75%,50%)]" };
+        return {
+            label: "Major Outage",
+            color: "text-[hsl(0,75%,50%)]",
+        };
+
     if (latest.status === "Minor Incident")
-        return { label: "Minor Incident", color: "text-[hsl(35,95%,45%)]" };
-    return { label: "Operational", color: "text-[hsl(140,60%,38%)]" };
+        return {
+            label: "Minor Incident",
+            color: "text-[hsl(35,95%,45%)]",
+        };
+
+    return {
+        label: "Operational",
+        color: "text-[hsl(140,60%,38%)]",
+    };
 }
 
-function LegendDot({ className, label }: { className: string; label: string }) {
+function LegendDot({
+                       className,
+                       label,
+                   }: {
+    className: string;
+    label: string;
+}) {
     return (
         <span className="flex items-center gap-2">
-      <span className={`h-3 w-3 rounded-sm ${className}`} />
+            <span className={`h-3 w-3 rounded-sm ${className}`} />
             {label}
-    </span>
+        </span>
     );
 }
 
@@ -80,21 +118,32 @@ export default function UptimeStatus() {
             .finally(() => setLoading(false));
     }, []);
 
-    // Close on ESC
+    // Close modal on ESC
     useEffect(() => {
         if (!selected) return;
+
         const onKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") setSelected(null);
+            if (e.key === "Escape") {
+                setSelected(null);
+            }
         };
+
         window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
+
+        return () => {
+            window.removeEventListener("keydown", onKey);
+        };
     }, [selected]);
 
     const byService: Record<string, ServiceDay[]> = {};
+
     if (data) {
         for (const day of data.data) {
             for (const s of day.services) {
-                if (!byService[s.service]) byService[s.service] = [];
+                if (!byService[s.service]) {
+                    byService[s.service] = [];
+                }
+
                 byService[s.service].push({
                     date: day.date,
                     downtime_hours: s.downtime_hours,
@@ -109,30 +158,43 @@ export default function UptimeStatus() {
     }
 
     const serviceNames = Object.keys(byService);
+
     const allOperational = serviceNames.every((n) => {
         const latest = byService[n][byService[n].length - 1];
-        return latest && latest.status === "Operational";
+
+        return (
+            latest &&
+            (latest.status === "Operational" ||
+                latest.status === "Server Upgrade")
+        );
     });
 
     const avgUptime = serviceNames.length
         ? (
             serviceNames.reduce((acc, n) => {
                 const days = byService[n];
-                const a = days.reduce((s, d) => s + d.uptime, 0) / days.length;
-                return acc + a;
+
+                const avg =
+                    days.reduce((sum, d) => sum + d.uptime, 0) /
+                    days.length;
+
+                return acc + avg;
             }, 0) / serviceNames.length
         ).toFixed(2)
         : "0";
 
     const incidentsByService: Record<string, ServiceDay[]> = {};
+
     for (const name of serviceNames) {
         const incs = byService[name].filter(
             (d) =>
-                d.status !== "Operational" ||
-                (d.reason && d.reason !== "Normal Operation") ||
-                d.incident,
+                d.status !== "Operational" &&
+                d.status !== "Server Upgrade",
         );
-        if (incs.length) incidentsByService[name] = incs;
+
+        if (incs.length) {
+            incidentsByService[name] = incs;
+        }
     }
 
     return (
@@ -143,10 +205,12 @@ export default function UptimeStatus() {
                         <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[hsl(32,100%,52%)] font-bold text-white">
                             G
                         </div>
+
                         <span className="text-xl font-semibold text-[#2b2b2b]">
-              GebetaMaps Status
-            </span>
+                            GebetaMaps Status
+                        </span>
                     </div>
+
                     <a
                         href="https://gebeta.app"
                         className="rounded-md bg-[#1a1a1a] px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white hover:bg-black"
@@ -177,6 +241,7 @@ export default function UptimeStatus() {
                                     ? "All Systems Operational"
                                     : "Some Systems Affected"}
                     </h1>
+
                     {!loading && !error && (
                         <p className="mt-1 text-sm opacity-90">
                             Average uptime across all services: {avgUptime}%
@@ -187,6 +252,7 @@ export default function UptimeStatus() {
                 <section className="mt-10">
                     <div className="mb-4 flex items-end justify-between">
                         <div />
+
                         <p className="text-sm text-[#7a6f5e]">
                             Uptime over the past {data?.data.length ?? 0} days.
                         </p>
@@ -194,57 +260,77 @@ export default function UptimeStatus() {
 
                     <div className="overflow-hidden rounded-xl border border-[#f1e4cf] bg-white">
                         {error && (
-                            <div className="p-6 text-sm text-red-600">Error: {error}</div>
+                            <div className="p-6 text-sm text-red-600">
+                                Error: {error}
+                            </div>
                         )}
 
                         {!error &&
                             serviceNames.map((name, idx) => {
-
                                 const days = byService[name];
-                                const overall = overallStatusForService(days);
+
+                                const overall =
+                                    overallStatusForService(days);
+
                                 const avg = (
-                                    days.reduce((s, d) => s + d.uptime, 0) / days.length
+                                    days.reduce(
+                                        (sum, d) => sum + d.uptime,
+                                        0,
+                                    ) / days.length
                                 ).toFixed(2);
-                                const incidents = incidentsByService[name] ?? [];
+
                                 return (
                                     <div
                                         key={name}
                                         className={`px-6 py-5 ${
-                                            idx !== 0 ? "border-t border-[#f5ecdb]" : ""
+                                            idx !== 0
+                                                ? "border-t border-[#f5ecdb]"
+                                                : ""
                                         }`}
                                     >
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-base font-semibold text-[#2b2b2b]">
-                                                {name == "OSM" ? "ONM" : name}
+                                                {name === "OSM"
+                                                    ? "ONM"
+                                                    : name}
                                             </h3>
-                                            <span className={`text-sm font-semibold ${overall.color}`}>
-                        {overall.label}
-                      </span>
+
+                                            <span
+                                                className={`text-sm font-semibold ${overall.color}`}
+                                            >
+                                                {overall.label}
+                                            </span>
                                         </div>
 
                                         <div className="mt-3 flex h-10 items-stretch gap-[2px]">
                                             {days.map((d) => {
                                                 const isIncident =
-                                                    d.status !== "Operational" ||
-                                                    (d.reason && d.reason !== "Normal Operation");
+                                                    d.status !==
+                                                    "Operational" &&
+                                                    d.status !==
+                                                    "Server Upgrade";
+
                                                 return (
                                                     <button
                                                         type="button"
                                                         key={d.date}
-                                                        onClick={() => isIncident && setSelected(d)}
+                                                        onClick={() =>
+                                                            isIncident &&
+                                                            setSelected(d)
+                                                        }
                                                         title={`${d.date} — ${d.uptime}% uptime${
                                                             d.downtime_hours
                                                                 ? ` · ${d.downtime_hours}h downtime`
                                                                 : ""
-                                                        } · ${d.status}${
-                                                            d.reason && d.reason !== "Normal Operation"
-                                                                ? ` · ${d.reason}`
-                                                                : ""
-                                                        }`}
+                                                        } · ${d.status}`}
                                                         className={`flex-1 rounded-sm transition-transform hover:scale-y-110 ${statusColor(
                                                             d.status,
                                                             d.uptime,
-                                                        )} ${isIncident ? "cursor-pointer" : "cursor-default"}`}
+                                                        )} ${
+                                                            isIncident
+                                                                ? "cursor-pointer"
+                                                                : "cursor-default"
+                                                        }`}
                                                         aria-label={`${name} on ${d.date}`}
                                                     />
                                                 );
@@ -253,45 +339,13 @@ export default function UptimeStatus() {
 
                                         <div className="mt-2 flex items-center justify-between text-xs text-[#9a8f7e]">
                                             <span>{days[0]?.date}</span>
+
                                             <span className="font-medium text-[#7a6f5e]">
-                        {avg}% uptime
-                      </span>
+                                                {avg}% uptime
+                                            </span>
+
                                             <span>Today</span>
                                         </div>
-
-                                        {incidents.length > 0 && (
-                                            ""
-                              //               <ul className="mt-3 space-y-1.5">
-                              //                   {incidents.map((d) => (
-                              //                       <li key={d.date}>
-                              //                           <button
-                              //                               type="button"
-                              //                               onClick={() => setSelected(d)}
-                              //                               className="flex w-full items-start gap-2 rounded-md border border-[#f5ecdb] bg-[#fff7e8] px-3 py-2 text-left text-xs text-[#7a6f5e] transition-colors hover:bg-[#ffeecc]"
-                              //                           >
-                              // <span
-                              //     className={`mt-1 h-2 w-2 shrink-0 rounded-full ${statusColor(
-                              //         d.status,
-                              //         d.uptime,
-                              //     )}`}
-                              // />
-                              //                               <span className="flex-1">
-                              //   <span className="font-semibold text-[#2b2b2b]">
-                              //     {d.date}
-                              //   </span>{" "}
-                              //                                   — {d.reason || d.status}
-                              //                                   {d.downtime_hours
-                              //                                       ? ` (${d.downtime_hours}h downtime)`
-                              //                                       : ""}
-                              // </span>
-                              //                               <span className="text-[#b58a3a] underline">
-                              //   View details
-                              // </span>
-                              //                           </button>
-                              //                       </li>
-                              //                   ))}
-                              //               </ul>
-                                        )}
                                     </div>
                                 );
                             })}
@@ -302,10 +356,13 @@ export default function UptimeStatus() {
                                 <div
                                     key={i}
                                     className={`px-6 py-5 ${
-                                        i !== 0 ? "border-t border-[#f5ecdb]" : ""
+                                        i !== 0
+                                            ? "border-t border-[#f5ecdb]"
+                                            : ""
                                     }`}
                                 >
                                     <div className="h-4 w-32 animate-pulse rounded bg-[#f1e4cf]" />
+
                                     <div className="mt-3 h-10 animate-pulse rounded bg-[#faf0dc]" />
                                 </div>
                             ))}
@@ -313,10 +370,30 @@ export default function UptimeStatus() {
                 </section>
 
                 <div className="mt-6 flex flex-wrap gap-4 text-xs text-[#7a6f5e]">
-                    <LegendDot className="bg-[hsl(140,60%,45%)]" label="Operational" />
-                    <LegendDot className="bg-[hsl(48,95%,55%)]" label="Degraded" />
-                    <LegendDot className="bg-[hsl(35,95%,55%)]" label="Minor Incident" />
-                    <LegendDot className="bg-[hsl(0,75%,55%)]" label="Major Outage" />
+                    <LegendDot
+                        className="bg-[hsl(140,60%,45%)]"
+                        label="Operational"
+                    />
+
+                    <LegendDot
+                        className="bg-[hsl(210,95%,55%)]"
+                        label="Server Upgrade"
+                    />
+
+                    <LegendDot
+                        className="bg-[hsl(48,95%,55%)]"
+                        label="Degraded"
+                    />
+
+                    <LegendDot
+                        className="bg-[hsl(35,95%,55%)]"
+                        label="Minor Incident"
+                    />
+
+                    <LegendDot
+                        className="bg-[hsl(0,75%,55%)]"
+                        label="Major Outage"
+                    />
                 </div>
 
                 <footer className="mt-12 border-t border-[#f1e4cf] pt-6 text-center text-xs text-[#9a8f7e]">
@@ -324,7 +401,7 @@ export default function UptimeStatus() {
                 </footer>
             </main>
 
-            {/* Plain Tailwind dialog */}
+            {/* Modal */}
             {selected && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -333,6 +410,7 @@ export default function UptimeStatus() {
                     onClick={() => setSelected(null)}
                 >
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
                     <div
                         className="relative z-10 w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
@@ -347,9 +425,11 @@ export default function UptimeStatus() {
                         </button>
 
                         <h2 className="pr-8 text-lg font-bold text-[#2b2b2b]">
-                            {selected.incident?.summary ?? selected.status} —{" "}
-                            {selected.service}
+                            {selected.incident?.summary ??
+                                selected.status}{" "}
+                            — {selected.service}
                         </h2>
+
                         <p className="mt-1 text-sm text-[#7a6f5e]">
                             {selected.incident?.related ??
                                 selected.reason ??
@@ -361,23 +441,29 @@ export default function UptimeStatus() {
                                 <dt className="text-xs uppercase tracking-wide text-[#9a8f7e]">
                                     Date
                                 </dt>
+
                                 <dd className="font-medium text-[#2b2b2b]">
-                                    {selected.incident?.date ?? selected.date}
+                                    {selected.incident?.date ??
+                                        selected.date}
                                 </dd>
                             </div>
+
                             <div>
                                 <dt className="text-xs uppercase tracking-wide text-[#9a8f7e]">
                                     Duration
                                 </dt>
+
                                 <dd className="font-medium text-[#2b2b2b]">
                                     {selected.incident?.duration ??
                                         `${selected.downtime_hours} hrs`}
                                 </dd>
                             </div>
+
                             <div>
                                 <dt className="text-xs uppercase tracking-wide text-[#9a8f7e]">
                                     Uptime
                                 </dt>
+
                                 <dd className="font-medium text-[#2b2b2b]">
                                     {selected.uptime}%
                                 </dd>
@@ -386,7 +472,9 @@ export default function UptimeStatus() {
 
                         {selected.reason && (
                             <div className="mt-4 rounded-md bg-[#fff7e8] px-3 py-2 text-sm text-[#7a6f5e]">
-                                <span className="font-semibold text-[#2b2b2b]">Reason: </span>
+                                <span className="font-semibold text-[#2b2b2b]">
+                                    Reason:
+                                </span>{" "}
                                 {selected.reason}
                             </div>
                         )}
