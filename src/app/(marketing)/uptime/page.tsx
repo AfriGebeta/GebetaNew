@@ -199,6 +199,7 @@ export default function UptimeStatus() {
 
                         {!error &&
                             serviceNames.map((name, idx) => {
+
                                 const days = byService[name];
                                 const overall = overallStatusForService(days);
                                 const avg = (
@@ -214,7 +215,7 @@ export default function UptimeStatus() {
                                     >
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-base font-semibold text-[#2b2b2b]">
-                                                {name}
+                                                {name == "OSM" ? "ONM" : name}
                                             </h3>
                                             <span className={`text-sm font-semibold ${overall.color}`}>
                         {overall.label}
@@ -319,7 +320,7 @@ export default function UptimeStatus() {
                 </div>
 
                 <footer className="mt-12 border-t border-[#f1e4cf] pt-6 text-center text-xs text-[#9a8f7e]">
-                    Data from valhalla.gebeta.app/uptime/api/uptime
+                    Data from Gebeta Maps
                 </footer>
             </main>
 
