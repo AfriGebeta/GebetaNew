@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import { useContext } from "react"
-import { BookOpen, CreditCard, LockKeyhole, ReceiptIcon, Settings2, SquareTerminal, Building } from "lucide-react"
+import { BookOpen, CreditCard, LockKeyhole, ReceiptIcon, Settings2, SquareTerminal, Building, ShieldCheck } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -35,6 +35,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 title: "API keys",
                 url: "/dashboard/api-token",
                 icon: LockKeyhole,
+            },
+            {
+                title: "Service Accounts",
+                url: "/dashboard/service-account",
+                icon: ShieldCheck,
             },
             {
                 title: "My Subscription",

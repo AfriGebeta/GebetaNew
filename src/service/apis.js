@@ -378,3 +378,46 @@ export const deleteBillingCap = async (apiToken, id) => {
         return { success: false, message: error.response?.data?.message || 'Failed to delete billing cap' };
     }
 };
+
+export const getServiceAccounts = async (apiToken, userId) => {
+    try {
+        const { data } = await apiClient.get(`/v1/service-accounts/org/${userId}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return data.data || [];
+    } catch (error) {
+        console.error('Failed to fetch service accounts:', error);
+        return [];
+    }
+};
+
+export const createServiceAccount = async ({ apiToken, description, scopes }) => {
+    try {
+        const { data } = await apiClient.post('/v1/service-accounts', {
+            platform: "WEB",
+            isAdmin: false,
+            description: description || "",
+            scopes: scopes
+        }, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to create service account';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to create service account' };
+    }
+};
+
+export const deleteServiceAccount = async (apiToken, id) => {
+    try {
+        await apiClient.delete(`/v1/service-accounts/${id}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true };
+    } catch (error) {
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || 'Failed to delete service account';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to delete service account' };
+    }
+};
