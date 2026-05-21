@@ -329,6 +329,12 @@ export default function ServiceAccount() {
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-xs text-[#aaa]">
+                                            Platform: {account.platform}
+                                        </p>
+                                        <p className="text-xs text-[#aaa]">
+                                            Admin: {account.isAdmin ? "Yes" : "No"}
+                                        </p>
+                                        <p className="text-xs text-[#aaa]">
                                             User Token ID: {account.userTokenId}
                                         </p>
                                         <p className="text-xs text-[#aaa]">
