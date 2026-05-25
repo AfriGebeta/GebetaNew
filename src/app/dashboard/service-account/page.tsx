@@ -20,6 +20,7 @@ import { CopyIcon, EyeIcon, EyeOffIcon, KeyIcon, PlusIcon, ShieldCheckIcon, Tras
 import { AuthContext } from "@/providers/AuthProvider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 
 const AVAILABLE_SCOPES = [
     { value: "FEATURE_ALL", label: "Feature All" },
@@ -40,6 +41,7 @@ export default function ServiceAccount() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [description, setDescription] = useState("");
+    const [isAdmin, setIsAdmin] = useState(false);
     const [selectedScopes, setSelectedScopes] = useState(AVAILABLE_SCOPES.map(s => s.value));
     const [showClientToken, setShowClientToken] = useState({});
     const [showServerToken, setShowServerToken] = useState({});
@@ -100,13 +102,15 @@ export default function ServiceAccount() {
             const response = await createServiceAccount({
                 apiToken: currentUser?.token,
                 description: description || "",
-                scopes: selectedScopes
+                scopes: selectedScopes,
+                isAdmin: isAdmin
             });
 
             if (response.success) {
                 await fetchServiceAccounts();
                 setDialogOpen(false);
                 setDescription("");
+                setIsAdmin(false);
                 setSelectedScopes(AVAILABLE_SCOPES.map(s => s.value));
 
                 if (response.data?.token) {
@@ -200,6 +204,17 @@ export default function ServiceAccount() {
                                     placeholder="e.g., Production API access"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex items-center justify-between space-x-2 py-2">
+                                <div className="space-y-0.5">
+                                    <Label htmlFor="admin-mode">Admin Token</Label>
+                                    <p className="text-xs text-[#aaa]">Grant admin privileges to this service account</p>
+                                </div>
+                                <Switch
+                                    id="admin-mode"
+                                    checked={isAdmin}
+                                    onCheckedChange={setIsAdmin}
                                 />
                             </div>
                             <div className="space-y-2">

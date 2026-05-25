@@ -391,11 +391,11 @@ export const getServiceAccounts = async (apiToken, userId) => {
     }
 };
 
-export const createServiceAccount = async ({ apiToken, description, scopes }) => {
+export const createServiceAccount = async ({ apiToken, description, scopes, isAdmin }) => {
     try {
         const { data } = await apiClient.post('/v1/service-accounts', {
             platform: "WEB",
-            isAdmin: false,
+            isAdmin: isAdmin || false,
             description: description || "",
             scopes: scopes
         }, {
