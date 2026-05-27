@@ -17,13 +17,13 @@ export const getUser = async (apiToken) => {
     }
 };
 
-export const setToken = async ({apiToken, userId, scopes, identifierName }) => {
+export const setToken = async ({ apiToken, userId, scopes, identifierName }) => {
     try {
         const scopesString = Array.isArray(scopes)
             ? scopes.join(',')
             : scopes || "DIRECTION,GEOCODING,TILE,MATRIX,ONM,TSS";
 
-        const {data} = await apiClient.patch(
+        const { data } = await apiClient.patch(
             `/user/updatetoken`,
             {
                 userId,
@@ -68,7 +68,7 @@ export const revokeToken = async (apiToken, token) => {
             authToken: apiToken.substring(0, 20) + '...'
         });
 
-        const {data} = await apiClient.patch(
+        const { data } = await apiClient.patch(
             `/user/revoke-token?token=${token}`,
             {},
             {
@@ -101,7 +101,7 @@ export const revokeToken = async (apiToken, token) => {
 }
 
 export const getMatrix = async (apiToken) => {
-    const {data} = await apiClient.get(`/usage/matrix`, {
+    const { data } = await apiClient.get(`/usage/matrix`, {
         headers: {
             Authorization: `Bearer ${apiToken}`,
         },
@@ -115,7 +115,7 @@ export const getUserUsage = async (
     endDate,
     apiToken) => {
     try {
-        const {data} = await apiClient.get(`/usage/matrix?startDate=${startDate}&endDate=${endDate}`, {
+        const { data } = await apiClient.get(`/usage/matrix?startDate=${startDate}&endDate=${endDate}`, {
             headers: {
                 Authorization: `Bearer ${apiToken}`,
             }
@@ -143,7 +143,7 @@ export const getUserUsageForGraph = async (
                 },
             }
         );
-        return {error: null, data};
+        return { error: null, data };
     } catch (error) {
         return error;
     }
@@ -175,7 +175,7 @@ export const getAllBilling = async (apiToken, page, limit) => {
                 Authorization: `Bearer ${apiToken}`,
             },
         });
-        return {billing: response.data.data.places || [], count: response.data.data.count};
+        return { billing: response.data.data.places || [], count: response.data.data.count };
     } catch (error) {
         return error;
     }
@@ -193,13 +193,13 @@ export const buyCredit = async (apiToken, id) => {
                 "Content-Type": "application/json",
             },
         });
-        return {data: response.data};
+        return { data: response.data };
     } catch (error) {
         return error
     }
 };
 
-export const getAllCredits = async ({page, limit}) => {
+export const getAllCredits = async ({ page, limit }) => {
     try {
         const data = await apiClient.get(
             `/credit-bundle?page=${page}&limit=${limit}`,
@@ -419,5 +419,58 @@ export const deleteServiceAccount = async (apiToken, id) => {
         const res = error.response?.data;
         const message = res?.message || res?.error?.message || res?.msg || 'Failed to delete service account';
         return { success: false, message: typeof message === 'string' ? message : 'Failed to delete service account' };
+    }
+};
+
+// Access Blocks
+export const getAccessBlocks = async (apiToken) => {
+    try {
+        const { data } = await apiClient.get('/access-blocks', {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        console.log('Raw API response:', data);
+        console.log('Blocks array:', data.data?.blocks);
+        return data.data?.blocks || [];
+    } catch (error) {
+        console.error('Failed to fetch access blocks:', error);
+        return [];
+    }
+};
+
+export const createAccessBlock = async (apiToken, { type, value, reason }) => {
+    try {
+        const { data } = await apiClient.post('/access-blocks', {
+            type,
+            value,
+            reason
+        }, {
+            headers: {
+                Authorization: `Bearer ${apiToken}`,
+                'Content-Type': 'application/json'
+            },
+        });
+        return { success: true, data: data.data };
+    } catch (error) {
+        console.error('Create access block error:', error.response?.data);
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to create access block';
+        return {
+            success: false,
+            message: typeof message === 'string' ? message : JSON.stringify(message),
+            details: res
+        };
+    }
+};
+
+export const deleteAccessBlock = async (apiToken, id) => {
+    try {
+        await apiClient.delete(`/access-blocks/${id}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return { success: true };
+    } catch (error) {
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || 'Failed to delete access block';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to delete access block' };
     }
 };

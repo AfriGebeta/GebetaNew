@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import { useContext } from "react"
-import { BookOpen, CreditCard, LockKeyhole, ReceiptIcon, Settings2, SquareTerminal, Building, ShieldCheck } from "lucide-react"
+import { BookOpen, CreditCard, LockKeyhole, ReceiptIcon, Settings2, SquareTerminal, Building, ShieldCheck, ShieldBan } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -40,6 +40,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 title: "Service Accounts",
                 url: "/dashboard/service-account",
                 icon: ShieldCheck,
+            },
+            {
+                title: "Access Blocks",
+                url: "/dashboard/access-blocks",
+                icon: ShieldBan,
             },
             {
                 title: "My Subscription",

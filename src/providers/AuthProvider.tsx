@@ -37,7 +37,7 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     useEffect(() => {
-        if(isAuthenticated && UN_PROTECTED_ROUTES.includes(pathname)) {
+        if (isAuthenticated && UN_PROTECTED_ROUTES.includes(pathname)) {
             router.push('/dashboard');
         }
     }, [isAuthenticated]);
@@ -46,7 +46,7 @@ export const AuthProvider = ({children}) => {
     const login = (user) => {
         setIsAuthenticated(true);
         setCurrentUser(user); // Set the user data when logging in
-        if(typeof window !== 'undefined'){
+        if (typeof window !== 'undefined') {
             localStorage.setItem('isAuthenticated', JSON.stringify(true));
         }
     };
@@ -54,7 +54,7 @@ export const AuthProvider = ({children}) => {
     const logout = () => {
         setIsAuthenticated(false);
         setCurrentUser(null);
-        if(typeof window !== 'undefined'){
+        if(typeof window !== 'undefined') {
             localStorage.removeItem('isAuthenticated');
             localStorage.removeItem('currentUser');
         }
@@ -62,7 +62,7 @@ export const AuthProvider = ({children}) => {
     };
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, currentUser, setCurrentUser, login, logout}}>
+        <AuthContext.Provider value={{isAuthenticated, currentUser, setCurrentUser, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
