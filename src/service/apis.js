@@ -17,6 +17,31 @@ export const getUser = async (apiToken) => {
     }
 };
 
+export const updateUser = async (apiToken, { username, email, phone, allow_abuse_detection }) => {
+    try {
+        const { data } = await apiClient.patch(
+            `/user/`,
+            {
+                username,
+                email,
+                phone,
+                allow_abuse_detection
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        return { success: true, data: data.data, message: data.data };
+    } catch (error) {
+        console.error('Update user error:', error.message);
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.data || 'Failed to update user';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to update user' };
+    }
+};
 
 export const setToken = async ({ apiToken, userId, scopes, identifierName }) => {
     try {
