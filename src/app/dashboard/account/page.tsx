@@ -21,7 +21,7 @@ export default function Account() {
     const [username, setUsername] = useState(currentUser?.user?.username || '');
     const [email, setEmail] = useState(currentUser?.user?.email || '');
     const [phone, setPhone] = useState(currentUser?.user?.phone || '');
-    const [allowAbuseDetection, setAllowAbuseDetection] = useState(currentUser?.user?.allow_abuse_detection || false);
+    const [allowAbuseDetection, setAllowAbuseDetection] = useState(currentUser?.user?.allow_alert || false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -52,7 +52,7 @@ export default function Account() {
                         username,
                         email,
                         phone,
-                        allow_abuse_detection: allowAbuseDetection
+                        allow_alert: allowAbuseDetection
                     }
                 });
             } else {
