@@ -22,7 +22,7 @@ import {AuthContext} from "@/providers/AuthProvider";
 import ScopeSelectionModal from "@/components/ScopeSelectionModal";
 
 export default function APIToken() {
-    const {currentUser, setCurrentUser} = useContext(AuthContext)
+    const { currentUser, setCurrentUser } = useContext(AuthContext)
     const [tokenList, setTokenList] = useState(currentUser?.user?.token || []);
     const [newToken, setNewToken] = useState("");
     const [selectedToken, setSelectedToken] = useState(null);
@@ -35,7 +35,8 @@ export default function APIToken() {
     const [domainLockDialogOpen, setDomainLockDialogOpen] = useState(false);
     const [editDomainDialogOpen, setEditDomainDialogOpen] = useState(false);
     const [lockDomain, setLockDomain] = useState("");
-    const [editDomainForm, setEditDomainForm] = useState({ id: "", domain: "" });
+    const [lockApiKey, setLockApiKey] = useState("");
+    const [editDomainForm, setEditDomainForm] = useState({ id: "", domain: "", apiKey: "" });
     const [isAddingLock, setIsAddingLock] = useState(false);
     const [isUpdatingLock, setIsUpdatingLock] = useState(false);
     const [isDeletingLockId, setIsDeletingLockId] = useState(null);
@@ -75,7 +76,7 @@ export default function APIToken() {
 
     const copyToClipboard = (token) => {
         navigator.clipboard.writeText(token)
-            .then(() => toast({description: "Copied to clipboard"}))
+            .then(() => toast({ description: "Copied to clipboard"}))
             .catch(err => {
                 toast({
                     description: "Failed to copy to clipboard",
@@ -177,16 +178,18 @@ export default function APIToken() {
 
     const handleAddDomainLock = async () => {
         if (!lockDomain.trim()) {
-            toast({description: "Please enter a domain", variant: "destructive"});
+            toast({ description: "Please enter a domain", variant: "destructive"});
             return;
         }
         setIsAddingLock(true);
         const result = await createDomainLock(currentUser?.token, {
             userId: currentUser?.user?.id,
             domain: lockDomain.trim(),
+            apiKey: lockApiKey.trim() || null,
         });
         if (result.success) {
             setLockDomain("");
+            setLockApiKey("");
             setDomainLockDialogOpen(false);
             await fetchDomainLocks();
             toast({description: "Domain lock added successfully"});
@@ -209,7 +212,7 @@ export default function APIToken() {
     };
 
     const openEditDomain = (lock) => {
-        setEditDomainForm({ id: lock.id, domain: lock.domain });
+        setEditDomainForm({ id: lock.id, domain: lock.domain, apiKey: lock.apiKey || "" });
         setEditDomainDialogOpen(true);
     };
 
@@ -222,6 +225,7 @@ export default function APIToken() {
         const result = await updateDomainLock(currentUser?.token, {
             id: editDomainForm.id,
             domain: editDomainForm.domain.trim(),
+            apiKey: editDomainForm.apiKey.trim() || null,
         });
         if (result.success) {
             setEditDomainDialogOpen(false);
@@ -353,6 +357,15 @@ export default function APIToken() {
                                         onChange={(e) => setLockDomain(e.target.value)}
                                     />
                                 </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor="lock-apikey">API Key (Optional)</Label>
+                                    <Input
+                                        id="lock-apikey"
+                                        placeholder="Enter API key"
+                                        value={lockApiKey}
+                                        onChange={(e) => setLockApiKey(e.target.value)}
+                                    />
+                                </div>
                             </div>
                             <DialogFooter>
                                 <DialogClose asChild>
@@ -374,7 +387,7 @@ export default function APIToken() {
                     <DialogContent className="sm:max-w-md">
                         <DialogHeader>
                             <DialogTitle>Edit Domain Lock</DialogTitle>
-                            <DialogDescription>Update the domain for this lock.</DialogDescription>
+                            <DialogDescription>Update the domain and API key for this lock.</DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 py-2">
                             <div className="space-y-1">
@@ -384,6 +397,15 @@ export default function APIToken() {
                                     placeholder="e.g. https://example.com"
                                     value={editDomainForm.domain}
                                     onChange={(e) => setEditDomainForm(f => ({ ...f, domain: e.target.value }))}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="edit-apikey">API Key (Optional)</Label>
+                                <Input
+                                    id="edit-apikey"
+                                    placeholder="Enter API key"
+                                    value={editDomainForm.apiKey}
+                                    onChange={(e) => setEditDomainForm(f => ({ ...f, apiKey: e.target.value }))}
                                 />
                             </div>
                         </div>

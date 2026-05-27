@@ -17,6 +17,7 @@ export const getUser = async (apiToken) => {
     }
 };
 
+
 export const setToken = async ({ apiToken, userId, scopes, identifierName }) => {
     try {
         const scopesString = Array.isArray(scopes)
@@ -243,9 +244,9 @@ export const getDomainLocks = async (apiToken, page = 0, limit = 10) => {
     }
 };
 
-export const createDomainLock = async (apiToken, { userId, domain }) => {
+export const createDomainLock = async (apiToken, { userId, domain, apiKey }) => {
     try {
-        const { data } = await apiClient.post('/domain', { userId, domain, apiKey: null }, {
+        const { data } = await apiClient.post('/domain', { userId, domain, apiKey: apiKey || null }, {
             headers: { Authorization: `Bearer ${apiToken}` },
         });
         return { success: true, data: data.data };
@@ -269,9 +270,9 @@ export const deleteDomainLock = async (apiToken, id) => {
     }
 };
 
-export const updateDomainLock = async (apiToken, { id, domain }) => {
+export const updateDomainLock = async (apiToken, { id, domain, apiKey }) => {
     try {
-        const { data } = await apiClient.patch('/domain', { id, domain }, {
+        const { data } = await apiClient.patch('/domain', { id, domain, apiKey: apiKey || null }, {
             headers: { Authorization: `Bearer ${apiToken}` },
         });
         return { success: true, data: data.data };
