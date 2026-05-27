@@ -474,3 +474,39 @@ export const deleteAccessBlock = async (apiToken, id) => {
         return { success: false, message: typeof message === 'string' ? message : 'Failed to delete access block' };
     }
 };
+
+export const getRecentCalls = async (apiToken, { startDate, endDate, page = 1, pageSize = 20, type, ipAddress, deviceId }) => {
+    try {
+        const params = new URLSearchParams({
+            startDate,
+            endDate,
+            page: String(page),
+            limit: String(pageSize),
+        });
+
+        if (type) params.append('type', type);
+        if (ipAddress) params.append('ipAddress', ipAddress);
+        if (deviceId) params.append('deviceId', deviceId);
+
+        const { data } = await apiClient.get(`/usage/recent-calls?${params.toString()}`, {
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        return {
+            success: true,
+            data: data.data || [],
+            page: data.page || page,
+            limit: data.limit || pageSize,
+            totalCount: data.total_count || 0
+        };
+    } catch (error) {
+        console.error('Failed to fetch recent calls:', error);
+        return {
+            success: false,
+            data: [],
+            page: 1,
+            limit: pageSize,
+            totalCount: 0,
+            message: error.response?.data?.message || 'Failed to fetch recent calls'
+        };
+    }
+};
