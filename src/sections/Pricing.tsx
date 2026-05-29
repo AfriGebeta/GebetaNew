@@ -153,7 +153,7 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
             displayPrice = price;
         }
 
-        const isEthiopia = location.country === 'ET';
+        const isEthiopia = location.country === 'ET' || !location.country;
 
         if (isEthiopia) {
             const etbPrice = Math.ceil(displayPrice * exchangeRate);
