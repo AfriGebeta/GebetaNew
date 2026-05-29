@@ -150,14 +150,16 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
         if (isNaN(price)) {
             displayPrice = 0;
         } else {
-            displayPrice = price
+            displayPrice = price;
         }
+
         const isEthiopia = location.country === 'ET';
+
         if (isEthiopia) {
             const etbPrice = Math.ceil(displayPrice * exchangeRate);
-            return `${displayPrice} Birr`;
+            return `${etbPrice} Birr`;
         } else {
-            return `$${displayPrice} USD`;
+            return `$${Math.round(displayPrice)} USD`;
         }
     };
 
