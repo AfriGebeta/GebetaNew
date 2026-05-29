@@ -154,10 +154,10 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
         }
         const isEthiopia = location.country === 'ET';
         if (isEthiopia) {
+            const etbPrice = Math.ceil(displayPrice * exchangeRate);
             return `${displayPrice} Birr`;
         } else {
-            const usdPrice = Math.ceil(displayPrice / exchangeRate);
-            return `$${usdPrice} USD`;
+            return `$${displayPrice} USD`;
         }
     };
 
