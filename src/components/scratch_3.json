@@ -513,8 +513,70 @@
     ],
     "step": 25000,
     "title": "Reverse Geocoding"
+  },
+
+
+  "Matching": {
+    "billableEventLabel": "Requests",
+    "freeQuota": 0,
+    "info": "",
+    "initialValue": 0,
+    "maxValue": 10000000,
+    "minValue": 0,
+    "tieredPricing": [
+      {
+        "unitCost": 5.4,
+        "tierLowerBound": 0,
+        "tierUpperBound": 100000
+      },
+      {
+        "unitCost": 3.3,
+        "tierLowerBound": 100001,
+        "tierUpperBound": 500000
+      },
+      {
+        "unitCost": 2.475,
+        "tierLowerBound": 500001,
+        "tierUpperBound": 1000000
+      },
+      {
+        "unitCost": 1.2375,
+        "tierLowerBound": 1000001,
+        "tierUpperBound": 5000000
+      },
+      {
+        "unitCost": 0.3135,
+        "tierLowerBound": 5000001,
+        "tierUpperBound": 10000000
+      },
+      {
+        "unitCost": 0.3135,
+        "tierLowerBound": 10000001,
+        "tierUpperBound": 20000000
+      },
+      {
+        "unitCost": 0.3135,
+        "tierLowerBound": 20000001,
+        "tierUpperBound": 50000000
+      },
+      {
+        "unitCost": 0.3135,
+        "tierLowerBound": 50000001,
+        "tierUpperBound": 100000000
+      },
+      {
+        "unitCost": 0.3135,
+        "tierLowerBound": 100000001,
+        "tierUpperBound": 200000000
+      },
+      {
+        "unitCost": 0.3135,
+        "tierLowerBound": 200000001,
+        "tierUpperBound": 1000000000000000
+      }
+    ],
+    "step": 25000,
+    "title": "Map Matching"
   }
-
-
 
 }

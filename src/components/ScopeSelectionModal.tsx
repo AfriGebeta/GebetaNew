@@ -18,20 +18,10 @@ interface ScopeSelectionModalProps {
     onToggleScope: (scope: string) => void;
     onCreateToken: (identifierName: string) => void;
     isCreating: boolean;
+    availableScopes: string[];
+    scopesLoading?: boolean;
     trigger?: React.ReactNode;
 }
-
-const availableScopes = [
-    "MATRIX",
-    "ONM",
-    "TILE",
-    "DIRECTION",
-    "TSS",
-    "VRP",
-    "TRACKING_HTTP",
-    "TRACKING_SOCKET",
-    "GEOCODING"
-];
 
 export default function ScopeSelectionModal({
     open,
@@ -40,6 +30,8 @@ export default function ScopeSelectionModal({
     onToggleScope,
     onCreateToken,
     isCreating,
+    availableScopes,
+    scopesLoading = false,
     trigger
 }: ScopeSelectionModalProps) {
     const [identifierName, setIdentifierName] = useState("");
@@ -65,6 +57,11 @@ export default function ScopeSelectionModal({
                 <div className="space-y-4">
                     <div className="space-y-3 max-h-[400px] overflow-y-auto">
                         <p className="text-sm font-medium text-[#1B1E2B] dark:text-white">Scopes</p>
+                        {scopesLoading ? (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Loading scopes...</p>
+                        ) : availableScopes.length === 0 ? (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">No scopes available</p>
+                        ) : null}
                         {availableScopes.map((scope) => (
                             <div key={scope} className="flex items-center space-x-3">
                                 <input
@@ -120,7 +117,7 @@ export default function ScopeSelectionModal({
                     <Button
                         type="button"
                         onClick={handleCreateToken}
-                        disabled={isCreating || selectedScopes.length === 0 || !identifierName.trim()}
+                        disabled={isCreating || scopesLoading || selectedScopes.length === 0 || !identifierName.trim()}
                         className="bg-[#FFA500] text-white hover:bg-[#FF8C00] disabled:opacity-50"
                     >
                         {isCreating ? "Creating..." : "Set Token"}

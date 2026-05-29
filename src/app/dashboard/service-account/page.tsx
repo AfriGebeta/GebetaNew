@@ -21,19 +21,8 @@ import { AuthContext } from "@/providers/AuthProvider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-
-const AVAILABLE_SCOPES = [
-    { value: "FEATURE_ALL", label: "Feature All" },
-    { value: "TRACKING_HTTP", label: "Tracking HTTP" },
-    { value: "MATRIX", label: "Matrix" },
-    { value: "ONM", label: "ONM" },
-    { value: "TILE", label: "Tile" },
-    { value: "DIRECTION", label: "Direction" },
-    { value: "TSS", label: "TSS" },
-    { value: "VRP", label: "VRP" },
-    { value: "TRACKING_SOCKET", label: "Tracking Socket" },
-    { value: "GEOCODING", label: "Geocoding" }
-];
+import { useReferenceData } from "@/hooks/useReferenceData";
+import { formatScopeLabel } from "@/lib/referenceData";
 
 export default function ServiceAccount() {
     const { currentUser } = useContext(AuthContext)
@@ -42,7 +31,9 @@ export default function ServiceAccount() {
     const [isCreating, setIsCreating] = useState(false);
     const [description, setDescription] = useState("");
     const [isAdmin, setIsAdmin] = useState(false);
-    const [selectedScopes, setSelectedScopes] = useState(AVAILABLE_SCOPES.map(s => s.value));
+    const { allowedScopes, loading: scopesLoading } = useReferenceData();
+    const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
+    const [defaultsApplied, setDefaultsApplied] = useState(false);
     const [showClientToken, setShowClientToken] = useState({});
     const [showServerToken, setShowServerToken] = useState({});
     const [isDeleting, setIsDeleting] = useState(null);
@@ -68,6 +59,13 @@ export default function ServiceAccount() {
     useEffect(() => {
         if (currentUser?.token) fetchServiceAccounts();
     }, [currentUser?.token]);
+
+    useEffect(() => {
+        if (!scopesLoading && allowedScopes.length > 0 && !defaultsApplied) {
+            setSelectedScopes([...allowedScopes]);
+            setDefaultsApplied(true);
+        }
+    }, [scopesLoading, allowedScopes, defaultsApplied]);
 
     const toggleScope = (scopeValue) => {
         setSelectedScopes(prev =>
@@ -111,7 +109,7 @@ export default function ServiceAccount() {
                 setDialogOpen(false);
                 setDescription("");
                 setIsAdmin(false);
-                setSelectedScopes(AVAILABLE_SCOPES.map(s => s.value));
+                setSelectedScopes([...allowedScopes]);
 
                 if (response.data?.token) {
                     setNewlyCreatedToken(response.data.token);
@@ -220,21 +218,27 @@ export default function ServiceAccount() {
                             <div className="space-y-2">
                                 <Label>Scopes</Label>
                                 <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto p-2 border rounded">
-                                    {AVAILABLE_SCOPES.map((scope) => (
-                                        <div key={scope.value} className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id={scope.value}
-                                                checked={selectedScopes.includes(scope.value)}
-                                                onCheckedChange={() => toggleScope(scope.value)}
-                                            />
-                                            <label
-                                                htmlFor={scope.value}
-                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                            >
-                                                {scope.label}
-                                            </label>
-                                        </div>
-                                    ))}
+                                    {scopesLoading ? (
+                                        <p className="text-sm text-[#aaa] col-span-2">Loading scopes...</p>
+                                    ) : allowedScopes.length === 0 ? (
+                                        <p className="text-sm text-[#aaa] col-span-2">No scopes available</p>
+                                    ) : (
+                                        allowedScopes.map((scope) => (
+                                            <div key={scope} className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id={scope}
+                                                    checked={selectedScopes.includes(scope)}
+                                                    onCheckedChange={() => toggleScope(scope)}
+                                                />
+                                                <label
+                                                    htmlFor={scope}
+                                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                >
+                                                    {formatScopeLabel(scope)}
+                                                </label>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -245,7 +249,7 @@ export default function ServiceAccount() {
                             <Button
                                 className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
                                 onClick={createAccount}
-                                disabled={isCreating}
+                                disabled={isCreating || scopesLoading || selectedScopes.length === 0}
                             >
                                 {isCreating ? "Creating..." : "Create"}
                             </Button>

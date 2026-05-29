@@ -254,35 +254,44 @@ export const claimFreemium = async (apiToken) => {
     }
 }
 
-//dns lock
-export const getDomainLocks = async (apiToken, page = 0, limit = 10) => {
-    if (!apiToken) return [];
+// allowed IP restrictions
+export const getAllowedIps = async (apiToken, page = 1, limit = 50) => {
+    if (!apiToken) return { domains: [], count: 0 };
     try {
         const { data } = await apiClient.get(`/domain/?page=${page}&limit=${limit}`, {
             headers: { Authorization: `Bearer ${apiToken}` },
         });
         const payload = data?.data ?? data;
-        const list = payload?.Domains ?? payload?.domains;
-        return Array.isArray(list) ? list : [];
+        const list = payload?.Domains ?? payload?.domains ?? [];
+        const count = payload?.count ?? payload?.Count ?? (Array.isArray(list) ? list.length : 0);
+
+        return {
+            domains: Array.isArray(list) ? list : [],
+            count: typeof count === "number" ? count : 0,
+        };
     } catch (error) {
-        return [];
+        return { domains: [], count: 0 };
     }
 };
 
-export const createDomainLock = async (apiToken, { userId, domain, apiKey }) => {
+export const createAllowedIp = async (apiToken, { ipAddress, apiKey, description }) => {
     try {
-        const { data } = await apiClient.post('/domain', { userId, domain, apiKey: apiKey || null }, {
+        const body = { ipAddress, apiKey };
+        if (description?.trim()) {
+            body.description = description.trim();
+        }
+        await apiClient.post('/domain', body, {
             headers: { Authorization: `Bearer ${apiToken}` },
         });
-        return { success: true, data: data.data };
+        return { success: true };
     } catch (error) {
         const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to add domain lock';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to add domain lock' };
+        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to add allowed IP';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to add allowed IP' };
     }
 };
 
-export const deleteDomainLock = async (apiToken, id) => {
+export const deleteAllowedIp = async (apiToken, id) => {
     try {
         await apiClient.delete(`/domain?id=${id}`, {
             headers: { Authorization: `Bearer ${apiToken}` },
@@ -290,19 +299,25 @@ export const deleteDomainLock = async (apiToken, id) => {
         return { success: true };
     } catch (error) {
         const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || 'Failed to delete domain lock';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to delete domain lock' };
+        const message = res?.message || res?.error?.message || res?.msg || 'Failed to remove allowed IP';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to remove allowed IP' };
     }
 };
 
-export const updateDomainLock = async (apiToken, { id, domain, apiKey }) => {
+export const updateAllowedIp = async (apiToken, { id, ipAddress, apiKey, description }) => {
     try {
-        const { data } = await apiClient.patch('/domain', { id, domain, apiKey: apiKey || null }, {
+        const body = { id, ipAddress, apiKey };
+        if (description?.trim()) {
+            body.description = description.trim();
+        }
+        await apiClient.patch('/domain', body, {
             headers: { Authorization: `Bearer ${apiToken}` },
         });
-        return { success: true, data: data.data };
+        return { success: true };
     } catch (error) {
-        return { success: false, message: error.response?.data?.message || 'Failed to update domain lock' };
+        const res = error.response?.data;
+        const message = res?.message || res?.error?.message || res?.msg || 'Failed to update allowed IP';
+        return { success: false, message: typeof message === 'string' ? message : 'Failed to update allowed IP' };
     }
 };
 
@@ -533,6 +548,37 @@ export const getRecentCalls = async (apiToken, { startDate, endDate, page = 1, p
             limit: pageSize,
             totalCount: 0,
             message: error.response?.data?.message || 'Failed to fetch recent calls'
+        };
+    }
+};
+
+export const getReferenceData = async () => {
+    try {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mapapi.gebeta.app/api";
+        const response = await fetch(`${baseUrl}/v1/reference-data`, {
+            cache: "no-store",
+        });
+
+        if (!response.ok) {
+            return { success: false, message: "Failed to load reference data", tokenTypes: [], allowedScopes: [] };
+        }
+
+        const data = await response.json();
+        const excluded = new Set(["AUTH", "REFRESH", "FEATURE_ALL"]);
+        const allowedScopes = (data.allowed_token_scopes || []).filter((scope) => !excluded.has(scope));
+
+        return {
+            success: true,
+            tokenTypes: data.token_types || [],
+            allowedScopes,
+        };
+    } catch (error) {
+        console.error("Failed to fetch reference data:", error);
+        return {
+            success: false,
+            message: "Failed to load reference data",
+            tokenTypes: [],
+            allowedScopes: [],
         };
     }
 };

@@ -15,11 +15,14 @@ import {
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import React, {useContext, useEffect, useState} from "react";
-import {createDomainLock, deleteDomainLock, getDomainLocks, updateDomainLock, revokeToken, setToken} from "@/service/apis";
+import {createAllowedIp, deleteAllowedIp, getAllowedIps, updateAllowedIp, revokeToken, setToken} from "@/service/apis";
 import {useToast} from "@/hooks/use-toast"
-import {CopyIcon, EyeIcon, GlobeIcon, PencilIcon, PlusIcon, Trash2Icon} from "lucide-react";
+import {CopyIcon, EyeIcon, NetworkIcon, PencilIcon, PlusIcon, Trash2Icon} from "lucide-react";
 import {AuthContext} from "@/providers/AuthProvider";
 import ScopeSelectionModal from "@/components/ScopeSelectionModal";
+import { useReferenceData } from "@/hooks/useReferenceData";
+import { getDefaultSelectedScopes } from "@/lib/referenceData";
+import { formatAllowedIpDate, maskApiKey, normalizeAllowedIp } from "@/lib/allowedIp";
 
 export default function APIToken() {
     const { currentUser, setCurrentUser } = useContext(AuthContext)
@@ -30,38 +33,42 @@ export default function APIToken() {
     const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
 
-    //for domain lock
-    const [domainLocks, setDomainLocks] = useState([]);
-    const [domainLockDialogOpen, setDomainLockDialogOpen] = useState(false);
-    const [editDomainDialogOpen, setEditDomainDialogOpen] = useState(false);
-    const [lockDomain, setLockDomain] = useState("");
+    const [allowedIps, setAllowedIps] = useState([]);
+    const [allowedIpDialogOpen, setAllowedIpDialogOpen] = useState(false);
+    const [editAllowedIpDialogOpen, setEditAllowedIpDialogOpen] = useState(false);
+    const [lockIpAddress, setLockIpAddress] = useState("");
     const [lockApiKey, setLockApiKey] = useState("");
-    const [editDomainForm, setEditDomainForm] = useState({ id: "", domain: "", apiKey: "" });
-    const [isAddingLock, setIsAddingLock] = useState(false);
-    const [isUpdatingLock, setIsUpdatingLock] = useState(false);
-    const [isDeletingLockId, setIsDeletingLockId] = useState(null);
-    const [domainLocksLoading, setDomainLocksLoading] = useState(false);
+    const [lockDescription, setLockDescription] = useState("");
+    const [editAllowedIpForm, setEditAllowedIpForm] = useState({ id: "", ipAddress: "", apiKey: "", description: "" });
+    const [isAddingAllowedIp, setIsAddingAllowedIp] = useState(false);
+    const [isUpdatingAllowedIp, setIsUpdatingAllowedIp] = useState(false);
+    const [isDeletingAllowedIpId, setIsDeletingAllowedIpId] = useState(null);
+    const [allowedIpsLoading, setAllowedIpsLoading] = useState(false);
+    const [allowedIpsCount, setAllowedIpsCount] = useState(0);
 
-    //default ones
-    const [selectedScopes, setSelectedScopes] = useState([
-        "DIRECTION",
-        "GEOCODING",
-        "TILE",
-        "MATRIX",
-        "ONM",
-        "TSS"
-    ]);
+    const { allowedScopes, loading: scopesLoading } = useReferenceData();
+    const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
+    const [defaultsApplied, setDefaultsApplied] = useState(false);
 
-    const fetchDomainLocks = async () => {
+    useEffect(() => {
+        if (!scopesLoading && allowedScopes.length > 0 && !defaultsApplied) {
+            setSelectedScopes(getDefaultSelectedScopes(allowedScopes));
+            setDefaultsApplied(true);
+        }
+    }, [scopesLoading, allowedScopes, defaultsApplied]);
+
+    const fetchAllowedIps = async () => {
         if (!currentUser?.token) return;
-        setDomainLocksLoading(true);
-        const result = await getDomainLocks(currentUser.token);
-        setDomainLocks(Array.isArray(result) ? result : []);
-        setDomainLocksLoading(false);
+        setAllowedIpsLoading(true);
+        const result = await getAllowedIps(currentUser.token);
+        const domains = (result.domains ?? []).map(normalizeAllowedIp);
+        setAllowedIps(domains);
+        setAllowedIpsCount(result.count ?? domains.length);
+        setAllowedIpsLoading(false);
     };
 
     useEffect(() => {
-        if (currentUser?.token) fetchDomainLocks();
+        if (currentUser?.token) fetchAllowedIps();
     }, [currentUser?.token]);
 
     const toggleScope = (scope) => {
@@ -123,7 +130,7 @@ export default function APIToken() {
                 toast({
                     description: response.message || "Token created successfully",
                 });
-                setSelectedScopes(["DIRECTION", "GEOCODING", "TILE", "MATRIX", "ONM", "TSS"]);
+                setSelectedScopes(getDefaultSelectedScopes(allowedScopes));
             } else {
                 toast({
                     description: `${response.message}`,
@@ -176,65 +183,80 @@ export default function APIToken() {
         setDialogOpen(true);
     };
 
-    const handleAddDomainLock = async () => {
-        if (!lockDomain.trim()) {
-            toast({ description: "Please enter a domain", variant: "destructive"});
+    const handleAddAllowedIp = async () => {
+        if (!lockIpAddress.trim()) {
+            toast({ description: "Please enter an IP address", variant: "destructive"});
             return;
         }
-        setIsAddingLock(true);
-        const result = await createDomainLock(currentUser?.token, {
-            userId: currentUser?.user?.id,
-            domain: lockDomain.trim(),
-            apiKey: lockApiKey.trim() || null,
+        if (!lockApiKey.trim()) {
+            toast({ description: "Please enter an API key", variant: "destructive"});
+            return;
+        }
+        setIsAddingAllowedIp(true);
+        const result = await createAllowedIp(currentUser?.token, {
+            ipAddress: lockIpAddress.trim(),
+            apiKey: lockApiKey.trim(),
+            description: lockDescription.trim() || undefined,
         });
         if (result.success) {
-            setLockDomain("");
+            setLockIpAddress("");
             setLockApiKey("");
-            setDomainLockDialogOpen(false);
-            await fetchDomainLocks();
-            toast({description: "Domain lock added successfully"});
+            setLockDescription("");
+            setAllowedIpDialogOpen(false);
+            await fetchAllowedIps();
+            toast({description: "Allowed IP added successfully"});
         } else {
-            toast({description: result.message || "Failed to add domain lock", variant: "destructive"});
+            toast({description: result.message || "Failed to add allowed IP", variant: "destructive"});
         }
-        setIsAddingLock(false);
+        setIsAddingAllowedIp(false);
     };
 
-    const handleDeleteDomainLock = async (id) => {
-        setIsDeletingLockId(id);
-        const result = await deleteDomainLock(currentUser?.token, id);
+    const handleDeleteAllowedIp = async (id) => {
+        setIsDeletingAllowedIpId(id);
+        const result = await deleteAllowedIp(currentUser?.token, id);
         if (result.success) {
-            await fetchDomainLocks();
-            toast({description: "Domain lock removed"});
+            await fetchAllowedIps();
+            toast({description: "Allowed IP removed"});
         } else {
-            toast({description: result.message || "Failed to remove domain lock", variant: "destructive"});
+            toast({description: result.message || "Failed to remove allowed IP", variant: "destructive"});
         }
-        setIsDeletingLockId(null);
+        setIsDeletingAllowedIpId(null);
     };
 
-    const openEditDomain = (lock) => {
-        setEditDomainForm({ id: lock.id, domain: lock.domain, apiKey: lock.apiKey || "" });
-        setEditDomainDialogOpen(true);
+    const openEditAllowedIp = (entry) => {
+        setEditAllowedIpForm({
+            id: entry.id,
+            ipAddress: entry.ipAddress,
+            apiKey: entry.apiKey,
+            description: entry.description,
+        });
+        setEditAllowedIpDialogOpen(true);
     };
 
-    const handleUpdateDomainLock = async () => {
-        if (!editDomainForm.domain.trim()) {
-            toast({description: "Please enter a domain", variant: "destructive"});
+    const handleUpdateAllowedIp = async () => {
+        if (!editAllowedIpForm.ipAddress.trim()) {
+            toast({description: "Please enter an IP address", variant: "destructive"});
             return;
         }
-        setIsUpdatingLock(true);
-        const result = await updateDomainLock(currentUser?.token, {
-            id: editDomainForm.id,
-            domain: editDomainForm.domain.trim(),
-            apiKey: editDomainForm.apiKey.trim() || null,
+        if (!editAllowedIpForm.apiKey.trim()) {
+            toast({description: "Please enter an API key", variant: "destructive"});
+            return;
+        }
+        setIsUpdatingAllowedIp(true);
+        const result = await updateAllowedIp(currentUser?.token, {
+            id: editAllowedIpForm.id,
+            ipAddress: editAllowedIpForm.ipAddress.trim(),
+            apiKey: editAllowedIpForm.apiKey.trim(),
+            description: editAllowedIpForm.description.trim() || undefined,
         });
         if (result.success) {
-            setEditDomainDialogOpen(false);
-            await fetchDomainLocks();
-            toast({description: "Domain lock updated"});
+            setEditAllowedIpDialogOpen(false);
+            await fetchAllowedIps();
+            toast({description: "Allowed IP updated"});
         } else {
-            toast({description: result.message || "Failed to update domain lock", variant: "destructive"});
+            toast({description: result.message || "Failed to update allowed IP", variant: "destructive"});
         }
-        setIsUpdatingLock(false);
+        setIsUpdatingAllowedIp(false);
     };
 
     return (
@@ -248,6 +270,8 @@ export default function APIToken() {
                     onToggleScope={toggleScope}
                     onCreateToken={createToken}
                     isCreating={isCreating}
+                    availableScopes={allowedScopes}
+                    scopesLoading={scopesLoading}
                     trigger={
                         <Button className="bg-[#FFA500] text-white hover:bg-[#FF8C00] text-sm px-4 py-2">
                             Create Token
@@ -327,43 +351,54 @@ export default function APIToken() {
                 </TableBody>
             </Table>
 
-            {/*domain lock section*/}
             <div className="mt-8">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                     <div>
-                        <h2 className="text-sm font-medium text-white dark:text-white">Domain Lock</h2>
-                        <p className="text-xs text-[#aaa] mt-1">Restrict API access to specific domains</p>
+                        <h2 className="text-sm font-medium text-white dark:text-white">Allowed IPs</h2>
+                        <p className="text-xs text-[#aaa] mt-1">
+                            Restrict API access to specific IP addresses and API keys
+                            {!allowedIpsLoading && allowedIpsCount > 0 ? ` · ${allowedIpsCount} total` : ""}
+                        </p>
                     </div>
-                    <Dialog open={domainLockDialogOpen} onOpenChange={setDomainLockDialogOpen}>
+                    <Dialog open={allowedIpDialogOpen} onOpenChange={setAllowedIpDialogOpen}>
                         <DialogTrigger asChild>
                             <Button className="bg-[#FFA500] text-white hover:bg-[#FF8C00] text-sm px-4 py-2">
-                                <PlusIcon className="w-4 h-4 mr-1" /> Add Domain
+                                <PlusIcon className="w-4 h-4 mr-1" /> Add Allowed IP
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
-                                <DialogTitle>Add Domain Lock</DialogTitle>
+                                <DialogTitle>Add Allowed IP</DialogTitle>
                                 <DialogDescription>
-                                    Restrict API access to a specific domain. Only requests originating from this domain will be allowed.
+                                    Restrict API access to a specific IP address. Only requests from this IP using the linked API key will be allowed.
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 py-2">
                                 <div className="space-y-1">
-                                    <Label htmlFor="lock-domain">Domain</Label>
+                                    <Label htmlFor="lock-ip-address">IP Address</Label>
                                     <Input
-                                        id="lock-domain"
-                                        placeholder="e.g. https://example.com"
-                                        value={lockDomain}
-                                        onChange={(e) => setLockDomain(e.target.value)}
+                                        id="lock-ip-address"
+                                        placeholder="e.g. 203.0.113.42"
+                                        value={lockIpAddress}
+                                        onChange={(e) => setLockIpAddress(e.target.value)}
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <Label htmlFor="lock-apikey">API Key (Optional)</Label>
+                                    <Label htmlFor="lock-apikey">API Key</Label>
                                     <Input
                                         id="lock-apikey"
                                         placeholder="Enter API key"
                                         value={lockApiKey}
                                         onChange={(e) => setLockApiKey(e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor="lock-description">Description (Optional)</Label>
+                                    <Input
+                                        id="lock-description"
+                                        placeholder="e.g. Production server"
+                                        value={lockDescription}
+                                        onChange={(e) => setLockDescription(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -373,39 +408,48 @@ export default function APIToken() {
                                 </DialogClose>
                                 <Button
                                     className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
-                                    onClick={handleAddDomainLock}
-                                    disabled={isAddingLock}
+                                    onClick={handleAddAllowedIp}
+                                    disabled={isAddingAllowedIp || !lockIpAddress.trim() || !lockApiKey.trim()}
                                 >
-                                    {isAddingLock ? "Adding..." : "Add Lock"}
+                                    {isAddingAllowedIp ? "Adding..." : "Add"}
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
                 </div>
 
-                <Dialog open={editDomainDialogOpen} onOpenChange={setEditDomainDialogOpen}>
+                <Dialog open={editAllowedIpDialogOpen} onOpenChange={setEditAllowedIpDialogOpen}>
                     <DialogContent className="sm:max-w-md">
                         <DialogHeader>
-                            <DialogTitle>Edit Domain Lock</DialogTitle>
-                            <DialogDescription>Update the domain and API key for this lock.</DialogDescription>
+                            <DialogTitle>Edit Allowed IP</DialogTitle>
+                            <DialogDescription>Update the IP address, API key, and description.</DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 py-2">
                             <div className="space-y-1">
-                                <Label htmlFor="edit-domain">Domain</Label>
+                                <Label htmlFor="edit-ip-address">IP Address</Label>
                                 <Input
-                                    id="edit-domain"
-                                    placeholder="e.g. https://example.com"
-                                    value={editDomainForm.domain}
-                                    onChange={(e) => setEditDomainForm(f => ({ ...f, domain: e.target.value }))}
+                                    id="edit-ip-address"
+                                    placeholder="e.g. 203.0.113.42"
+                                    value={editAllowedIpForm.ipAddress}
+                                    onChange={(e) => setEditAllowedIpForm(f => ({ ...f, ipAddress: e.target.value }))}
                                 />
                             </div>
                             <div className="space-y-1">
-                                <Label htmlFor="edit-apikey">API Key (Optional)</Label>
+                                <Label htmlFor="edit-apikey">API Key</Label>
                                 <Input
                                     id="edit-apikey"
                                     placeholder="Enter API key"
-                                    value={editDomainForm.apiKey}
-                                    onChange={(e) => setEditDomainForm(f => ({ ...f, apiKey: e.target.value }))}
+                                    value={editAllowedIpForm.apiKey}
+                                    onChange={(e) => setEditAllowedIpForm(f => ({ ...f, apiKey: e.target.value }))}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="edit-description">Description (Optional)</Label>
+                                <Input
+                                    id="edit-description"
+                                    placeholder="e.g. Production server"
+                                    value={editAllowedIpForm.description}
+                                    onChange={(e) => setEditAllowedIpForm(f => ({ ...f, description: e.target.value }))}
                                 />
                             </div>
                         </div>
@@ -415,47 +459,67 @@ export default function APIToken() {
                             </DialogClose>
                             <Button
                                 className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
-                                onClick={handleUpdateDomainLock}
-                                disabled={isUpdatingLock}
+                                onClick={handleUpdateAllowedIp}
+                                disabled={isUpdatingAllowedIp || !editAllowedIpForm.ipAddress.trim() || !editAllowedIpForm.apiKey.trim()}
                             >
-                                {isUpdatingLock ? "Saving..." : "Save Changes"}
+                                {isUpdatingAllowedIp ? "Saving..." : "Save Changes"}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
 
-                {domainLocksLoading ? (
+                {allowedIpsLoading ? (
                     <p className="text-sm text-[#aaa] py-4">Loading...</p>
-                ) : domainLocks.length === 0 ? (
+                ) : allowedIps.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-8 gap-2 text-[#aaa] border border-dashed rounded-md">
-                        <GlobeIcon className="w-8 h-8 opacity-40" />
-                        <p className="text-sm">No domain locks configured</p>
+                        <NetworkIcon className="w-8 h-8 opacity-40" />
+                        <p className="text-sm">No allowed IPs configured</p>
                     </div>
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Domain</TableHead>
+                                <TableHead>IP Address</TableHead>
+                                <TableHead>API Key</TableHead>
+                                <TableHead>Description</TableHead>
+                                <TableHead>Created</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {domainLocks.map((lock, i) => (
-                                <TableRow key={i}>
-                                    <TableCell className="font-mono text-sm">{lock.domain}</TableCell>
+                            {allowedIps.map((entry) => (
+                                <TableRow key={entry.id}>
+                                    <TableCell className="font-mono text-sm">{entry.ipAddress || "—"}</TableCell>
+                                    <TableCell className="font-mono text-sm">
+                                        <div className="flex items-center gap-2">
+                                            <span>{maskApiKey(entry.apiKey)}</span>
+                                            {entry.apiKey ? (
+                                                <Button
+                                                    variant="link"
+                                                    onClick={() => copyToClipboard(entry.apiKey)}
+                                                    className="p-0 h-auto"
+                                                    title="Copy API key"
+                                                >
+                                                    <CopyIcon className="w-3.5 h-3.5" />
+                                                </Button>
+                                            ) : null}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-sm">{entry.description || "—"}</TableCell>
+                                    <TableCell className="text-sm text-[#aaa]">{formatAllowedIpDate(entry.createdAt)}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end space-x-1">
                                             <Button
                                                 variant="link"
-                                                onClick={() => openEditDomain(lock)}
+                                                onClick={() => openEditAllowedIp(entry)}
                                                 className="p-2"
                                             >
                                                 <PencilIcon className="w-4 h-4" />
                                             </Button>
                                             <Button
                                                 variant="link"
-                                                onClick={() => handleDeleteDomainLock(lock.id)}
-                                                disabled={isDeletingLockId === lock.id}
+                                                onClick={() => handleDeleteAllowedIp(entry.id)}
+                                                disabled={isDeletingAllowedIpId === entry.id}
                                                 className="p-2"
                                             >
                                                 <Trash2Icon className="w-4 h-4" />
