@@ -21,6 +21,9 @@ export function formatScopeLabel(scope: string): string {
 }
 
 export function getDefaultSelectedScopes(allowedScopes: string[]): string[] {
-    const preferred = DEFAULT_TOKEN_SCOPES.filter((scope) => allowedScopes.includes(scope));
-    return preferred.length > 0 ? [...preferred] : [...allowedScopes];
+    // const preferred = DEFAULT_TOKEN_SCOPES.filter((scope) => allowedScopes.includes(scope));
+    // return preferred.length > 0 ? [...preferred] : [...allowedScopes];
+
+    return allowedScopes;
+
 }
