@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@gebeta/node':
+        specifier: ^3.0.7
+        version: 3.0.7
       '@mdx-js/loader':
         specifier: ^3.1.0
         version: 3.1.0(acorn@8.14.0)
@@ -273,6 +276,12 @@ packages:
 
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
+
+  '@gebeta/api@3.0.7':
+    resolution: {integrity: sha512-RtiStvIGbVpbPvxagHTz8aVwnR6CWWpxCDkEvOmSJfVUyWjg62xBxKdI+/R6x3PGVgiYIH1YWYmDmegZDIfxTg==}
+
+  '@gebeta/node@3.0.7':
+    resolution: {integrity: sha512-gskhIO+W1Sj6I/6X4brlaNS9Qrvyy45/ZlwRKiYOSRn2YppL7mAzyvsVZ8WuTcr5mVNYsoc8dgfaHiYIxGf50A==}
 
   '@img/sharp-darwin-arm64@0.34.2':
     resolution: {integrity: sha512-OfXHZPppddivUJnqyKoi5YVeHRkkNE2zUFT2gbpKxp/JZCFYEYubnMg+gOp6lWfasPrTS+KPosKqdI+ELYVDtg==}
@@ -3034,6 +3043,12 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   '@floating-ui/utils@0.2.9': {}
+
+  '@gebeta/api@3.0.7': {}
+
+  '@gebeta/node@3.0.7':
+    dependencies:
+      '@gebeta/api': 3.0.7
 
   '@img/sharp-darwin-arm64@0.34.2':
     optionalDependencies:

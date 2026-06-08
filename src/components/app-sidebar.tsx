@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import { useContext } from "react"
-import { BookOpen, CreditCard, LockKeyhole, ReceiptIcon, Settings2, SquareTerminal, Building, ShieldCheck, ShieldBan, History } from "lucide-react"
+import { BookOpen, CreditCard, LockKeyhole, ReceiptIcon, Settings2, SquareTerminal, Building, ShieldCheck, ShieldBan, History, MapPin } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -72,7 +72,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 title: "Account",
                 url: "/dashboard/account",
                 icon: Settings2
-            }
+            },
+            {
+                title: "Map Embed",
+                url: "/dashboard/map-embed",
+                icon: MapPin,
+            },
         ],
     }
 

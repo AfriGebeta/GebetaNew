@@ -109,13 +109,10 @@ export default function Navbar() {
                                     className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400"
                                 >Sign In</a>
                             </div>
-                            <div
-                                className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap cursor-pointer"
-                                onClick={() => router.push("/auth/register")}>
-                                <a
-                                    className="font-bold"
-                                >Get Started</a>
-                            </div>
+                            <Link
+                                href="/auth/register"
+                                className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Get
+                                Started</Link>
                         </div>
                     </nav>
 
