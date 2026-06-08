@@ -1,4 +1,3 @@
-// app/actions/map-embed.ts
 "use server";
 
 export interface Marker {
@@ -8,7 +7,8 @@ export interface Marker {
 }
 
 export interface GenerateEmbedInput {
-    clientToken: string;  // service account token
+    serverToken: string;
+    clientToken: string;
     lat: number;
     lng: number;
     zoom?: number;
@@ -22,17 +22,14 @@ export interface GenerateEmbedResult {
 
 export async function generateMapEmbed(input: GenerateEmbedInput): Promise<GenerateEmbedResult> {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-
     const res = await fetch(`${baseUrl}/api/map-embed`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),
     });
-
     if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error ?? "Failed to create embed");
     }
-
     return res.json();
 }

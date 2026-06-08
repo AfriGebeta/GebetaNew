@@ -1,34 +1,37 @@
+import { EncryptJWT, jwtDecrypt } from "jose";
 import { GebetaAuth } from "@gebeta/node";
 
-const auth = new GebetaAuth({ serverToken: process.env.GEBETA_SERVER_TOKEN! });
+// 256-bit key required for AES-256 encryption
+const SECRET = new Uint8Array(
+    Buffer.from(
+        process.env.EMBED_SECRET ?? "0".repeat(64), // must be 64 hex chars = 32 bytes
+        "hex"
+    )
+);
 
 export interface EmbedSession {
+    serverToken: string;
     clientToken: string;
     lat: number;
     lng: number;
     zoom: number;
     markers: Array<{ lat: number; lng: number; label?: string }>;
-    createdAt: number;
 }
 
-const sessions = new Map<string, EmbedSession>();
-
-function cleanup() {
-    const now = Date.now();
-    for (const [id, s] of sessions.entries()) {
-        if (now - s.createdAt > 24 * 60 * 60 * 1000) sessions.delete(id);
-    }
+export async function createEmbedToken(session: EmbedSession): Promise<string> {
+    return new EncryptJWT({ ...session })
+        .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
+        .setExpirationTime("24h")
+        .setIssuedAt()
+        .encrypt(SECRET);
 }
 
-export function setEmbedSession(id: string, session: EmbedSession) {
-    cleanup();
-    sessions.set(id, session);
+export async function verifyEmbedToken(token: string): Promise<EmbedSession> {
+    const { payload } = await jwtDecrypt(token, SECRET);
+    return payload as unknown as EmbedSession;
 }
 
-export function getEmbedSession(id: string): EmbedSession | undefined {
-    return sessions.get(id);
-}
-
-export async function mintTokens(clientToken: string) {
+export async function mintTokens(serverToken: string, clientToken: string) {
+    const auth = new GebetaAuth({ serverToken });
     return auth.authenticate(clientToken);
 }

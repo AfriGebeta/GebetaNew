@@ -1,9 +1,7 @@
-// app/dashboard/map-embed/page.tsx
 "use client";
 
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { generateMapEmbed, type Marker } from "@/app/actions/map-embed";
-import { AuthContext } from "@/providers/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Copy, Check, Map, Plus, Trash2, EyeIcon, EyeOffIcon } from "lucide-react";
 
 export default function MapEmbedPage() {
-    const { currentUser } = useContext(AuthContext);
     const { toast } = useToast();
 
-    const [manualToken, setManualToken] = useState("");
-    const [showToken, setShowToken] = useState(false);
+    const [serverToken, setServerToken] = useState("");
+    const [clientToken, setClientToken] = useState("");
+    const [showServerToken, setShowServerToken] = useState(false);
+    const [showClientToken, setShowClientToken] = useState(false);
 
     const [lat, setLat] = useState("9.0161");
     const [lng, setLng] = useState("38.7685");
@@ -43,14 +42,15 @@ export default function MapEmbedPage() {
     };
 
     const handleGenerate = async () => {
-        if (!manualToken.trim()) {
-            toast({ description: "Please paste your service account token", variant: "destructive" });
+        if (!serverToken.trim() || !clientToken.trim()) {
+            toast({ description: "Both server token and client token are required", variant: "destructive" });
             return;
         }
         setGenerating(true);
         try {
             const result = await generateMapEmbed({
-                clientToken: manualToken.trim(),
+                serverToken: serverToken.trim(),
+                clientToken: clientToken.trim(),
                 lat: parseFloat(lat),
                 lng: parseFloat(lng),
                 zoom: parseFloat(zoom),
@@ -76,48 +76,74 @@ export default function MapEmbedPage() {
     };
 
     return (
-        <div className="text-[#aaa] p-4 md:p-6 mt-2 max-w-4xl">
-            {/* Header */}
+        <div className=" p-4 md:p-6 mt-2 max-w-4xl">
             <div className="mb-6">
-                <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+                <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
                     <Map className="w-5 h-5 text-[#FFA500]" />
                     Map Embed
                 </h2>
                 <p className="text-sm text-[#aaa]">
-                    Generate a shareable map iframe for any website. Your service account token is used server-side only — never exposed in the iframe URL.
+                    Generate a shareable map iframe. You need two service accounts — one created with Admin ON (server token) and one with Admin OFF (client token).
                 </p>
             </div>
 
             <div className="space-y-6">
 
-                {/* Step 1 — Token */}
-                <div className="space-y-2">
-                    <Label className="text-white text-sm">1. Service Account Token</Label>
+                {/* Step 1 — Tokens */}
+                <div className="space-y-3">
+                    <Label className=" text-sm">1. Service Account Tokens</Label>
                     <p className="text-xs text-[#aaa]">
-                        Paste the token shown once when you created your service account. It stays on our server and is never included in the iframe URL.
+                        Create two service accounts on the Service Accounts page. Admin ON gives you the server token, Admin OFF gives you the client token.
                     </p>
-                    <div className="flex gap-2">
-                        <Input
-                            className="bg-transparent border-white/10 text-white font-mono text-xs flex-1 placeholder:text-[#555]"
-                            type={showToken ? "text" : "password"}
-                            placeholder="Paste your service account token..."
-                            value={manualToken}
-                            onChange={(e) => setManualToken(e.target.value)}
-                        />
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="border-white/10 text-[#aaa] hover:text-white bg-transparent shrink-0"
-                            onClick={() => setShowToken((v) => !v)}
-                        >
-                            {showToken ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
-                        </Button>
+
+                    {/* Server Token */}
+                    <div className="space-y-1">
+                        <Label className=" text-xs">Server Token <span className="text-[#aaa]">(from service account with Admin ON)</span></Label>
+                        <div className="flex gap-2">
+                            <Input
+                                className="bg-transparent border-white/10  font-mono text-xs flex-1 placeholder:text-[#555]"
+                                type={showServerToken ? "text" : "password"}
+                                placeholder="Paste server token..."
+                                value={serverToken}
+                                onChange={(e) => setServerToken(e.target.value)}
+                            />
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="border-white/10  bg-transparent shrink-0"
+                                onClick={() => setShowServerToken((v) => !v)}
+                            >
+                                {showServerToken ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Client Token */}
+                    <div className="space-y-1">
+                        <Label className=" text-xs">Client Token <span className="text-[#aaa]">(from service account with Admin OFF)</span></Label>
+                        <div className="flex gap-2">
+                            <Input
+                                className="bg-transparent border-white/10  font-mono text-xs flex-1 placeholder:text-[#555]"
+                                type={showClientToken ? "text" : "password"}
+                                placeholder="Paste client token..."
+                                value={clientToken}
+                                onChange={(e) => setClientToken(e.target.value)}
+                            />
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="border-white/10  bg-transparent shrink-0"
+                                onClick={() => setShowClientToken((v) => !v)}
+                            >
+                                {showClientToken ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Step 2 — Map center */}
                 <div className="space-y-2">
-                    <Label className="text-white text-sm">2. Map Center & Zoom</Label>
+                    <Label className=" text-sm">2. Map Center & Zoom</Label>
                     <div className="grid grid-cols-3 gap-3">
                         {[
                             { label: "Latitude", value: lat, setter: setLat, placeholder: "9.0161" },
@@ -125,9 +151,9 @@ export default function MapEmbedPage() {
                             { label: "Zoom (1–20)", value: zoom, setter: setZoom, placeholder: "13" },
                         ].map(({ label, value, setter, placeholder }) => (
                             <div key={label} className="space-y-1">
-                                <Label className="text-xs text-[#aaa]">{label}</Label>
+                                <Label className=" text-xs">{label}</Label>
                                 <Input
-                                    className="bg-transparent border-white/10 text-white placeholder:text-[#555]"
+                                    className="bg-transparent border-white/10  placeholder:text-[#555]"
                                     value={value}
                                     onChange={(e) => setter(e.target.value)}
                                     placeholder={placeholder}
@@ -140,11 +166,11 @@ export default function MapEmbedPage() {
                 {/* Step 3 — Markers */}
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <Label className="text-white text-sm">3. Markers (optional)</Label>
+                        <Label className=" text-sm">3. Markers (optional)</Label>
                         <Button
                             size="sm"
                             variant="outline"
-                            className="text-xs border-white/10 text-[#aaa] hover:text-white bg-transparent"
+                            className="text-xs border-white/10  bg-transparent"
                             onClick={addMarker}
                         >
                             <Plus className="w-3 h-3 mr-1" /> Add Marker
@@ -162,19 +188,19 @@ export default function MapEmbedPage() {
                                 className="grid grid-cols-[1fr_1fr_2fr_auto] gap-2 items-center border border-white/10 rounded-lg p-2"
                             >
                                 <Input
-                                    className="bg-transparent border-white/10 text-white text-xs placeholder:text-[#555]"
+                                    className="bg-transparent border-white/10  text-xs placeholder:text-[#555]"
                                     placeholder="Lat"
                                     value={m.lat}
                                     onChange={(e) => updateMarker(i, "lat", e.target.value)}
                                 />
                                 <Input
-                                    className="bg-transparent border-white/10 text-white text-xs placeholder:text-[#555]"
+                                    className="bg-transparent border-white/10  text-xs placeholder:text-[#555]"
                                     placeholder="Lng"
                                     value={m.lng}
                                     onChange={(e) => updateMarker(i, "lng", e.target.value)}
                                 />
                                 <Input
-                                    className="bg-transparent border-white/10 text-white text-xs placeholder:text-[#555]"
+                                    className="bg-transparent border-white/10  text-xs placeholder:text-[#555]"
                                     placeholder="Label (optional)"
                                     value={m.label ?? ""}
                                     onChange={(e) => updateMarker(i, "label", e.target.value)}
@@ -195,8 +221,8 @@ export default function MapEmbedPage() {
                 {/* Generate */}
                 <Button
                     onClick={handleGenerate}
-                    disabled={generating || !manualToken.trim()}
-                    className="bg-[#FFA500] text-white hover:bg-[#FF8C00] w-full sm:w-auto"
+                    disabled={generating || !serverToken.trim() || !clientToken.trim()}
+                    className="bg-[#FFA500] text-black font-semibold hover:bg-[#FF8C00] w-full sm:w-auto"
                 >
                     {generating ? "Generating..." : "Generate Embed"}
                 </Button>
@@ -216,7 +242,7 @@ export default function MapEmbedPage() {
                         </div>
 
                         <div className="space-y-1">
-                            <Label className="text-white text-sm">Copy & paste this on any website</Label>
+                            <Label className=" text-sm">Copy & paste this on any website</Label>
                             <div className="relative">
                                 <pre className="bg-[#111] border border-white/10 rounded-lg p-4 text-xs text-[#aaa] overflow-x-auto whitespace-pre-wrap font-mono">
                                     {iframeSnippet}
@@ -227,12 +253,12 @@ export default function MapEmbedPage() {
                                 >
                                     {copied
                                         ? <Check className="w-4 h-4 text-green-400" />
-                                        : <Copy className="w-4 h-4 text-[#aaa]" />
+                                        : <Copy className="w-4 h-4 " />
                                     }
                                 </button>
                             </div>
-                            <p className="text-xs text-[#555]">
-                                This URL contains no tokens or API keys. Safe to share publicly.
+                            <p className="text-xs text-[#aaa]">
+                                This URL contains no raw tokens. Safe to share publicly.
                             </p>
                         </div>
                     </div>
