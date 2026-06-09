@@ -11,8 +11,10 @@ export interface EmbedSession {
     lat: number;
     lng: number;
     zoom: number;
+    minZoom: number;
+    maxZoom: number;
     markers: Array<{ lat: number; lng: number; label?: string }>;
-    fenceCoords?: Array<[number, number]> | null; // [[lng,lat], ...] closed polygon
+    bounds?: [number, number, number, number] | null; // [west, south, east, north]
 }
 
 export async function createEmbedToken(session: EmbedSession): Promise<string> {

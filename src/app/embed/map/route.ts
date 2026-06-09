@@ -4,35 +4,37 @@ import { verifyEmbedToken, mintTokens } from "@/lib/map-embed-store";
 export const dynamic = "force-dynamic";
 
 function errorHtml(message: string, status: number) {
-    return new NextResponse(
-        `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body style="margin:0;background:#e8e0d8;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:14px"><p>${message}</p></body></html>`,
-        { status, headers: { "Content-Type": "text/html" } }
-    );
+  return new NextResponse(
+    `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body style="margin:0;background:#e8e0d8;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:14px"><p>${message}</p></body></html>`,
+    { status, headers: { "Content-Type": "text/html" } }
+  );
 }
 
 export async function GET(req: NextRequest) {
-    const token = req.nextUrl.searchParams.get("t");
-    if (!token) return errorHtml("This embed link is invalid or has expired.", 404);
+  const token = req.nextUrl.searchParams.get("t");
+  if (!token) return errorHtml("This embed link is invalid or has expired.", 404);
 
-    let session;
-    try { session = await verifyEmbedToken(token); }
-    catch { return errorHtml("This embed link is invalid or has expired.", 404); }
+  let session;
+  try { session = await verifyEmbedToken(token); }
+  catch { return errorHtml("This embed link is invalid or has expired.", 404); }
 
-    let credentials;
-    try { credentials = await mintTokens(session.serverToken, session.clientToken); }
-    catch { return errorHtml("Failed to authenticate. Please regenerate the embed.", 500); }
+  let credentials;
+  try { credentials = await mintTokens(session.serverToken, session.clientToken); }
+  catch { return errorHtml("Failed to authenticate. Please regenerate the embed.", 500); }
 
-    const mapData = JSON.stringify({
-        accessToken: credentials.accessToken,
-        refreshToken: credentials.refreshToken,
-        lat: session.lat,
-        lng: session.lng,
-        zoom: session.zoom,
-        markers: session.markers,
-        fenceCoords: session.fenceCoords ?? null,
-    });
+  const mapData = JSON.stringify({
+    accessToken: credentials.accessToken,
+    refreshToken: credentials.refreshToken,
+    lat: session.lat,
+    lng: session.lng,
+    zoom: session.zoom,
+    minZoom: session.minZoom ?? 1,
+    maxZoom: session.maxZoom ?? 22,
+    markers: session.markers,
+    bounds: session.bounds ?? null, 
+  });
 
-    const html = `<!DOCTYPE html>
+  const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8"/>
@@ -41,65 +43,31 @@ export async function GET(req: NextRequest) {
     * { margin:0; padding:0; box-sizing:border-box; }
     html, body { width:100%; height:100%; }
     #map { width:100%; height:100vh; }
-
-    /* Hide default maplibre attribution — we have our own footer */
     .maplibregl-ctrl-bottom-left { display:none !important; }
     .maplibregl-ctrl-attrib { display:none !important; }
-
-    /* Push nav controls down slightly so they don't overlap open button */
     .maplibregl-ctrl-top-right { top:48px !important; }
-
-    /* Google Maps style frosted glass footer */
     #footer {
-      position:absolute;
-      bottom:0; left:0; right:0;
-      height:28px;
-      background:rgba(255,255,255,0.55);
-      backdrop-filter:blur(8px);
-      -webkit-backdrop-filter:blur(8px);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 10px;
-      font-family:Roboto,Arial,sans-serif;
-      font-size:11px;
-      color:#666;
-      pointer-events:none;
-      z-index:10;
-      border-top:1px solid rgba(0,0,0,0.07);
+      position:absolute; bottom:0; left:0; right:0; height:28px;
+      background:rgba(255,255,255,0.55); backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px); display:flex; align-items:center;
+      justify-content:space-between; padding:0 10px;
+      font-family:Roboto,Arial,sans-serif; font-size:11px; color:#666;
+      pointer-events:none; z-index:10; border-top:1px solid rgba(0,0,0,0.07);
     }
-    #footer a {
-      pointer-events:all;
-      color:#1a73e8;
-      text-decoration:none;
-      margin-left:8px;
-    }
+    #footer a { pointer-events:all; color:#1a73e8; text-decoration:none; margin-left:8px; }
     #footer a:hover { text-decoration:underline; }
-
-    /* Frosted glass "View larger map" button — top right */
     #open-btn {
-      position:absolute;
-      top:10px; right:10px;
-      background:rgba(255,255,255,0.55);
-      backdrop-filter:blur(8px);
-      -webkit-backdrop-filter:blur(8px);
-      border:none;
-      border-radius:4px;
-      box-shadow:0 1px 4px rgba(0,0,0,0.18);
-      padding:6px 12px;
-      font-size:12px;
-      font-family:Roboto,Arial,sans-serif;
-      color:#1a73e8;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      gap:5px;
-      z-index:10;
-      transition:background 0.15s;
+      position:absolute; top:10px; right:10px;
+      background:rgba(255,255,255,0.55); backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px); border:none; border-radius:4px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.18); padding:6px 12px;
+      font-size:12px; font-family:Roboto,Arial,sans-serif; color:#1a73e8;
+      cursor:pointer; display:flex; align-items:center; gap:5px;
+      z-index:10; transition:background 0.15s;
     }
     #open-btn:hover { background:rgba(255,255,255,0.85); }
     #open-btn svg { width:13px; height:13px; flex-shrink:0; }
-    .gebeta-logo { display: none !important; }
+    .gebeta-logo { display:none !important; }
   </style>
   <script>window.__MAP_DATA__ = ${mapData};</script>
   <script src="https://tiles.gebeta.app/static/v3/gebeta-maps.umd.js"></script>
@@ -123,34 +91,32 @@ export async function GET(req: NextRequest) {
   <script>
     document.getElementById('open-btn').addEventListener('click', function () {
       var d = window.__MAP_DATA__;
-      window.open('http://localhost:3001/?lat=' + d.lat + '&lng=' + d.lng, '_blank');
+      var url = 'http://localhost:3001/?lat=' + d.lat + '&lon=' + d.lng + '&z=' + d.zoom;
+      window.open(url, '_blank');
     });
 
     window.addEventListener('load', function () {
       var d = window.__MAP_DATA__;
 
-      var gebetaMap = new GebetaMaps({ auth: { accessToken: d.accessToken, refreshToken: d.refreshToken } });
-      var map = gebetaMap.init({
+      var gebeta = new GebetaMaps({ auth: { accessToken: d.accessToken, refreshToken: d.refreshToken } });
+      var map = gebeta.init({
         container: 'map',
         center: [d.lng, d.lat],
         zoom: d.zoom,
+        minZoom: d.minZoom,
+        maxZoom: d.maxZoom,
         navigationControl: true,
-        
       });
 
       map.on('load', function () {
 
-        // ── Markers ──────────────────────────────────────────────
         (d.markers || []).forEach(function (m) {
           var el = document.createElement('div');
           el.style.cssText = [
-            'width:40px',
-            'height:40px',
+            'width:40px', 'height:40px',
             'background-image:url(https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png)',
-            'background-size:contain',
-            'background-repeat:no-repeat',
-            'background-position:center bottom',
-            'cursor:pointer',
+            'background-size:contain', 'background-repeat:no-repeat',
+            'background-position:center bottom', 'cursor:pointer',
             'filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
           ].join(';');
           var marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
@@ -158,36 +124,11 @@ export async function GET(req: NextRequest) {
           if (m.label) marker.setPopup(new maplibregl.Popup({ offset: 40 }).setText(m.label));
           marker.addTo(map);
         });
-
-        // ── Fencing ───────────────────────────────────────────────
-        if (d.fenceCoords && d.fenceCoords.length >= 3) {
-          var coords = d.fenceCoords;
-
-          map.addSource('fence', {
-            type: 'geojson',
-            data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [coords] } }
-          });
-          map.addLayer({ id: 'fence-fill', type: 'fill', source: 'fence', paint: { 'fill-color': '#FFA500', 'fill-opacity': 0.07 } });
-          map.addLayer({ id: 'fence-line', type: 'line', source: 'fence', paint: { 'line-color': '#FFA500', 'line-width': 2, 'line-dasharray': [4, 2] } });
-
-          gebetaMap.fencing.addFence({ id: 'embed-fence', coordinates: coords.map(function (c) { return [c[0], c[1]]; }) });
-
-          var lastValidCenter = [d.lng, d.lat];
-          map.on('moveend', function () {
-            var c = map.getCenter();
-            var inside = gebetaMap.fencing.isInsideFence('embed-fence', { lat: c.lat, lng: c.lng });
-            if (inside) {
-              lastValidCenter = [c.lng, c.lat];
-            } else {
-              map.flyTo({ center: lastValidCenter, duration: 300 });
-            }
-          });
-        }
       });
     });
   </script>
 </body>
 </html>`;
 
-    return new NextResponse(html, { status: 200, headers: { "Content-Type": "text/html" } });
+  return new NextResponse(html, { status: 200, headers: { "Content-Type": "text/html" } });
 }
