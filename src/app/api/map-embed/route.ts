@@ -4,30 +4,16 @@ import { createEmbedToken } from "@/lib/map-embed-store";
 export async function POST(req: NextRequest) {
     try {
         const {
-            serverToken,
-            clientToken,
-            lat = 9.0161,
-            lng = 38.7685,
-            zoom = 13,
-            markers = [],
+            serverToken, clientToken,
+            lat = 9.0161, lng = 38.7685, zoom = 13,
+            markers = [], fenceCoords = null,
         } = await req.json();
 
         if (!serverToken || !clientToken) {
-            return NextResponse.json(
-                { error: "Both serverToken and clientToken are required" },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: "Both tokens required" }, { status: 400 });
         }
 
-        const token = await createEmbedToken({
-            serverToken,
-            clientToken,
-            lat,
-            lng,
-            zoom,
-            markers,
-        });
-
+        const token = await createEmbedToken({ serverToken, clientToken, lat, lng, zoom, markers, fenceCoords });
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
         return NextResponse.json({

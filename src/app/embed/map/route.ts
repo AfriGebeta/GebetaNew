@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 function errorHtml(message: string, status: number) {
     return new NextResponse(
-        `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body style="margin:0;background:#111;color:#aaa;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif"><p>${message}</p></body></html>`,
+        `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body style="margin:0;background:#e8e0d8;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:14px"><p>${message}</p></body></html>`,
         { status, headers: { "Content-Type": "text/html" } }
     );
 }
@@ -15,18 +15,12 @@ export async function GET(req: NextRequest) {
     if (!token) return errorHtml("This embed link is invalid or has expired.", 404);
 
     let session;
-    try {
-        session = await verifyEmbedToken(token);
-    } catch {
-        return errorHtml("This embed link is invalid or has expired.", 404);
-    }
+    try { session = await verifyEmbedToken(token); }
+    catch { return errorHtml("This embed link is invalid or has expired.", 404); }
 
     let credentials;
-    try {
-        credentials = await mintTokens(session.serverToken, session.clientToken);
-    } catch {
-        return errorHtml("Failed to authenticate. Please check your tokens and regenerate the embed.", 500);
-    }
+    try { credentials = await mintTokens(session.serverToken, session.clientToken); }
+    catch { return errorHtml("Failed to authenticate. Please regenerate the embed.", 500); }
 
     const mapData = JSON.stringify({
         accessToken: credentials.accessToken,
@@ -35,40 +29,165 @@ export async function GET(req: NextRequest) {
         lng: session.lng,
         zoom: session.zoom,
         markers: session.markers,
+        fenceCoords: session.fenceCoords ?? null,
     });
 
     const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <style>* { margin:0; padding:0; box-sizing:border-box; } html,body { width:100%; height:100%; } #map { width:100%; height:100vh; }</style>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { width:100%; height:100%; }
+    #map { width:100%; height:100vh; }
+
+    /* Hide default maplibre attribution — we have our own footer */
+    .maplibregl-ctrl-bottom-left { display:none !important; }
+    .maplibregl-ctrl-attrib { display:none !important; }
+
+    /* Push nav controls down slightly so they don't overlap open button */
+    .maplibregl-ctrl-top-right { top:48px !important; }
+
+    /* Google Maps style frosted glass footer */
+    #footer {
+      position:absolute;
+      bottom:0; left:0; right:0;
+      height:28px;
+      background:rgba(255,255,255,0.55);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 10px;
+      font-family:Roboto,Arial,sans-serif;
+      font-size:11px;
+      color:#666;
+      pointer-events:none;
+      z-index:10;
+      border-top:1px solid rgba(0,0,0,0.07);
+    }
+    #footer a {
+      pointer-events:all;
+      color:#1a73e8;
+      text-decoration:none;
+      margin-left:8px;
+    }
+    #footer a:hover { text-decoration:underline; }
+
+    /* Frosted glass "View larger map" button — top right */
+    #open-btn {
+      position:absolute;
+      top:10px; right:10px;
+      background:rgba(255,255,255,0.55);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      border:none;
+      border-radius:4px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.18);
+      padding:6px 12px;
+      font-size:12px;
+      font-family:Roboto,Arial,sans-serif;
+      color:#1a73e8;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:5px;
+      z-index:10;
+      transition:background 0.15s;
+    }
+    #open-btn:hover { background:rgba(255,255,255,0.85); }
+    #open-btn svg { width:13px; height:13px; flex-shrink:0; }
+    .gebeta-logo { display: none !important; }
+  </style>
   <script>window.__MAP_DATA__ = ${mapData};</script>
   <script src="https://tiles.gebeta.app/static/v3/gebeta-maps.umd.js"></script>
 </head>
 <body>
   <div id="map"></div>
+
+  <button id="open-btn">
+    <svg viewBox="0 0 24 24" fill="#1a73e8"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    View larger map
+  </button>
+
+  <div id="footer">
+    <span>© Gebeta Maps</span>
+    <span>
+      <a href="https://gebeta.app/terms" target="_blank">Terms</a>
+      <a href="https://maps.gebeta.app" target="_blank">Contribute</a>
+    </span>
+  </div>
+
   <script>
+    document.getElementById('open-btn').addEventListener('click', function () {
+      var d = window.__MAP_DATA__;
+      window.open('http://localhost:3001/?lat=' + d.lat + '&lng=' + d.lng, '_blank');
+    });
+
     window.addEventListener('load', function () {
       var d = window.__MAP_DATA__;
+
       var gebetaMap = new GebetaMaps({ auth: { accessToken: d.accessToken, refreshToken: d.refreshToken } });
-      var map = gebetaMap.init({ container: 'map', center: [d.lng, d.lat], zoom: d.zoom, navigationControl: true });
+      var map = gebetaMap.init({
+        container: 'map',
+        center: [d.lng, d.lat],
+        zoom: d.zoom,
+        navigationControl: true,
+        
+      });
+
       map.on('load', function () {
+
+        // ── Markers ──────────────────────────────────────────────
         (d.markers || []).forEach(function (m) {
           var el = document.createElement('div');
-          el.style.cssText = 'width:28px;height:28px;border-radius:50% 50% 50% 0;background:#FFA500;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);';
-          var marker = new maplibregl.Marker({ element: el }).setLngLat([m.lng, m.lat]);
-          if (m.label) marker.setPopup(new maplibregl.Popup().setText(m.label));
+          el.style.cssText = [
+            'width:40px',
+            'height:40px',
+            'background-image:url(https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png)',
+            'background-size:contain',
+            'background-repeat:no-repeat',
+            'background-position:center bottom',
+            'cursor:pointer',
+            'filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+          ].join(';');
+          var marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+            .setLngLat([m.lng, m.lat]);
+          if (m.label) marker.setPopup(new maplibregl.Popup({ offset: 40 }).setText(m.label));
           marker.addTo(map);
         });
+
+        // ── Fencing ───────────────────────────────────────────────
+        if (d.fenceCoords && d.fenceCoords.length >= 3) {
+          var coords = d.fenceCoords;
+
+          map.addSource('fence', {
+            type: 'geojson',
+            data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [coords] } }
+          });
+          map.addLayer({ id: 'fence-fill', type: 'fill', source: 'fence', paint: { 'fill-color': '#FFA500', 'fill-opacity': 0.07 } });
+          map.addLayer({ id: 'fence-line', type: 'line', source: 'fence', paint: { 'line-color': '#FFA500', 'line-width': 2, 'line-dasharray': [4, 2] } });
+
+          gebetaMap.fencing.addFence({ id: 'embed-fence', coordinates: coords.map(function (c) { return [c[0], c[1]]; }) });
+
+          var lastValidCenter = [d.lng, d.lat];
+          map.on('moveend', function () {
+            var c = map.getCenter();
+            var inside = gebetaMap.fencing.isInsideFence('embed-fence', { lat: c.lat, lng: c.lng });
+            if (inside) {
+              lastValidCenter = [c.lng, c.lat];
+            } else {
+              map.flyTo({ center: lastValidCenter, duration: 300 });
+            }
+          });
+        }
       });
     });
   </script>
 </body>
 </html>`;
 
-    return new NextResponse(html, {
-        status: 200,
-        headers: { "Content-Type": "text/html" },
-    });
+    return new NextResponse(html, { status: 200, headers: { "Content-Type": "text/html" } });
 }

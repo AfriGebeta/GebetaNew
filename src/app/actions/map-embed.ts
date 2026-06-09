@@ -13,6 +13,7 @@ export interface GenerateEmbedInput {
     lng: number;
     zoom?: number;
     markers?: Marker[];
+    bounds?: [number, number, number, number] | null;
 }
 
 export interface GenerateEmbedResult {
