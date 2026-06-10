@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       bounds,
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const baseUrl = "https://gebeta.app";
     return NextResponse.json({
       iframeSrc: `${baseUrl}/embed/map?t=${encodeURIComponent(token)}`,
       embedId: token,

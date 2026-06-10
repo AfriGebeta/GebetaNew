@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
       var d = window.__MAP_DATA__;
       var center = map ? map.getCenter() : { lat: d.lat, lng: d.lng };
       var zoom = map ? Math.round(map.getZoom() * 10) / 10 : d.zoom;
-      var url = 'http://localhost:3001/?lat=' + center.lat + '&lon=' + center.lng + '&z=' + zoom;
+      var url = 'https://maps.gebeta.app/?lat=' + center.lat + '&lon=' + center.lng + '&z=' + zoom;
       window.open(url, '_blank');
     });
 
