@@ -89,9 +89,13 @@ export async function GET(req: NextRequest) {
   </div>
 
   <script>
+    var map;
+
     document.getElementById('open-btn').addEventListener('click', function () {
       var d = window.__MAP_DATA__;
-      var url = 'http://localhost:3001/?lat=' + d.lat + '&lon=' + d.lng + '&z=' + d.zoom;
+      var center = map ? map.getCenter() : { lat: d.lat, lng: d.lng };
+      var zoom = map ? Math.round(map.getZoom() * 10) / 10 : d.zoom;
+      var url = 'http://localhost:3001/?lat=' + center.lat + '&lon=' + center.lng + '&z=' + zoom;
       window.open(url, '_blank');
     });
 
@@ -99,17 +103,17 @@ export async function GET(req: NextRequest) {
       var d = window.__MAP_DATA__;
 
       var gebeta = new GebetaMaps({ auth: { accessToken: d.accessToken, refreshToken: d.refreshToken } });
-      var map = gebeta.init({
+      map = gebeta.init({
         container: 'map',
         center: [d.lng, d.lat],
         zoom: d.zoom,
         minZoom: d.minZoom,
         maxZoom: d.maxZoom,
         navigationControl: true,
+        maxBounds: d.bounds ? [[d.bounds[0], d.bounds[1]], [d.bounds[2], d.bounds[3]]] : undefined,
       });
 
       map.on('load', function () {
-
         (d.markers || []).forEach(function (m) {
           var el = document.createElement('div');
           el.style.cssText = [

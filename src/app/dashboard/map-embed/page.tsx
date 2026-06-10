@@ -341,12 +341,12 @@ export default function MapEmbedPage() {
                                 className={`text-xs border-white/10 bg-transparent ${mode === "marker" ? "border-[#FFA500] text-[#FFA500]" : ""}`}>
                                 <Map className="w-3 h-3 mr-1" /> Drop Marker
                             </Button>
-                            {/* <Button size="sm" variant="outline"
+                            <Button size="sm" variant="outline"
                                 onClick={() => { handleClearBounds(); setMode("bounds"); toast({ description: "Click two opposite corners to draw the bounding box." }); }}
                                 className={`text-xs border-white/10 bg-transparent ${mode === "bounds" ? "border-[#FFA500] text-[#FFA500]" : bounds ? "border-orange-400 text-orange-400" : ""}`}>
                                 <BoxSelect className="w-3 h-3 mr-1" />
                                 {boundsCorner1 ? "Click 2nd corner…" : bounds ? "Redraw Bounds" : "Draw Bounds"}
-                            </Button> */}
+                            </Button>
                             {bounds && mode !== "bounds" && (
                                 <Button size="sm" variant="outline" onClick={handleClearBounds}
                                     className="text-xs border-white/10 text-red-400 bg-transparent">
