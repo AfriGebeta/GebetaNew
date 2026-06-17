@@ -3,7 +3,7 @@ import { verifyEmbedToken, mintTokens } from "@/lib/map-embed-store";
 
 export const dynamic = "force-dynamic";
 
-const EXTERNAL_API = "https://api.traffic.gebeta.app"
+const EXTERNAL_API = process.env.EXTERNAL_API_URL ?? "http://localhost:4000";
 
 function errorHtml(message: string, status: number) {
   return new NextResponse(
@@ -42,7 +42,6 @@ export async function GET(req: NextRequest) {
         }));
     }
   } catch {
-    // Non-fatal — render map without markers rather than failing the whole embed
   }
 
   const mapData = JSON.stringify({
@@ -137,37 +136,81 @@ export async function GET(req: NextRequest) {
       });
 
       map.on('load', function () {
-        (d.markers || []).forEach(function (m) {
-          var el = document.createElement('div');
+        var markerList = d.markers || [];
 
-          if (m.image) {
-            el.style.cssText = [
-              'width:36px', 'height:36px',
-              'background-image:url(' + m.image + ')',
-              'background-size:contain',
-              'background-repeat:no-repeat',
-              'background-position:center bottom',
-              'cursor:pointer',
-            ].join(';');
-          } else {
-            el.style.cssText = [
-              'width:40px', 'height:40px',
-              'background-image:url(https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png)',
-              'background-size:contain', 'background-repeat:no-repeat',
-              'background-position:center bottom', 'cursor:pointer',
-              'filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-            ].join(';');
-          }
+        // Register every distinct marker image once, keyed by a stable icon id.
+        // Falls back to the default teardrop pin for markers with no image.
+        var DEFAULT_ICON = 'default-pin';
+        var imagePromises = [];
+        var seenImages = {};
 
-          var marker = new maplibregl.Marker({ element: el, anchor: m.image ? 'center' : 'bottom' })
-            .setLngLat([m.lng, m.lat]);
+        markerList.forEach(function (m) {
+          var url = m.image || 'https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png';
+          if (seenImages[url]) return;
+          seenImages[url] = true;
+          imagePromises.push(
+            map.loadImage(url).then(function (res) {
+              var iconId = m.image ? url : DEFAULT_ICON;
+              if (!map.hasImage(iconId)) {
+                map.addImage(iconId, res.data, m.image ? {} : { });
+              }
+            }).catch(function () {
+              // Individual broken image shouldn't block the rest of the layer
+            })
+          );
+        });
 
-          if (m.label) {
-            var popup = new maplibregl.Popup({ offset: 25, closeButton: true })
-              .setHTML('<div style="font-family:Roboto,Arial,sans-serif;font-size:13px;font-weight:600;color:#333;padding:2px 4px;">' + m.label + '</div>');
-            marker.setPopup(popup);
-          }
-          marker.addTo(map);
+        Promise.all(imagePromises).then(function () {
+          var features = markerList.map(function (m) {
+            var url = m.image || 'https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png';
+            return {
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [m.lng, m.lat] },
+              properties: {
+                label: m.label || '',
+                iconId: url,
+              },
+            };
+          });
+
+          map.addSource('places', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: features },
+          });
+
+          map.addLayer({
+            id: 'places-layer',
+            type: 'symbol',
+            source: 'places',
+            layout: {
+              'icon-image': ['get', 'iconId'],
+              'icon-size': 0.06,
+              'icon-anchor': 'bottom',
+              'icon-allow-overlap': false,
+              'icon-ignore-placement': false,
+            },
+          });
+
+          // Single shared popup, shown on click instead of one Popup
+          // instance per marker — keeps memory flat regardless of count.
+          var popup = new maplibregl.Popup({ offset: 25, closeButton: true });
+
+          map.on('click', 'places-layer', function (e) {
+            var feature = e.features[0];
+            var label = feature.properties.label;
+            if (!label) return;
+            popup
+              .setLngLat(feature.geometry.coordinates)
+              .setHTML('<div style="font-family:Roboto,Arial,sans-serif;font-size:13px;font-weight:600;color:#333;padding:2px 4px;">' + label + '</div>')
+              .addTo(map);
+          });
+
+          map.on('mouseenter', 'places-layer', function () {
+            map.getCanvas().style.cursor = 'pointer';
+          });
+          map.on('mouseleave', 'places-layer', function () {
+            map.getCanvas().style.cursor = '';
+          });
         });
       });
     });

@@ -494,6 +494,7 @@ export default function MapEmbedPage() {
                                     <Input
                                         autoFocus
                                         placeholder="Place name (optional)"
+                                        className="text-white"
                                         value={pendingLabel}
                                         onChange={e => setPendingLabel(e.target.value)}
                                         onKeyDown={e => e.key === "Enter" && confirmPendingMarker()}
