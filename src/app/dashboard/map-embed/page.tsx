@@ -589,7 +589,7 @@ export default function MapEmbedPage() {
                             </div>
                         )}
                         {pendingMarker && (
-                            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-[#1a1a1a] border border-white/15 rounded-xl shadow-2xl p-4 w-72">
+                            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-white rounded-xl shadow-2xl p-4 w-72">
                                 <p className="text-xs text-[#aaa] mb-3">
                                     {pendingMarker.lat.toFixed(5)}, {pendingMarker.lng.toFixed(5)}
                                 </p>
@@ -597,12 +597,11 @@ export default function MapEmbedPage() {
                                     <Input
                                         autoFocus
                                         placeholder="Place name (optional)"
-                                        className="text-white"
                                         value={pendingLabel}
                                         onChange={e => setPendingLabel(e.target.value)}
                                         onKeyDown={e => e.key === "Enter" && confirmPendingMarker()}
                                     />
-                                    <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] hover:text-white border border-white/10 rounded-lg px-3 py-2">
+                                    <label className="flex items-center gap-2 cursor-pointer text-xs rounded-lg px-3 py-2">
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -621,11 +620,12 @@ export default function MapEmbedPage() {
                                 </div>
                                 <div className="flex gap-2">
                                     <Button size="sm" onClick={confirmPendingMarker}
-                                        className="flex-1 bg-[#FFA500] text-black text-xs font-semibold hover:bg-[#FF8C00]">
+                                        className="flex-1 text-white hover:bg-[#ffa500]">
                                         Add Place
                                     </Button>
-                                    <Button size="sm" variant="outline"
-                                        className="border-white/10 bg-transparent text-xs"
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
                                         onClick={cancelPendingMarker}>
                                         Cancel
                                     </Button>
