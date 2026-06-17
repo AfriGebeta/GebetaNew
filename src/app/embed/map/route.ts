@@ -3,7 +3,7 @@ import { verifyEmbedToken, mintTokens } from "@/lib/map-embed-store";
 
 export const dynamic = "force-dynamic";
 
-const EXTERNAL_API = process.env.EXTERNAL_API_URL ?? "http://localhost:4000";
+const EXTERNAL_API = "https://api.traffic.gebeta.app";
 
 function errorHtml(message: string, status: number) {
   return new NextResponse(
