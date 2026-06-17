@@ -13,7 +13,7 @@ import {
     EyeIcon, EyeOffIcon,
     ImagePlus,
     Loader2,
-    Map,
+    Map as MapIcon,
     MousePointer, RotateCcw,
     Trash2,
     UploadCloud,
@@ -98,22 +98,90 @@ export default function MapEmbedPage() {
 
     useEffect(() => { markersStateRef.current = markers; }, [markers]);
 
+    const DEFAULT_ICON = "default-pin";
+    const seenImagesRef = useRef<Set<string>>(new Set());
+
     const syncMarkersOnMap = useCallback((newMarkers: Marker[]) => {
-        markersRef.current.forEach(m => m.remove());
-        markersRef.current = [];
-        if (!mapRef.current) return;
-        newMarkers.forEach(m => {
-            const el = document.createElement("div");
-            if (m.image) {
-                el.style.cssText = "width:32px;height:32px;border-radius:50%;background-size:cover;background-position:center;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);background-image:url(" + m.image + ")";
-            } else {
-                el.style.cssText = "width:28px;height:28px;border-radius:50% 50% 50% 0;background:#FFA500;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);";
-            }
-            const marker = new (window as any).maplibregl.Marker({ element: el })
-                .setLngLat([m.lng, m.lat]).addTo(mapRef.current);
-            if (m.label) marker.setPopup(new (window as any).maplibregl.Popup().setText(m.label));
-            markersRef.current.push(marker);
+        const map = mapRef.current;
+        if (!map) return;
+        const maplibregl = (window as any).maplibregl;
+
+        const buildFeatures = () => ({
+            type: "FeatureCollection" as const,
+            features: newMarkers.map((m) => {
+                const url = m.image || "https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png";
+                const iconId = m.image ? url : DEFAULT_ICON;
+                return {
+                    type: "Feature" as const,
+                    geometry: { type: "Point" as const, coordinates: [m.lng, m.lat] },
+                    properties: { label: m.label || "", iconId },
+                };
+            }),
         });
+
+        const applyLayer = () => {
+            const data = buildFeatures();
+            const source = map.getSource("dashboard-places");
+            if (source) {
+                source.setData(data);
+            } else {
+                map.addSource("dashboard-places", { type: "geojson", data });
+                map.addLayer({
+                    id: "dashboard-places-layer",
+                    type: "symbol",
+                    source: "dashboard-places",
+                    layout: {
+                        "icon-image": ["get", "iconId"],
+                        "icon-size": 0.06,
+                        "icon-anchor": "bottom",
+                        "icon-allow-overlap": false,
+                        "icon-ignore-placement": false,
+                    },
+                });
+
+                const popup = new maplibregl.Popup({ offset: 25, closeButton: true });
+                map.on("click", "dashboard-places-layer", (e: any) => {
+                    const feature = e.features[0];
+                    const label = feature.properties.label;
+                    if (!label) return;
+                    popup.setLngLat(feature.geometry.coordinates)
+                        .setHTML('<div style="font-family:Roboto,Arial,sans-serif;font-size:13px;font-weight:600;color:#333;padding:2px 4px;">' + label + "</div>")
+                        .addTo(map);
+                });
+                map.on("mouseenter", "dashboard-places-layer", () => { map.getCanvas().style.cursor = "pointer"; });
+                map.on("mouseleave", "dashboard-places-layer", () => { map.getCanvas().style.cursor = ""; });
+            }
+        };
+
+        const toLoad = newMarkers
+            .map(m => m.image || "https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png")
+            .filter(url => !seenImagesRef.current.has(url) && !map.hasImage(url) && url !== DEFAULT_ICON);
+
+        const needsDefault = !map.hasImage(DEFAULT_ICON) && newMarkers.some(m => !m.image);
+        const loadPromises: Promise<any>[] = [];
+
+        if (needsDefault) {
+            loadPromises.push(
+                map.loadImage("https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png")
+                    .then((res: any) => { if (!map.hasImage(DEFAULT_ICON)) map.addImage(DEFAULT_ICON, res.data); })
+                    .catch(() => { })
+            );
+        }
+
+        Array.from(new Set(toLoad)).forEach(url => {
+            seenImagesRef.current.add(url);
+            loadPromises.push(
+                map.loadImage(url)
+                    .then((res: any) => { if (!map.hasImage(url)) map.addImage(url, res.data); })
+                    .catch(() => { })
+            );
+        });
+
+        if (loadPromises.length === 0) {
+            applyLayer();
+        } else {
+            Promise.all(loadPromises).then(applyLayer);
+        }
     }, []);
 
     const handleMarkerImageUpload = useCallback(async (i: number, file: File) => {
@@ -288,6 +356,9 @@ export default function MapEmbedPage() {
                 try { mapRef.current.remove(); } catch { }
                 mapRef.current = null;
             }
+
+            seenImagesRef.current.clear();
+            markersRef.current = [];
             mapReadyRef.current = false;
             setMapReady(false);
             setMapLoaded(false);
@@ -520,7 +591,7 @@ export default function MapEmbedPage() {
                             ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Loading Map...</>
                             : mapLoaded
                                 ? <><RotateCcw className="w-4 h-4 mr-2" />Reload Map</>
-                                : <><Map className="w-4 h-4 mr-2" />Load Map to Configure</>}
+                                : <><MapIcon className="w-4 h-4 mr-2" />Load Map to Configure</>}
                     </Button>
                 </div>
 
@@ -540,7 +611,7 @@ export default function MapEmbedPage() {
                             </Button>
                             <Button size="sm" variant="outline" onClick={() => setMode("marker")}
                                 className={`text-xs border-white/10 bg-transparent ${mode === "marker" ? "border-[#FFA500] text-[#FFA500]" : ""}`}>
-                                <Map className="w-3 h-3 mr-1" /> Drop Marker
+                                <MapIcon className="w-3 h-3 mr-1" /> Drop Marker
                             </Button>
                             <Button size="sm" variant="outline"
                                 onClick={() => { handleClearBounds(); setMode("bounds"); toast({ description: "Click two opposite corners to draw the bounding box." }); }}
@@ -561,7 +632,7 @@ export default function MapEmbedPage() {
                         <div ref={mapContainerRef} className="w-full h-full" />
                         {!mapLoaded && !mapLoading && !mapRef.current && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#111] gap-3">
-                                <Map className="w-10 h-10 text-white/20" />
+                                <MapIcon className="w-10 h-10 text-white/20" />
                                 <p className="text-[#555]">Paste your tokens and click "Load Map to Configure"</p>
                             </div>
                         )}
@@ -589,7 +660,7 @@ export default function MapEmbedPage() {
                             </div>
                         )}
                         {pendingMarker && (
-                            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-white rounded-xl shadow-2xl p-4 w-72">
+                            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-white border border-white/15 rounded-xl shadow-2xl p-4 w-72">
                                 <p className="text-xs text-[#aaa] mb-3">
                                     {pendingMarker.lat.toFixed(5)}, {pendingMarker.lng.toFixed(5)}
                                 </p>
@@ -601,7 +672,7 @@ export default function MapEmbedPage() {
                                         onChange={e => setPendingLabel(e.target.value)}
                                         onKeyDown={e => e.key === "Enter" && confirmPendingMarker()}
                                     />
-                                    <label className="flex items-center gap-2 cursor-pointer text-xs rounded-lg px-3 py-2">
+                                    <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa]  border border-black/10 rounded-lg px-3 py-2">
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -620,12 +691,10 @@ export default function MapEmbedPage() {
                                 </div>
                                 <div className="flex gap-2">
                                     <Button size="sm" onClick={confirmPendingMarker}
-                                        className="flex-1 text-white hover:bg-[#ffa500]">
+                                        className="flex-1 bg-[#FFA500] text-white text-xs font-semibold hover:bg-[#FF8C00]">
                                         Add Place
                                     </Button>
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
+                                    <Button size="sm" variant="outline"
                                         onClick={cancelPendingMarker}>
                                         Cancel
                                     </Button>
@@ -653,7 +722,7 @@ export default function MapEmbedPage() {
                         <Input className="w-32" placeholder="Latitude" value={manualLat} onChange={e => setManualLat(e.target.value)} />
                         <Input className="w-32" placeholder="Longitude" value={manualLng} onChange={e => setManualLng(e.target.value)} />
                         <Input className="w-32" placeholder="Type (optional)" value={manualType} onChange={e => setManualType(e.target.value)} />
-                        <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] border border-white/10 rounded-lg px-3 py-2 h-9">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] hover:text-white border border-white/10 rounded-lg px-3 py-2 h-9">
                             <input
                                 type="file"
                                 accept="image/*"
@@ -673,7 +742,7 @@ export default function MapEmbedPage() {
                             className="bg-[#FFA500] text-black font-semibold hover:bg-[#FF8C00]">
                             {manualSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
                         </Button>
-                        <label className="flex items-center gap-2 cursor-pointer text-xs border border-white/10 rounded-lg px-3 py-2 h-9">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs border border-white/10 rounded-lg px-3 py-2 h-9 hover:bg-white/10">
                             <input
                                 type="file"
                                 accept=".csv"
