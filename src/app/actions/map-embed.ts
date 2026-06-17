@@ -25,7 +25,7 @@ export interface GenerateEmbedResult {
 }
 
 export async function generateMapEmbed(input: GenerateEmbedInput): Promise<GenerateEmbedResult> {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://gebeta.app";
   const res = await fetch(`${baseUrl}/api/map-embed`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
