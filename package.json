@@ -64,6 +64,7 @@
     "next-themes": "^0.4.6",
     "nextjs-toploader": "^3.8.15",
     "nodemailer": "^6.9.16",
+    "papaparse": "^5.5.3",
     "pdf-lib": "^1.17.1",
     "plaiceholder": "^3.0.0",
     "posthog-js": "^1.260.1",

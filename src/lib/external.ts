@@ -22,13 +22,13 @@ export interface CreateExternalPlaceInput {
     active?: boolean;
 }
 
-export async function getAllExternalPlaces(owner: string): Promise<ExternalPlace[]> {
+export async function getAllExternalPlaces(owner: string): Promise<ExternalPlace[] | undefined> {
     try {
         const res = await fetch(
             `${EXTERNAL_API}/api/external/place?owner=${encodeURIComponent(owner)}`,
             { cache: "no-store" }
         );
-        console.log("places fetch status:", res.status, "data:", res, "owner:", owner); // ADD
+        console.log("places fetch status:", res.status, "data:", res, "owner:", owner);
         if (!res.ok) throw new Error(`Failed to fetch places: ${res.status}`);
         return res.json();
     } catch (error) {
@@ -43,4 +43,13 @@ export async function createExternalPlace(data: CreateExternalPlaceInput): Promi
         body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error(`Failed to create place: ${res.status}`);
+}
+
+export async function createManyExternalPlaces(data: CreateExternalPlaceInput[]): Promise<void> {
+    const res = await fetch(`${EXTERNAL_API}/api/external/place/create-many`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ places: data }),
+    });
+    if (!res.ok) throw new Error(`Failed to bulk create: ${res.status}`);
 }

@@ -16,9 +16,10 @@ import {
     Map,
     MousePointer, RotateCcw,
     Trash2,
+    UploadCloud,
 } from "lucide-react";
-import { useContext, useEffect, useRef, useState } from "react";
-import { createExternalPlace, getAllExternalPlaces } from "@/lib/external";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createExternalPlace, createManyExternalPlaces, getAllExternalPlaces } from "@/lib/external";
 import { AuthContext } from "@/providers/AuthProvider";
 
 export default function MapEmbedPage() {
@@ -53,10 +54,21 @@ export default function MapEmbedPage() {
     const [iframeSrc, setIframeSrc] = useState("");
     const [generating, setGenerating] = useState(false);
     const [copied, setCopied] = useState(false);
+
     const [pendingMarker, setPendingMarker] = useState<{ lat: number; lng: number } | null>(null);
     const [pendingLabel, setPendingLabel] = useState("");
     const [pendingImage, setPendingImage] = useState<string | null>(null);
     const [pendingUploading, setPendingUploading] = useState(false);
+
+    const [manualName, setManualName] = useState("");
+    const [manualLat, setManualLat] = useState("");
+    const [manualLng, setManualLng] = useState("");
+    const [manualType, setManualType] = useState("");
+    const [manualImage, setManualImage] = useState<string | null>(null);
+    const [manualUploading, setManualUploading] = useState(false);
+    const [manualSubmitting, setManualSubmitting] = useState(false);
+
+    const [csvUploading, setCsvUploading] = useState(false);
 
     const modeRef = useRef(mode);
     const boundsCorner1Ref = useRef(boundsCorner1);
@@ -71,23 +83,40 @@ export default function MapEmbedPage() {
     }, []);
 
     useEffect(() => {
-        console.log("places effect fired, user:", currentUser?.user?.username);
         if (!currentUser?.user?.username) return;
-        getAllExternalPlaces(currentUser?.user?.username)
+        getAllExternalPlaces(currentUser.user.username)
             .then(places => {
-                console.log("places fetched:", places.length, places);
+                //@ts-ignore
                 const mapped: Marker[] = places
-                    .filter(p => p.active !== false)
+                    ?.filter(p => p.active !== false)
                     .map(p => ({ lat: p.lat, lng: p.lng, label: p.name, image: p.image }));
                 setMarkers(mapped);
                 if (mapReadyRef.current) syncMarkersOnMap(mapped);
             })
             .catch(err => toast({ description: "Failed to load places: " + err.message, variant: "destructive" }));
-    }, [currentUser?.user?.username])
+    }, [currentUser?.user?.username]);
 
     useEffect(() => { markersStateRef.current = markers; }, [markers]);
 
-    const handleMarkerImageUpload = async (i: number, file: File) => {
+    const syncMarkersOnMap = useCallback((newMarkers: Marker[]) => {
+        markersRef.current.forEach(m => m.remove());
+        markersRef.current = [];
+        if (!mapRef.current) return;
+        newMarkers.forEach(m => {
+            const el = document.createElement("div");
+            if (m.image) {
+                el.style.cssText = "width:32px;height:32px;border-radius:50%;background-size:cover;background-position:center;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);background-image:url(" + m.image + ")";
+            } else {
+                el.style.cssText = "width:28px;height:28px;border-radius:50% 50% 50% 0;background:#FFA500;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);";
+            }
+            const marker = new (window as any).maplibregl.Marker({ element: el })
+                .setLngLat([m.lng, m.lat]).addTo(mapRef.current);
+            if (m.label) marker.setPopup(new (window as any).maplibregl.Popup().setText(m.label));
+            markersRef.current.push(marker);
+        });
+    }, []);
+
+    const handleMarkerImageUpload = useCallback(async (i: number, file: File) => {
         setUploadingIndex(i);
         try {
             const url = await uploadMarkerImage(file);
@@ -102,9 +131,9 @@ export default function MapEmbedPage() {
         } finally {
             setUploadingIndex(null);
         }
-    };
+    }, [syncMarkersOnMap, toast]);
 
-    const handlePendingImageUpload = async (file: File) => {
+    const handlePendingImageUpload = useCallback(async (file: File) => {
         setPendingUploading(true);
         try {
             const url = await uploadMarkerImage(file);
@@ -114,32 +143,124 @@ export default function MapEmbedPage() {
         } finally {
             setPendingUploading(false);
         }
-    };
+    }, [toast]);
 
-    const confirmPendingMarker = () => {
-        if (!pendingMarker) return;
-        const newMarker: Marker = {
-            lat: pendingMarker.lat,
-            lng: pendingMarker.lng,
-            label: pendingLabel || undefined,
-            image: pendingImage || undefined,
-        };
-        setMarkers(prev => {
-            const updated = [...prev, newMarker];
-            syncMarkersOnMap(updated);
-            return updated;
-        });
-        createExternalPlace({
-            name: pendingLabel || "",
-            lat: pendingMarker.lat,
-            lng: pendingMarker.lng,
-            owner: currentUser?.user?.username,
-            image: pendingImage || undefined,
-        }).catch(() => { });
+    const cancelPendingMarker = useCallback(() => {
         setPendingMarker(null);
         setPendingLabel("");
         setPendingImage(null);
-    };
+    }, []);
+
+    const confirmPendingMarker = useCallback(() => {
+        setPendingMarker(currentPending => {
+            if (!currentPending) return currentPending;
+            setPendingLabel(currentLabel => {
+                setPendingImage(currentImage => {
+                    const newMarker: Marker = {
+                        lat: currentPending.lat,
+                        lng: currentPending.lng,
+                        label: currentLabel || undefined,
+                        image: currentImage || undefined,
+                    };
+                    setMarkers(prev => {
+                        const updated = [...prev, newMarker];
+                        syncMarkersOnMap(updated);
+                        return updated;
+                    });
+                    createExternalPlace({
+                        name: currentLabel || "",
+                        lat: currentPending.lat,
+                        lng: currentPending.lng,
+                        owner: currentUser?.user?.username,
+                        image: currentImage || undefined,
+                    }).catch(() => { });
+                    return null;
+                });
+                return "";
+            });
+            return null;
+        });
+    }, [syncMarkersOnMap, currentUser?.user?.username]);
+
+    const handleManualImageUpload = useCallback(async (file: File) => {
+        setManualUploading(true);
+        try {
+            const url = await uploadMarkerImage(file);
+            setManualImage(url);
+        } catch (e: any) {
+            toast({ description: e.message ?? "Upload failed", variant: "destructive" });
+        } finally {
+            setManualUploading(false);
+        }
+    }, [toast]);
+
+    const handleManualAdd = useCallback(async () => {
+        const lat = parseFloat(manualLat);
+        const lng = parseFloat(manualLng);
+        if (isNaN(lat) || isNaN(lng)) {
+            toast({ description: "Valid latitude and longitude required", variant: "destructive" });
+            return;
+        }
+        setManualSubmitting(true);
+        try {
+            await createExternalPlace({
+                name: manualName || "",
+                lat, lng,
+                owner: currentUser?.user?.username,
+                type: manualType || undefined,
+                image: manualImage || undefined,
+            });
+            const newMarker: Marker = { lat, lng, label: manualName || undefined, image: manualImage || undefined };
+            setMarkers(prev => {
+                const updated = [...prev, newMarker];
+                syncMarkersOnMap(updated);
+                return updated;
+            });
+            toast({ description: "Place added!" });
+            setManualName(""); setManualLat(""); setManualLng(""); setManualType(""); setManualImage(null);
+        } catch (e: any) {
+            toast({ description: e.message ?? "Failed to add place", variant: "destructive" });
+        } finally {
+            setManualSubmitting(false);
+        }
+    }, [manualName, manualLat, manualLng, manualType, manualImage, currentUser?.user?.username, syncMarkersOnMap, toast]);
+
+    const handleCsvUpload = useCallback(async (file: File) => {
+        setCsvUploading(true);
+        try {
+            //@ts-ignore
+            const Papa = (await import("papaparse")).default;
+            const text = await file.text();
+            const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+            const rows = parsed.data as any[];
+            const places = rows.map(r => ({
+                name: r.name || r.location_name || "",
+                lat: parseFloat(r.lat || r.latitude),
+                lng: parseFloat(r.lng || r.longitude),
+                type: r.type || r.location_type || undefined,
+                owner: currentUser?.user?.username,
+            })).filter(p => !isNaN(p.lat) && !isNaN(p.lng));
+
+            if (places.length === 0) {
+                toast({ description: "No valid rows found in CSV", variant: "destructive" });
+                return;
+            }
+
+            await createManyExternalPlaces(places);
+            toast({ description: `Added ${places.length} places from CSV` });
+
+            const mapped: Marker[] = places.map(p => ({ lat: p.lat, lng: p.lng, label: p.name }));
+            setMarkers(prev => {
+                const updated = [...prev, ...mapped];
+                syncMarkersOnMap(updated);
+                return updated;
+            });
+        } catch (e: any) {
+            toast({ description: e.message ?? "CSV upload failed", variant: "destructive" });
+        } finally {
+            setCsvUploading(false);
+        }
+    }, [currentUser?.user?.username, syncMarkersOnMap, toast]);
 
     const handleLoadMap = async () => {
         if (!serverToken.trim() || !clientToken.trim()) {
@@ -209,24 +330,6 @@ export default function MapEmbedPage() {
             setCenter({ lat: p.lat, lng: p.lng });
         });
         centerMarkerRef.current = marker;
-    };
-
-    const syncMarkersOnMap = (newMarkers: Marker[]) => {
-        markersRef.current.forEach(m => m.remove());
-        markersRef.current = [];
-        if (!mapRef.current) return;
-        newMarkers.forEach(m => {
-            const el = document.createElement("div");
-            if (m.image) {
-                el.style.cssText = "width:32px;height:32px;border-radius:50%;background-size:cover;background-position:center;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);background-image:url(" + m.image + ")";
-            } else {
-                el.style.cssText = "width:28px;height:28px;border-radius:50% 50% 50% 0;background:#FFA500;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);";
-            }
-            const marker = new (window as any).maplibregl.Marker({ element: el })
-                .setLngLat([m.lng, m.lat]).addTo(mapRef.current);
-            if (m.label) marker.setPopup(new (window as any).maplibregl.Popup().setText(m.label));
-            markersRef.current.push(marker);
-        });
     };
 
     const drawBoundsOnMap = (b: [number, number, number, number]) => {
@@ -353,7 +456,7 @@ export default function MapEmbedPage() {
                 lat: center.lat, lng: center.lng,
                 zoom: zoomRef.current,
                 bounds: bounds ?? null,
-                owner: currentUser.user.username,
+                owner: currentUser?.user?.username,
             });
             setIframeSrc(result.iframeSrc);
             setTimeout(() => document.getElementById("embed-result")?.scrollIntoView({ behavior: "smooth" }), 100);
@@ -523,7 +626,7 @@ export default function MapEmbedPage() {
                                     </Button>
                                     <Button size="sm" variant="outline"
                                         className="border-white/10 bg-transparent text-xs"
-                                        onClick={() => { setPendingMarker(null); setPendingLabel(""); setPendingImage(null); }}>
+                                        onClick={cancelPendingMarker}>
                                         Cancel
                                     </Button>
                                 </div>
@@ -541,6 +644,53 @@ export default function MapEmbedPage() {
                             )}
                         </div>
                     )}
+                </div>
+
+                <div className="space-y-2">
+                    <Label>3. Add Place Manually <span className="text-[#aaa] font-normal">(optional)</span></Label>
+                    <div className="flex gap-2 flex-wrap items-center">
+                        <Input className="w-48" placeholder="Name" value={manualName} onChange={e => setManualName(e.target.value)} />
+                        <Input className="w-32" placeholder="Latitude" value={manualLat} onChange={e => setManualLat(e.target.value)} />
+                        <Input className="w-32" placeholder="Longitude" value={manualLng} onChange={e => setManualLng(e.target.value)} />
+                        <Input className="w-32" placeholder="Type (optional)" value={manualType} onChange={e => setManualType(e.target.value)} />
+                        <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] border border-white/10 rounded-lg px-3 py-2 h-9">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={e => {
+                                    const file = e.target.files?.[0];
+                                    if (file) handleManualImageUpload(file);
+                                }}
+                            />
+                            {manualUploading
+                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                : manualImage
+                                    ? <img src={manualImage} className="w-5 h-5 rounded object-cover" alt="" />
+                                    : <ImagePlus className="w-3.5 h-3.5" />}
+                        </label>
+                        <Button size="sm" onClick={handleManualAdd} disabled={manualSubmitting}
+                            className="bg-[#FFA500] text-black font-semibold hover:bg-[#FF8C00]">
+                            {manualSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
+                        </Button>
+                        <label className="flex items-center gap-2 cursor-pointer text-xs border border-white/10 rounded-lg px-3 py-2 h-9">
+                            <input
+                                type="file"
+                                accept=".csv"
+                                className="hidden"
+                                onChange={e => {
+                                    const file = e.target.files?.[0];
+                                    if (file) handleCsvUpload(file);
+                                }}
+                            />
+                            {csvUploading
+                                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading CSV...</>
+                                : <><UploadCloud className="w-3.5 h-3.5" /> Upload CSV</>}
+                        </label>
+                    </div>
+                    <p className="text-xs text-[#555]">
+                        CSV columns: name (or location_name), lat/latitude, lng/longitude, type (or location_type)
+                    </p>
                 </div>
 
                 {markers.length > 0 && (

@@ -163,12 +163,13 @@ export async function GET(req: NextRequest) {
         Promise.all(imagePromises).then(function () {
           var features = markerList.map(function (m) {
             var url = m.image || 'https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png';
+            var iconId = m.image ? url : DEFAULT_ICON;
             return {
               type: 'Feature',
               geometry: { type: 'Point', coordinates: [m.lng, m.lat] },
               properties: {
                 label: m.label || '',
-                iconId: url,
+                iconId: iconId,
               },
             };
           });

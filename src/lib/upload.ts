@@ -13,6 +13,7 @@ export async function uploadMarkerImage(file: File): Promise<string> {
     body: JSON.stringify({
       prefix: "user-custom-markers",
       filename: file.name,
+      bucket: "traffic-app-public"
     }),
   });
 

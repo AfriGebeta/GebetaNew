@@ -1,26 +1,12 @@
-/**
- * One-off seed script — bulk imports external places into the Express/Prisma DB,
- * mapping each place's `location_type` to its marker image already uploaded in MinIO
- * under traffic-app/user-custom-markers/.
- *
- * Usage:
- *   npx tsx scripts/seed-external-places.ts ./data/places.json
- *
- * The JSON file should be the raw array straight from your source (Mongo export etc).
- * Adjust EXTERNAL_API, OWNER, and TYPE_IMAGE_MAP below before running.
- */
-
 import fs from "fs";
 import path from "path";
 
-const EXTERNAL_API = process.env.EXTERNAL_API_URL ?? "https://api.traffic.gebeta.app";
-const MINIO_BASE = "https://miniotest.gebeta.app/traffic-app/user-custom-markers";
-const OWNER = "boss_username_here"; // <-- set the actual owner this batch belongs to
-const BATCH_SIZE = 15; // concurrent requests per batch — stay under the 100 req/min limiter
-const BATCH_DELAY_MS = 10000; // wait between batches so we stay under 100 req/60s
+const EXTERNAL_API = process.env.EXTERNAL_API_URL ?? "http://localhost:4000";
+const MINIO_BASE = "https://minio.traffic.gebeta.app/traffic-app-public/user-custom-markers";
+const OWNER = "gebeta1";
+const BATCH_SIZE = 15;
+const BATCH_DELAY_MS = 10000; 
 
-// location_type -> marker image filename already in MinIO.
-// Add every distinct type your source data uses; unmapped types fall back to no image.
 const TYPE_IMAGE_MAP: Record<string, string> = {
   tele: "tele.webp",
   bank: "bank.webp",
