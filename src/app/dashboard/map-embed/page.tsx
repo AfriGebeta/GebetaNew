@@ -55,13 +55,11 @@ export default function MapEmbedPage() {
     const [generating, setGenerating] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    // Pending marker (click-on-map) state
     const [pendingMarker, setPendingMarker] = useState<{ lat: number; lng: number } | null>(null);
     const [pendingLabel, setPendingLabel] = useState("");
     const [pendingImage, setPendingImage] = useState<string | null>(null);
     const [pendingUploading, setPendingUploading] = useState(false);
 
-    // Manual entry form state
     const [manualName, setManualName] = useState("");
     const [manualLat, setManualLat] = useState("");
     const [manualLng, setManualLng] = useState("");
@@ -70,7 +68,6 @@ export default function MapEmbedPage() {
     const [manualUploading, setManualUploading] = useState(false);
     const [manualSubmitting, setManualSubmitting] = useState(false);
 
-    // CSV upload state
     const [csvUploading, setCsvUploading] = useState(false);
     const [visibleMarkerCount, setVisibleMarkerCount] = useState(5);
 
@@ -90,8 +87,9 @@ export default function MapEmbedPage() {
         if (!currentUser?.user?.username) return;
         getAllExternalPlaces(currentUser.user.username)
             .then(places => {
+                //@ts-ignore
                 const mapped: Marker[] = places
-                    .filter(p => p.active !== false)
+                    ?.filter(p => p.active !== false)
                     .map(p => ({ lat: p.lat, lng: p.lng, label: p.name, image: p.image }));
                 setMarkers(mapped);
                 if (mapReadyRef.current) syncMarkersOnMap(mapped);
@@ -101,12 +99,6 @@ export default function MapEmbedPage() {
 
     useEffect(() => { markersStateRef.current = markers; }, [markers]);
 
-    // Mirrors the embed route's approach: bulk places render via a GPU
-    // symbol layer (source 'dashboard-places' / layer 'dashboard-places-layer')
-    // instead of individual DOM Marker objects, which is what made hundreds
-    // of markers slow and broke after map reinit. DOM Markers are no longer
-    // used for the place list at all — only the center marker (drag) and
-    // the pending-marker-being-added stay as real Marker objects elsewhere.
     const DEFAULT_ICON = "default-pin";
     const seenImagesRef = useRef<Set<string>>(new Set());
 
@@ -162,12 +154,10 @@ export default function MapEmbedPage() {
             }
         };
 
-        // Load any new marker images we haven't registered yet, then apply.
         const toLoad = newMarkers
             .map(m => m.image || "https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png")
             .filter(url => !seenImagesRef.current.has(url) && !map.hasImage(url) && url !== DEFAULT_ICON);
 
-        // Always ensure the default pin icon exists once.
         const needsDefault = !map.hasImage(DEFAULT_ICON) && newMarkers.some(m => !m.image);
         const loadPromises: Promise<any>[] = [];
 
@@ -307,6 +297,7 @@ export default function MapEmbedPage() {
     const handleCsvUpload = useCallback(async (file: File) => {
         setCsvUploading(true);
         try {
+            //@ts-ignore
             const Papa = (await import("papaparse")).default;
             const text = await file.text();
             const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
@@ -366,9 +357,7 @@ export default function MapEmbedPage() {
                 try { mapRef.current.remove(); } catch { }
                 mapRef.current = null;
             }
-            // New map instance means the old GeoJSON source/layer and any
-            // registered images are gone too — reset bookkeeping so the
-            // next syncMarkersOnMap call rebuilds everything from scratch.
+            
             seenImagesRef.current.clear();
             markersRef.current = [];
             mapReadyRef.current = false;
