@@ -3,6 +3,8 @@ import { verifyEmbedToken, mintTokens } from "@/lib/map-embed-store";
 
 export const dynamic = "force-dynamic";
 
+const EXTERNAL_API = "https://api.traffic.gebeta.app"
+
 function errorHtml(message: string, status: number) {
   return new NextResponse(
     `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body style="margin:0;background:#e8e0d8;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:14px"><p>${message}</p></body></html>`,
@@ -22,6 +24,27 @@ export async function GET(req: NextRequest) {
   try { credentials = await mintTokens(session.serverToken, session.clientToken); }
   catch { return errorHtml("Failed to authenticate. Please regenerate the embed.", 500); }
 
+  let markers: { lat: number; lng: number; label?: string; image?: string }[] = [];
+  try {
+    const placesRes = await fetch(
+      `${EXTERNAL_API}/api/external/place?owner=${encodeURIComponent(session.owner)}`,
+      { cache: "no-store" }
+    );
+    if (placesRes.ok) {
+      const places = await placesRes.json();
+      markers = places
+        .filter((p: any) => p.active !== false)
+        .map((p: any) => ({
+          lat: p.lat,
+          lng: p.lng,
+          label: p.name ?? undefined,
+          image: p.image ?? undefined,
+        }));
+    }
+  } catch {
+    // Non-fatal — render map without markers rather than failing the whole embed
+  }
+
   const mapData = JSON.stringify({
     accessToken: credentials.accessToken,
     refreshToken: credentials.refreshToken,
@@ -30,8 +53,8 @@ export async function GET(req: NextRequest) {
     zoom: session.zoom,
     minZoom: session.minZoom ?? 1,
     maxZoom: session.maxZoom ?? 22,
-    markers: session.markers,
-    bounds: session.bounds ?? null, 
+    markers,
+    bounds: session.bounds ?? null,
   });
 
   const html = `<!DOCTYPE html>
@@ -116,16 +139,34 @@ export async function GET(req: NextRequest) {
       map.on('load', function () {
         (d.markers || []).forEach(function (m) {
           var el = document.createElement('div');
-          el.style.cssText = [
-            'width:40px', 'height:40px',
-            'background-image:url(https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png)',
-            'background-size:contain', 'background-repeat:no-repeat',
-            'background-position:center bottom', 'cursor:pointer',
-            'filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-          ].join(';');
-          var marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+
+          if (m.image) {
+            el.style.cssText = [
+              'width:36px', 'height:36px',
+              'background-image:url(' + m.image + ')',
+              'background-size:contain',
+              'background-repeat:no-repeat',
+              'background-position:center bottom',
+              'cursor:pointer',
+            ].join(';');
+          } else {
+            el.style.cssText = [
+              'width:40px', 'height:40px',
+              'background-image:url(https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png)',
+              'background-size:contain', 'background-repeat:no-repeat',
+              'background-position:center bottom', 'cursor:pointer',
+              'filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+            ].join(';');
+          }
+
+          var marker = new maplibregl.Marker({ element: el, anchor: m.image ? 'center' : 'bottom' })
             .setLngLat([m.lng, m.lat]);
-          if (m.label) marker.setPopup(new maplibregl.Popup({ offset: 40 }).setText(m.label));
+
+          if (m.label) {
+            var popup = new maplibregl.Popup({ offset: 25, closeButton: true })
+              .setHTML('<div style="font-family:Roboto,Arial,sans-serif;font-size:13px;font-weight:600;color:#333;padding:2px 4px;">' + m.label + '</div>');
+            marker.setPopup(popup);
+          }
           marker.addTo(map);
         });
       });

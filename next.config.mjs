@@ -4,6 +4,7 @@ import withPlaiceholder from "@plaiceholder/next";
 const nextConfig = {
     output: process.env.NEXT_OUTPUT || 'standalone',
     reactStrictMode: false,
+    transpilePackages: ["geist"],
     basePath: '',
     images: {
         unoptimized: true,

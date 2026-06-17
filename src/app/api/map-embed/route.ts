@@ -7,8 +7,8 @@ export async function POST(req: NextRequest) {
       serverToken, clientToken,
       lat = 9.0161, lng = 38.7685, zoom = 13,
       minZoom = 1, maxZoom = 22,
-      markers = [],
       bounds = null,
+      owner,
     } = await req.json();
 
     if (!serverToken || !clientToken) {
@@ -19,11 +19,11 @@ export async function POST(req: NextRequest) {
       serverToken, clientToken,
       lat, lng, zoom,
       minZoom, maxZoom,
-      markers,
       bounds,
+      owner
     });
 
-    const baseUrl = "https://gebeta.app";
+    const baseUrl = "http://localhost:3000";
     return NextResponse.json({
       iframeSrc: `${baseUrl}/embed/map?t=${encodeURIComponent(token)}`,
       embedId: token,

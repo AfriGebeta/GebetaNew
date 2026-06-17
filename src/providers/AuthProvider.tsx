@@ -8,7 +8,7 @@ import {User} from "@/types/user";
 
 interface AuthContextType {
     isAuthenticated: boolean;
-    currentUser: User;
+    currentUser: {token:string, user: User};
     setCurrentUser: (user: User) => void;
     login: (user: User) => void;
     logout: () => void;

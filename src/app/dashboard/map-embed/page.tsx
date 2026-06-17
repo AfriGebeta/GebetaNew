@@ -1,23 +1,36 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import { generateMapEmbed, type Marker } from "@/app/actions/map-embed";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { uploadMarkerImage } from "@/lib/upload";
 import {
-    Copy, Check, Map, Trash2, EyeIcon, EyeOffIcon,
-    MousePointer, RotateCcw, Loader2, BoxSelect,
+    BoxSelect,
+    Check,
+    Copy,
+    EyeIcon, EyeOffIcon,
+    ImagePlus,
+    Loader2,
+    Map,
+    MousePointer, RotateCcw,
+    Trash2,
 } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { createExternalPlace, getAllExternalPlaces } from "@/lib/external";
+import { AuthContext } from "@/providers/AuthProvider";
 
 export default function MapEmbedPage() {
     const { toast } = useToast();
+    const { currentUser } = useContext(AuthContext);
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<any>(null);
+    const mapReadyRef = useRef(false);
     const gebetaMapRef = useRef<any>(null);
     const markersRef = useRef<any[]>([]);
     const centerMarkerRef = useRef<any>(null);
+    const markersStateRef = useRef<Marker[]>([]);
 
     const [serverToken, setServerToken] = useState("");
     const [clientToken, setClientToken] = useState("");
@@ -31,6 +44,7 @@ export default function MapEmbedPage() {
     const [center, setCenter] = useState({ lat: 9.0161, lng: 38.7685 });
     const zoomRef = useRef(13);
     const [markers, setMarkers] = useState<Marker[]>([]);
+    const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
     const [mode, setMode] = useState<"center" | "marker" | "bounds">("center");
 
     const [bounds, setBounds] = useState<[number, number, number, number] | null>(null);
@@ -39,6 +53,10 @@ export default function MapEmbedPage() {
     const [iframeSrc, setIframeSrc] = useState("");
     const [generating, setGenerating] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [pendingMarker, setPendingMarker] = useState<{ lat: number; lng: number } | null>(null);
+    const [pendingLabel, setPendingLabel] = useState("");
+    const [pendingImage, setPendingImage] = useState<string | null>(null);
+    const [pendingUploading, setPendingUploading] = useState(false);
 
     const modeRef = useRef(mode);
     const boundsCorner1Ref = useRef(boundsCorner1);
@@ -51,6 +69,77 @@ export default function MapEmbedPage() {
         script.src = "https://tiles.gebeta.app/static/v3/gebeta-maps.umd.js";
         document.head.appendChild(script);
     }, []);
+
+    useEffect(() => {
+        console.log("places effect fired, user:", currentUser?.user?.username);
+        if (!currentUser?.user?.username) return;
+        getAllExternalPlaces(currentUser?.user?.username)
+            .then(places => {
+                console.log("places fetched:", places.length, places);
+                const mapped: Marker[] = places
+                    .filter(p => p.active !== false)
+                    .map(p => ({ lat: p.lat, lng: p.lng, label: p.name, image: p.image }));
+                setMarkers(mapped);
+                if (mapReadyRef.current) syncMarkersOnMap(mapped);
+            })
+            .catch(err => toast({ description: "Failed to load places: " + err.message, variant: "destructive" }));
+    }, [currentUser?.user?.username])
+
+    useEffect(() => { markersStateRef.current = markers; }, [markers]);
+
+    const handleMarkerImageUpload = async (i: number, file: File) => {
+        setUploadingIndex(i);
+        try {
+            const url = await uploadMarkerImage(file);
+            setMarkers(prev => {
+                const u = prev.map((m, idx) => idx === i ? { ...m, image: url } : m);
+                syncMarkersOnMap(u);
+                return u;
+            });
+            toast({ description: "Marker image uploaded!" });
+        } catch (e: any) {
+            toast({ description: e.message ?? "Upload failed", variant: "destructive" });
+        } finally {
+            setUploadingIndex(null);
+        }
+    };
+
+    const handlePendingImageUpload = async (file: File) => {
+        setPendingUploading(true);
+        try {
+            const url = await uploadMarkerImage(file);
+            setPendingImage(url);
+        } catch (e: any) {
+            toast({ description: e.message ?? "Upload failed", variant: "destructive" });
+        } finally {
+            setPendingUploading(false);
+        }
+    };
+
+    const confirmPendingMarker = () => {
+        if (!pendingMarker) return;
+        const newMarker: Marker = {
+            lat: pendingMarker.lat,
+            lng: pendingMarker.lng,
+            label: pendingLabel || undefined,
+            image: pendingImage || undefined,
+        };
+        setMarkers(prev => {
+            const updated = [...prev, newMarker];
+            syncMarkersOnMap(updated);
+            return updated;
+        });
+        createExternalPlace({
+            name: pendingLabel || "",
+            lat: pendingMarker.lat,
+            lng: pendingMarker.lng,
+            owner: currentUser?.user?.username,
+            image: pendingImage || undefined,
+        }).catch(() => { });
+        setPendingMarker(null);
+        setPendingLabel("");
+        setPendingImage(null);
+    };
 
     const handleLoadMap = async () => {
         if (!serverToken.trim() || !clientToken.trim()) {
@@ -74,7 +163,13 @@ export default function MapEmbedPage() {
                 }, 100);
             });
 
-            if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; }
+            if (mapRef.current) {
+                try { mapRef.current.remove(); } catch { }
+                mapRef.current = null;
+            }
+            mapReadyRef.current = false;
+            setMapReady(false);
+            setMapLoaded(false);
 
             const gebeta = new (window as any).GebetaMaps({ auth: { accessToken, refreshToken } });
             gebetaMapRef.current = gebeta;
@@ -85,10 +180,11 @@ export default function MapEmbedPage() {
                 navigationControl: true,
             });
             mapRef.current = map;
+            setMapReady(true);
             map.on("load", () => {
-                setMapReady(true);
-                setMapLoaded(true);
+                mapReadyRef.current = true;
                 addCenterMarker(center.lat, center.lng);
+                syncMarkersOnMap(markersStateRef.current);
                 toast({ description: "Map loaded! Click to configure." });
             });
             map.on("zoom", () => {
@@ -121,7 +217,11 @@ export default function MapEmbedPage() {
         if (!mapRef.current) return;
         newMarkers.forEach(m => {
             const el = document.createElement("div");
-            el.style.cssText = "width:28px;height:28px;border-radius:50% 50% 50% 0;background:#FFA500;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);";
+            if (m.image) {
+                el.style.cssText = "width:32px;height:32px;border-radius:50%;background-size:cover;background-position:center;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);background-image:url(" + m.image + ")";
+            } else {
+                el.style.cssText = "width:28px;height:28px;border-radius:50% 50% 50% 0;background:#FFA500;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);";
+            }
             const marker = new (window as any).maplibregl.Marker({ element: el })
                 .setLngLat([m.lng, m.lat]).addTo(mapRef.current);
             if (m.label) marker.setPopup(new (window as any).maplibregl.Popup().setText(m.label));
@@ -206,11 +306,9 @@ export default function MapEmbedPage() {
                 addCenterMarker(lat, lng);
                 map.flyTo({ center: [lng, lat] });
             } else if (currentMode === "marker") {
-                setMarkers(prev => {
-                    const updated = [...prev, { lat, lng, label: "" }];
-                    syncMarkersOnMap(updated);
-                    return updated;
-                });
+                setPendingMarker({ lat, lng });
+                setPendingLabel("");
+                setPendingImage(null);
             }
         };
 
@@ -254,8 +352,8 @@ export default function MapEmbedPage() {
                 clientToken: clientToken.trim(),
                 lat: center.lat, lng: center.lng,
                 zoom: zoomRef.current,
-                markers,
                 bounds: bounds ?? null,
+                owner: currentUser.user.username,
             });
             setIframeSrc(result.iframeSrc);
             setTimeout(() => document.getElementById("embed-result")?.scrollIntoView({ behavior: "smooth" }), 100);
@@ -331,7 +429,7 @@ export default function MapEmbedPage() {
                             : "Load the map above to start configuring."}
                     </p>
 
-                    {mapLoaded && (
+                    {(mapLoaded || mapRef.current) && (
                         <div className="flex gap-2 flex-wrap">
                             <Button size="sm" variant="outline" onClick={() => setMode("center")}
                                 className={`text-xs border-white/10 bg-transparent ${mode === "center" ? "border-[#3B82F6] text-[#3B82F6]" : ""}`}>
@@ -358,7 +456,7 @@ export default function MapEmbedPage() {
 
                     <div className="relative rounded-xl overflow-hidden border border-white/10" style={{ height: 450 }}>
                         <div ref={mapContainerRef} className="w-full h-full" />
-                        {!mapLoaded && !mapLoading && (
+                        {!mapLoaded && !mapLoading && !mapRef.current && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#111] gap-3">
                                 <Map className="w-10 h-10 text-white/20" />
                                 <p className="text-[#555]">Paste your tokens and click "Load Map to Configure"</p>
@@ -387,6 +485,49 @@ export default function MapEmbedPage() {
                                 )}
                             </div>
                         )}
+                        {pendingMarker && (
+                            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-[#1a1a1a] border border-white/15 rounded-xl shadow-2xl p-4 w-72">
+                                <p className="text-xs text-[#aaa] mb-3">
+                                    {pendingMarker.lat.toFixed(5)}, {pendingMarker.lng.toFixed(5)}
+                                </p>
+                                <div className="space-y-2 mb-3">
+                                    <Input
+                                        autoFocus
+                                        placeholder="Place name (optional)"
+                                        value={pendingLabel}
+                                        onChange={e => setPendingLabel(e.target.value)}
+                                        onKeyDown={e => e.key === "Enter" && confirmPendingMarker()}
+                                    />
+                                    <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] hover:text-white border border-white/10 rounded-lg px-3 py-2">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={e => {
+                                                const file = e.target.files?.[0];
+                                                if (file) handlePendingImageUpload(file);
+                                            }}
+                                        />
+                                        {pendingUploading
+                                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...</>
+                                            : pendingImage
+                                                ? <><img src={pendingImage} className="w-5 h-5 rounded object-cover" alt="" /> Image uploaded ✓</>
+                                                : <><ImagePlus className="w-3.5 h-3.5" /> Upload marker image</>}
+                                    </label>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button size="sm" onClick={confirmPendingMarker}
+                                        className="flex-1 bg-[#FFA500] text-black text-xs font-semibold hover:bg-[#FF8C00]">
+                                        Add Place
+                                    </Button>
+                                    <Button size="sm" variant="outline"
+                                        className="border-white/10 bg-transparent text-xs"
+                                        onClick={() => { setPendingMarker(null); setPendingLabel(""); setPendingImage(null); }}>
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {mapLoaded && (
@@ -399,7 +540,7 @@ export default function MapEmbedPage() {
                             )}
                         </div>
                     )}
-                </div>                
+                </div>
 
                 {markers.length > 0 && (
                     <div className="space-y-2">
@@ -411,6 +552,26 @@ export default function MapEmbedPage() {
                                     <Input className="bg-transparent border-white/10 text-xs placeholder:text-[#555] flex-1"
                                         placeholder="Label (optional)" value={m.label ?? ""}
                                         onChange={e => updateMarkerLabel(i, e.target.value)} />
+
+                                    {m.image ? (
+                                        <img src={m.image} alt="" className="w-7 h-7 rounded object-cover shrink-0" />
+                                    ) : (
+                                        <label className="cursor-pointer shrink-0">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) handleMarkerImageUpload(i, file);
+                                                }}
+                                            />
+                                            {uploadingIndex === i
+                                                ? <Loader2 className="w-4 h-4 animate-spin text-[#aaa]" />
+                                                : <ImagePlus className="w-4 h-4 text-[#aaa] hover:text-white" />}
+                                        </label>
+                                    )}
+
                                     <Button size="icon" variant="ghost" className="text-red-400 hover:text-red-300 h-8 w-8 shrink-0"
                                         onClick={() => removeMarker(i)}>
                                         <Trash2 className="w-3.5 h-3.5" />

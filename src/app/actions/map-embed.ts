@@ -4,6 +4,7 @@ export interface Marker {
   lat: number;
   lng: number;
   label?: string;
+  image?: string
 }
 
 export interface GenerateEmbedInput {
@@ -14,8 +15,8 @@ export interface GenerateEmbedInput {
   zoom?: number;
   minZoom?: number;
   maxZoom?: number;
-  markers?: Marker[];
   bounds?: [number, number, number, number] | null;
+  owner: string;
 }
 
 export interface GenerateEmbedResult {
@@ -24,7 +25,7 @@ export interface GenerateEmbedResult {
 }
 
 export async function generateMapEmbed(input: GenerateEmbedInput): Promise<GenerateEmbedResult> {
-  const baseUrl = "https://gebeta.app";
+  const baseUrl = "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/map-embed`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -10,10 +10,10 @@ export interface EmbedSession {
     clientToken: string;
     lat: number;
     lng: number;
+    owner: string;
     zoom: number;
     minZoom: number;
     maxZoom: number;
-    markers: Array<{ lat: number; lng: number; label?: string }>;
     bounds?: [number, number, number, number] | null; // [west, south, east, north]
 }
 
