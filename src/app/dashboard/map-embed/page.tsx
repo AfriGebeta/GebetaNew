@@ -55,11 +55,13 @@ export default function MapEmbedPage() {
     const [generating, setGenerating] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    // Pending marker (click-on-map) state
     const [pendingMarker, setPendingMarker] = useState<{ lat: number; lng: number } | null>(null);
     const [pendingLabel, setPendingLabel] = useState("");
     const [pendingImage, setPendingImage] = useState<string | null>(null);
     const [pendingUploading, setPendingUploading] = useState(false);
 
+    // Manual entry form state
     const [manualName, setManualName] = useState("");
     const [manualLat, setManualLat] = useState("");
     const [manualLng, setManualLng] = useState("");
@@ -68,7 +70,9 @@ export default function MapEmbedPage() {
     const [manualUploading, setManualUploading] = useState(false);
     const [manualSubmitting, setManualSubmitting] = useState(false);
 
+    // CSV upload state
     const [csvUploading, setCsvUploading] = useState(false);
+    const [visibleMarkerCount, setVisibleMarkerCount] = useState(5);
 
     const modeRef = useRef(mode);
     const boundsCorner1Ref = useRef(boundsCorner1);
@@ -86,9 +90,8 @@ export default function MapEmbedPage() {
         if (!currentUser?.user?.username) return;
         getAllExternalPlaces(currentUser.user.username)
             .then(places => {
-                //@ts-ignore
                 const mapped: Marker[] = places
-                    ?.filter(p => p.active !== false)
+                    .filter(p => p.active !== false)
                     .map(p => ({ lat: p.lat, lng: p.lng, label: p.name, image: p.image }));
                 setMarkers(mapped);
                 if (mapReadyRef.current) syncMarkersOnMap(mapped);
@@ -98,6 +101,12 @@ export default function MapEmbedPage() {
 
     useEffect(() => { markersStateRef.current = markers; }, [markers]);
 
+    // Mirrors the embed route's approach: bulk places render via a GPU
+    // symbol layer (source 'dashboard-places' / layer 'dashboard-places-layer')
+    // instead of individual DOM Marker objects, which is what made hundreds
+    // of markers slow and broke after map reinit. DOM Markers are no longer
+    // used for the place list at all — only the center marker (drag) and
+    // the pending-marker-being-added stay as real Marker objects elsewhere.
     const DEFAULT_ICON = "default-pin";
     const seenImagesRef = useRef<Set<string>>(new Set());
 
@@ -153,10 +162,12 @@ export default function MapEmbedPage() {
             }
         };
 
+        // Load any new marker images we haven't registered yet, then apply.
         const toLoad = newMarkers
             .map(m => m.image || "https://upload.wikimedia.org/wikipedia/commons/f/f2/678111-map-marker-512.png")
             .filter(url => !seenImagesRef.current.has(url) && !map.hasImage(url) && url !== DEFAULT_ICON);
 
+        // Always ensure the default pin icon exists once.
         const needsDefault = !map.hasImage(DEFAULT_ICON) && newMarkers.some(m => !m.image);
         const loadPromises: Promise<any>[] = [];
 
@@ -296,7 +307,6 @@ export default function MapEmbedPage() {
     const handleCsvUpload = useCallback(async (file: File) => {
         setCsvUploading(true);
         try {
-            //@ts-ignore
             const Papa = (await import("papaparse")).default;
             const text = await file.text();
             const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
@@ -356,7 +366,9 @@ export default function MapEmbedPage() {
                 try { mapRef.current.remove(); } catch { }
                 mapRef.current = null;
             }
-
+            // New map instance means the old GeoJSON source/layer and any
+            // registered images are gone too — reset bookkeeping so the
+            // next syncMarkersOnMap call rebuilds everything from scratch.
             seenImagesRef.current.clear();
             markersRef.current = [];
             mapReadyRef.current = false;
@@ -672,7 +684,7 @@ export default function MapEmbedPage() {
                                         onChange={e => setPendingLabel(e.target.value)}
                                         onKeyDown={e => e.key === "Enter" && confirmPendingMarker()}
                                     />
-                                    <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa]  border border-black/10 rounded-lg px-3 py-2">
+                                    <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] border border-black/10 rounded-lg px-3 py-2">
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -722,7 +734,7 @@ export default function MapEmbedPage() {
                         <Input className="w-32" placeholder="Latitude" value={manualLat} onChange={e => setManualLat(e.target.value)} />
                         <Input className="w-32" placeholder="Longitude" value={manualLng} onChange={e => setManualLng(e.target.value)} />
                         <Input className="w-32" placeholder="Type (optional)" value={manualType} onChange={e => setManualType(e.target.value)} />
-                        <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] hover:text-white border border-white/10 rounded-lg px-3 py-2 h-9">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] border border-white/10 rounded-lg px-3 py-2 h-9">
                             <input
                                 type="file"
                                 accept="image/*"
@@ -766,39 +778,49 @@ export default function MapEmbedPage() {
                     <div className="space-y-2">
                         <Label>4. Marker Labels <span className="text-[#aaa] font-normal">(optional)</span></Label>
                         <div className="space-y-2">
-                            {markers.map((m, i) => (
-                                <div key={i} className="flex gap-2 items-center border border-white/10 rounded-lg p-2">
-                                    <span className="text-xs text-[#aaa] w-36 shrink-0">{m.lat.toFixed(4)}, {m.lng.toFixed(4)}</span>
-                                    <Input className="bg-transparent border-white/10 text-xs placeholder:text-[#555] flex-1"
-                                        placeholder="Label (optional)" value={m.label ?? ""}
-                                        onChange={e => updateMarkerLabel(i, e.target.value)} />
+                            {markers.slice(0, visibleMarkerCount).map((m, sliceIdx) => {
+                                const i = sliceIdx; // slice always starts at 0, so index matches original array
+                                return (
+                                    <div key={i} className="flex gap-2 items-center border border-white/10 rounded-lg p-2">
+                                        <span className="text-xs text-[#aaa] w-36 shrink-0">{m.lat.toFixed(4)}, {m.lng.toFixed(4)}</span>
+                                        <Input className="bg-transparent border-white/10 text-xs placeholder:text-[#555] flex-1"
+                                            placeholder="Label (optional)" value={m.label ?? ""}
+                                            onChange={e => updateMarkerLabel(i, e.target.value)} />
 
-                                    {m.image ? (
-                                        <img src={m.image} alt="" className="w-7 h-7 rounded object-cover shrink-0" />
-                                    ) : (
-                                        <label className="cursor-pointer shrink-0">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) handleMarkerImageUpload(i, file);
-                                                }}
-                                            />
-                                            {uploadingIndex === i
-                                                ? <Loader2 className="w-4 h-4 animate-spin text-[#aaa]" />
-                                                : <ImagePlus className="w-4 h-4 text-[#aaa] hover:text-white" />}
-                                        </label>
-                                    )}
+                                        {m.image ? (
+                                            <img src={m.image} alt="" className="w-7 h-7 rounded object-cover shrink-0" />
+                                        ) : (
+                                            <label className="cursor-pointer shrink-0">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) handleMarkerImageUpload(i, file);
+                                                    }}
+                                                />
+                                                {uploadingIndex === i
+                                                    ? <Loader2 className="w-4 h-4 animate-spin text-[#aaa]" />
+                                                    : <ImagePlus className="w-4 h-4 text-[#aaa] hover:text-white" />}
+                                            </label>
+                                        )}
 
-                                    <Button size="icon" variant="ghost" className="text-red-400 hover:text-red-300 h-8 w-8 shrink-0"
-                                        onClick={() => removeMarker(i)}>
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                    </Button>
-                                </div>
-                            ))}
+                                        <Button size="icon" variant="ghost" className="text-red-400 hover:text-red-300 h-8 w-8 shrink-0"
+                                            onClick={() => removeMarker(i)}>
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </Button>
+                                    </div>
+                                );
+                            })}
                         </div>
+                        {visibleMarkerCount < markers.length && (
+                            <Button size="sm" variant="outline"
+                                className="border-white/10 bg-transparent text-xs w-full"
+                                onClick={() => setVisibleMarkerCount(c => c + 5)}>
+                                Load More ({markers.length - visibleMarkerCount} remaining)
+                            </Button>
+                        )}
                     </div>
                 )}
 
