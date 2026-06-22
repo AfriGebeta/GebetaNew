@@ -198,20 +198,20 @@ export default function RootLayout({
                     color="#FFA500"
                     showSpinner={false}
                 />
-                <PostHogProvider>
-                    <div className={
-                        'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] flex flex-col min-h-screen'
-                    }>
-                        <ThemeProvider defaultTheme="light" storageKey="app-theme">
-                            <AuthProvider>
-                                <QueryProvider>
+                <div className={
+                    'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] flex flex-col min-h-screen'
+                }>
+                    <ThemeProvider defaultTheme="light" storageKey="app-theme">
+                        <AuthProvider>
+                            <QueryProvider>
+                                <PostHogProvider>
                                     {children}
-                                </QueryProvider>
-                            </AuthProvider>
-                        </ThemeProvider>
-                    </div>
-                </PostHogProvider>
+                                </PostHogProvider>
+                            </QueryProvider>
+                        </AuthProvider>
+                    </ThemeProvider>
+                </div>
             </body>
-        </html>
+        </html >
     );
 }
