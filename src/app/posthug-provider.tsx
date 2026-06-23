@@ -2,13 +2,19 @@
 
 import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider } from 'posthog-js/react'
+import { useEffect } from 'react'
 
-if (typeof window !== 'undefined') {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
+export function PostHogProvider({ children }: { children: React.ReactNode }) {
+    useEffect(() => {
+        const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
 
-    if (!key) {
-        console.warn('[PostHog] Missing NEXT_PUBLIC_POSTHOG_KEY — tracking disabled')
-    } else {
+        if (!key) {
+            console.warn('[PostHog] Missing NEXT_PUBLIC_POSTHOG_KEY — tracking disabled')
+            return
+        }
+
+        if (posthog.__loaded) return
+
         posthog.init(key, {
             api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
             person_profiles: 'always',
@@ -22,10 +28,8 @@ if (typeof window !== 'undefined') {
             console.log('[PostHog] distinct_id:', posthog.get_distinct_id())
             console.log('[PostHog] identified:', !posthog.get_distinct_id()?.startsWith('$anon'))
         }
-    }
-}
+    }, []) 
 
-export function PostHogProvider({ children }: { children: React.ReactNode }) {
     return (
         <PHProvider client={posthog}>
             {children}
