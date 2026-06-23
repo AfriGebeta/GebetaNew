@@ -22,6 +22,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import PricingSlider from "@/components/PricingSlider";
 
 export default function BillingHistory() {
     const { currentUser, setCurrentUser } = useContext(AuthContext)
@@ -292,6 +293,10 @@ export default function BillingHistory() {
                         </TableBody>
                     </Table>
                 )}
+
+                <div className="mt-4">
+                    <PricingSlider isComponent={true} />
+                </div>
             </div>
 
             <Dialog open={editCapDialogOpen} onOpenChange={setEditCapDialogOpen}>
