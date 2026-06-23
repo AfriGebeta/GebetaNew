@@ -32,7 +32,7 @@ function calculateGooglePrice(numCalls, config) {
     return Math.round(Math.max(0, totalCost - credit) * 100) / 100;
 }
 
-const PricingSlider = ({ isComponent }: { isComponent: boolean }) => {
+const PricingSlider = ({ isComponent }: { isComponent?: boolean }) => {
     const [sliderValues, setSliderValues] = useState(() => {
         const initial = {};
         Object.entries(pricingConfig).forEach(([skuId, config]) => {
