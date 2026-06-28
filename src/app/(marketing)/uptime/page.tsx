@@ -35,7 +35,7 @@ interface ApiResponse {
     data: ApiDay[];
 }
 
-const API_URL = "https://valhalla.gebeta.app/uptime/api/uptime";
+const API_URL = "https://mapapi.gebeta.app/api/v1/uptime";
 
 function statusColor(status: string, uptime: number) {
     if (status ===  "Scheduled Maintenance")
