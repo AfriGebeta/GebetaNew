@@ -1,6 +1,6 @@
 //@ts-nocheck
 "use client";
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Link from "next/link";
 import { useRouter } from 'nextjs-toploader/app';
 import { useMutation } from "@tanstack/react-query";
@@ -15,19 +15,27 @@ const SignIn: React.FC = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
+    //read from location
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('session') === 'expired') {
+            setError('Your session has expired. Please sign in again.');
+        }
+    }, []);
+
     const signInMutation = useMutation({
         mutationFn: async () => {
             const response = await apiClient.post("/auth/login", {
                 username,
                 password
             });
-            return response.data; // Assuming the response contains user data
+            return response.data; 
         },
         onSuccess: (data) => {
-            login(data.data); // Update authentication state
-            setCurrentUser(data.data); // Store user data in local storage
+            login(data.data); 
+            setCurrentUser(data.data); 
             // setAuthToken(data.data.token); // Store auth token in local storage
-            router.push('/dashboard'); // Redirect to dashboard
+            router.push('/dashboard'); 
         },
         onError: (error: any) => {
             const errorCode = error.response?.data?.error?.code;

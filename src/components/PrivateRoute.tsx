@@ -4,26 +4,27 @@ import React, {useContext, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {AuthContext} from "@/providers/AuthProvider";
 import Spinner from "@/components/Spinner";
+import {isTokenExpired} from "@/lib/session";
 
 const ProtectedRoute = ({children}) => {
     const router = useRouter();
     const {currentUser} = useContext(AuthContext);
     const [isClient, setIsClient] = useState(false);
 
+    const hasValidSession = !!currentUser && !isTokenExpired(currentUser?.token);
+
     useEffect(() => {
         setIsClient(true);
-        if (!currentUser) {
+        if (!hasValidSession) {
             router.push('/auth/signin');
         }
-    }, [currentUser, router]);
+    }, [hasValidSession, router]);
 
-    // Return null during server-side rendering and initial client render
     if (!isClient) {
         return null;
     }
 
-    // Show loading state only on client-side when not authenticated
-    if (!currentUser) {
+    if (!hasValidSession) {
         return <Spinner/>
     }
 
