@@ -7,6 +7,7 @@ import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
 import {useRouter} from 'nextjs-toploader/app';
 import {BarLoader} from "react-spinners";
+import {getErrorMessage} from "@/lib/errors";
 
 const ResetPassword: React.FC = () => {
     const router = useRouter();
@@ -30,7 +31,7 @@ const ResetPassword: React.FC = () => {
             setError('');
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Failed to send OTP");
+            setError(getErrorMessage(error, "Failed to send OTP"));
         }
     });
 
@@ -42,7 +43,7 @@ const ResetPassword: React.FC = () => {
             setError('');
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Verification failed");
+            setError(getErrorMessage(error, "Verification failed"));
         }
     });
 
@@ -54,7 +55,7 @@ const ResetPassword: React.FC = () => {
             setError('');
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Failed to change password");
+            setError(getErrorMessage(error, "Failed to change password"));
         }
     });
 

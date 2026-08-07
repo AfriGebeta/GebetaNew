@@ -8,6 +8,7 @@ import { AuthContext } from "@/providers/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "nextjs-toploader/app";
 import { apiClient } from "@/service/apiClient";
+import { getErrorMessage } from "@/lib/errors";
 
 const FreemiumCreditCard = () => {
     const { toast } = useToast()
@@ -45,7 +46,8 @@ const FreemiumCreditCard = () => {
             setClaimed(true);
         },
         onError: (error) => {
-            toast({ description: error?.response?.data?.error?.additional.claim?.[0], variant: "destructive" })
+            const claimMessage = error?.response?.data?.error?.additional?.claim?.[0];
+            toast({ description: claimMessage || getErrorMessage(error, "Unable to claim freemium credit"), variant: "destructive" })
         }
     })
 

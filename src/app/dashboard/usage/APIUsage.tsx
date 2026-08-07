@@ -11,8 +11,8 @@ function APIUsage({ graphData, isLoading }) {
         if (graphData && !graphData.error) {
             try {
                 const dataArray = Object.entries(graphData.data.data.data).map(([key, value]) => ({
-                    date: new Date(value.Day).toISOString(),
-                    total: parseInt(value.Total) || 0
+                    date: new Date(value.day).toISOString(),
+                    total: parseInt(value.total) || 0
                 }));
 
                 const sortedData = dataArray.sort((a, b) => new Date(a.date) - new Date(b.date));

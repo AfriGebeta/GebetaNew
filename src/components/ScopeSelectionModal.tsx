@@ -10,6 +10,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { formatScopeLabel } from "@/lib/referenceData";
 
 interface ScopeSelectionModalProps {
     open: boolean;
@@ -20,6 +21,7 @@ interface ScopeSelectionModalProps {
     isCreating: boolean;
     availableScopes: string[];
     scopesLoading?: boolean;
+    emptyScopesMessage?: string;
     trigger?: React.ReactNode;
 }
 
@@ -32,6 +34,7 @@ export default function ScopeSelectionModal({
     isCreating,
     availableScopes,
     scopesLoading = false,
+    emptyScopesMessage = "No scopes available",
     trigger
 }: ScopeSelectionModalProps) {
     const [identifierName, setIdentifierName] = useState("");
@@ -60,7 +63,7 @@ export default function ScopeSelectionModal({
                         {scopesLoading ? (
                             <p className="text-sm text-gray-500 dark:text-gray-400">Loading scopes...</p>
                         ) : availableScopes.length === 0 ? (
-                            <p className="text-sm text-gray-500 dark:text-gray-400">No scopes available</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{emptyScopesMessage}</p>
                         ) : null}
                         {availableScopes.map((scope) => (
                             <div key={scope} className="flex items-center space-x-3">
@@ -75,7 +78,7 @@ export default function ScopeSelectionModal({
                                     htmlFor={scope}
                                     className="text-[#1B1E2B] dark:text-white text-sm font-medium cursor-pointer select-none"
                                 >
-                                    {scope}
+                                    {formatScopeLabel(scope)}
                                 </label>
                             </div>
                         ))}

@@ -54,7 +54,7 @@ export default function Page() {
                     maxSize: 10485760 // 10MB
                 };
 
-                const presignRes = await fetch(`${process.envNEXT_PUBLIC_BASE_URL}/v1/storage/pre-sign/post-policy`, {
+                const presignRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/storage/pre-sign/post-policy`, {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${token}`,

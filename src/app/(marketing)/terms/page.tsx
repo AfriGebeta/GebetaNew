@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Terms() {
-    const res = await fetch("https://mapapi.gebeta.app/terms", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/terms`, {
         next: { revalidate: 3600 }
     });
 

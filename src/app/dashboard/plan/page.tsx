@@ -34,8 +34,13 @@ export default function UserPlan() {
     const monthlyPlans = plans.filter(plan => plan.expiredIn === 30);
     const yearlyPlans = plans.filter(plan => plan.expiredIn === 365);
 
-    const purchasedBundleIds = currentUser?.user?.credits?.map(item => item.bundle_id) || [];
-    const activePlan = plans.find(p => purchasedBundleIds.includes(p.id)) || null;
+    // Prefer a real paid credit over the freemium one when the user has both -
+    // otherwise this always shows Freemium as "Current Plan" since it's
+    // typically the first bundle a new account is granted, regardless of
+    // whatever they've actually paid for since.
+    const purchasedCredits = currentUser?.user?.credits || [];
+    const activeCredit = purchasedCredits.find(c => !c.is_freeemium) || purchasedCredits[0];
+    const activePlan = activeCredit ? plans.find(p => p.id === activeCredit.bundle_id) || null : null;
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);

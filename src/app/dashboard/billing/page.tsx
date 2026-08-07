@@ -61,8 +61,10 @@ export default function BillingHistory() {
         const response = await verifyPayment(currentUser.token, id);
         if (response.data === "Payment Successful") {
             queryClient.invalidateQueries("history");
-            const response = await getUser(currentUser.token)
-            setCurrentUser(response.data)
+            const freshUser = await getUser(currentUser.token);
+            if (freshUser?.id) {
+                setCurrentUser({ ...currentUser, user: freshUser });
+            }
             toast({ description: "Successfully Verified" });
         } else {
             toast({ description: "Payment not verified", variant: "destructive" });

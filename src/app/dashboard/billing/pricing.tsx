@@ -139,7 +139,7 @@ function Plan({data, index}) {
                     .then(response => {
                         queryClient.invalidateQueries('history')
                         if (response.data.data.status === "success") {
-                            window.open(response.data.data.Data.checkout_url, '_blank');
+                            window.open(response.data.data.data.checkout_url, '_blank');
                         }
                     })
                     .catch(err => {

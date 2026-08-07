@@ -35,7 +35,7 @@ interface ApiResponse {
     data: ApiDay[];
 }
 
-const API_URL = "https://mapapi.gebeta.app/api/v1/uptime";
+const API_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/v1/uptime`;
 
 function statusColor(status: string, uptime: number) {
     if (status ===  "Scheduled Maintenance")
