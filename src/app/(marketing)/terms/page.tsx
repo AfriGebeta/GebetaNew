@@ -35,6 +35,8 @@ export const metadata: Metadata = {
     title: "Terms"
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function Terms() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/terms`, {
         next: { revalidate: 3600 }
