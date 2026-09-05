@@ -3,13 +3,15 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
+import {updateUser} from "@/service/apis";
 import {AuthContext} from "@/providers/AuthProvider";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
+import {Label } from "@/components/ui/label";
 import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs";
 import {useToast} from "@/hooks/use-toast";
+import {Switch } from "@/components/ui/switch";
 
 export default function Account() {
     const { currentUser, setCurrentUser, logout } = useContext(AuthContext);
@@ -19,6 +21,7 @@ export default function Account() {
     const [username, setUsername] = useState(currentUser?.user?.username || '');
     const [email, setEmail] = useState(currentUser?.user?.email || '');
     const [phone, setPhone] = useState(currentUser?.user?.phone || '');
+    const [allowAbuseDetection, setAllowAbuseDetection] = useState(currentUser?.user?.allow_alert || false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -30,36 +33,38 @@ export default function Account() {
     // Mutation for updating user info
     const updateUserMutation = useMutation({
         mutationFn: async () => {
-            const response = await apiClient.patch("/user", {
+            return await updateUser(currentUser?.token, {
                 username,
                 email,
-                phone
-            }, {
-                headers: {
-                    Authorization: `Bearer ${currentUser?.token}`
-                }
+                phone,
+                allow_abuse_detection: allowAbuseDetection
             });
-            return response.data;
         },
-        onSuccess: () => {
-            // setSuccess('Profile updated successfully');
-            toast({
-                description:"Profile updated successfully"
-            })
-            setCurrentUser({
-                ...currentUser,
-                user: {
-                    ...currentUser.user,
-                    username,
-                    email,
-                    phone
-                }
-            });
+        onSuccess: (response) => {
+            if (response.success) {
+                toast({
+                    description: "Profile updated successfully"
+                })
+                setCurrentUser({
+                    ...currentUser,
+                    user: {
+                        ...currentUser.user,
+                        username,
+                        email,
+                        phone,
+                        allow_alert: allowAbuseDetection
+                    }
+                });
+            } else {
+                toast({
+                    description: response.message || "Update failed",
+                    variant: 'destructive'
+                })
+            }
         },
         onError: (error: any) => {
-            // setError(error.response?.data?.message || "Update failed. Please try again.");
             toast({
-                description:`${error?.response?.data?.message || "Update failed. Please try again."}`,
+                description: `${error?.response?.data?.message || "Update failed. Please try again."}`,
                 variant: 'destructive'
             })
         }
@@ -91,7 +96,7 @@ export default function Account() {
         onError: (error: any) => {
             // setError(error.response?.data?.message || "Failed to send OTP");
             toast({
-                description:`${error?.response?.data?.message || "Failed to send OTP"}`,
+                description: `${error?.response?.data?.message || "Failed to send OTP"}`,
                 variant: 'destructive'
             })
         }
@@ -107,7 +112,7 @@ export default function Account() {
         onError: (error: any) => {
             // setError(error.response?.data?.message || "Verification failed");
             toast({
-                description:`${error?.response?.data?.message || "Verification failed"}`,
+                description: `${error?.response?.data?.message || "Verification failed"}`,
                 variant: 'destructive'
             })
         }
@@ -124,7 +129,7 @@ export default function Account() {
         onError: (error: any) => {
             // setError(error.response?.data?.message || "Failed to change password");
             toast({
-                description:`${error?.response?.data?.message || "Failed to change password"}`,
+                description: `${error?.response?.data?.message || "Failed to change password"}`,
                 variant: 'destructive'
             })
         }
@@ -246,6 +251,22 @@ export default function Account() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                     />
+                </div>
+                <div className="space-y-1 pt-2">
+                    <div className="flex items-center justify-between w-full md:w-1/2">
+                        <div className="space-y-0.5 flex-1">
+                            <Label htmlFor="abuse-detection">Abuse Detection & Notifications</Label>
+                            <p className="text-xs text-[#aaa]">
+                                Receive notifications when suspicious activity is detected
+                            </p>
+                        </div>
+                        <Switch
+                            id="abuse-detection"
+                            checked={allowAbuseDetection}
+                            onCheckedChange={setAllowAbuseDetection}
+                            className="ml-4"
+                        />
+                    </div>
                 </div>
                 {error && <p className="text-red-500 text-sm text-center">{error}</p>}
                 {success && <p className="text-green-500 text-sm text-center">{success}</p>}

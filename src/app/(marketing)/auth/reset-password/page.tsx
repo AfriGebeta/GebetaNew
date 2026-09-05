@@ -19,8 +19,11 @@ const ResetPassword: React.FC = () => {
     const requestOtpMutation = useMutation({
         mutationFn: (email: string) =>
             apiClient.post("/auth/request/otp", {
+                contactType: "EMAIL",
                 contact: email,
-                contactType: "EMAIL"
+                additional: {
+                    requestedOtpFor: "reset_password"
+                }
             }),
         onSuccess: () => {
             setStep(2);
@@ -213,7 +216,7 @@ const ResetPassword: React.FC = () => {
                 <form className="space-y-6 mt-[40px]" onSubmit={handleChangePassword}>
                     <div>
                         <label htmlFor="newPassword"
-                               className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             New Password
                         </label>
                         <input

@@ -23,6 +23,22 @@ jobs:
           echo "NEXT_PUBLIC_EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
           echo "NEXT_PUBLIC_TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
           echo "NEXT_PUBLIC_TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}" >> .env
+          echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.POSTHOG_KEY }}" >> .env
+          echo "NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.POSTHOG_HOST }}" >> .env
+          echo "NEXT_PUBLIC_EXTERNAL_API_URL=${{ secrets.NEXT_PUBLIC_EXTERNAL_API_URL }}" >> .env
+          echo "EXTERNAL_API_URL=${{ secrets.EXTERNAL_API_URL }}" >> .env
+          echo "GEBETA_SERVER_TOKEN=${{ secrets.GEBETA_SERVER_TOKEN }}" >> .env
+          echo "EMBED_SECRET=${{ secrets.EMBED_SECRET }}" >> .env
+          echo "EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}" >> .env
+          echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> .env
+          echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> .env
+          echo "CAREER_ADMIN_USERNAME=${{ secrets.CAREER_ADMIN_USERNAME }}" >> .env
+          echo "CAREER_ADMIN_PASSWORD=${{ secrets.CAREER_ADMIN_PASSWORD }}" >> .env
+          echo "CAREER_ADMIN_EMAIL=${{ secrets.CAREER_ADMIN_EMAIL }}" >> .env
+          echo "CAREER_JWT_SECRET=${{ secrets.CAREER_JWT_SECRET }}" >> .env
+          echo "EDGE_STORE_ACCESS_KEY=${{ secrets.EDGE_STORE_ACCESS_KEY }}" >> .env
+          echo "EDGE_STORE_SECRET_KEY=${{ secrets.EDGE_STORE_SECRET_KEY }}" >> .env
+          echo "DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}" >> .env
       - name: Verify .env file exists
         run: ls -la
       - name: Show .env file contents

@@ -1,12 +1,15 @@
 //@ts-nocheck
-import type {Metadata} from "next";
+import type { Metadata } from "next";
 import "./globals.css";
-import {Plus_Jakarta_Sans} from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import QueryProvider from "@/providers/QueryProvider";
-import {AuthProvider} from "@/providers/AuthProvider";
-import {ThemeProvider} from "@/providers/theme-provider";
+import { AuthProvider } from "@/providers/AuthProvider";
+import { ThemeProvider } from "@/providers/theme-provider";
 import NextTopLoader from 'nextjs-toploader';
-import {PostHogProvider} from "@/app/posthug-provider";
+import { PostHogProvider } from "@/app/posthug-provider";
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
+import { GeistPixelSquare, GeistPixelGrid, GeistPixelCircle, GeistPixelTriangle, GeistPixelLine } from 'geist/font/pixel';
 
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -14,11 +17,11 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://gebeta.app/" || 'http://localhost:3000'),
+    metadataBase: new URL("https://gebeta.app"),
     title: "GebetaMaps - Location Solutions Simplified",
     description: "GebetaMaps delivers powerful APIs for all your location-based needs, from geocoding to route optimization. With up-to-date data and easy-to-use features, build precise, scalable solutions quickly.",
     keywords: ["maps", "geocoding", "route optimization", "directions", "matrix api"],
-    authors: [{name: "GebetaMaps"}],
+    authors: [{ name: "GebetaMaps" }],
     creator: 'GebetaMaps',
     publisher: 'GebetaMaps, Inc.',
     applicationName: 'GebetaMaps',
@@ -171,44 +174,44 @@ const jsonLd = {
 };
 
 export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
+    children,
+}: Readonly<{
     children: React.ReactNode;
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-        <head>
-            <script
-                async
-                crossOrigin="anonymous"
-                src="https://tweakcn.com/live-preview.min.js"
-            />
-        </head>
-        <body
-            className={`${plusJakarta.className}`}
-        >
-        <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <NextTopLoader
-            color="#FFA500"
-            showSpinner={false}
-        />
-        <PostHogProvider>
-            <div className={
-                'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] flex flex-col min-h-screen'
-            }>
-                <ThemeProvider defaultTheme="light" storageKey="app-theme">
-                    <AuthProvider>
-                        <QueryProvider>
-                            {children}
-                        </QueryProvider>
-                    </AuthProvider>
-                </ThemeProvider>
-            </div>
-        </PostHogProvider>
-        </body>
-        </html>
+            <head>
+                <script
+                    async
+                    crossOrigin="anonymous"
+                    src="https://tweakcn.com/live-preview.min.js"
+                />
+            </head>
+            <body
+                className={`${plusJakarta.className} ${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable}`}
+            >
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
+                <NextTopLoader
+                    color="#FFA500"
+                    showSpinner={false}
+                />
+                <div className={
+                    'overflow-x-hidden min-w-full w-full antialiased dark:bg-[#05050a] flex flex-col min-h-screen'
+                }>
+                    <ThemeProvider defaultTheme="light" storageKey="app-theme">
+                        <AuthProvider>
+                            <QueryProvider>
+                                <PostHogProvider>
+                                    {children}
+                                </PostHogProvider>
+                            </QueryProvider>
+                        </AuthProvider>
+                    </ThemeProvider>
+                </div>
+            </body>
+        </html >
     );
 }

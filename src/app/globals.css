@@ -63,14 +63,14 @@
         --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
         --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
         --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-        0 1px 2px -1px hsl(0 0% 0% / 0.1);
+            0 1px 2px -1px hsl(0 0% 0% / 0.1);
         --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
         --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-        0 2px 4px -1px hsl(0 0% 0% / 0.1);
+            0 2px 4px -1px hsl(0 0% 0% / 0.1);
         --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-        0 4px 6px -1px hsl(0 0% 0% / 0.1);
+            0 4px 6px -1px hsl(0 0% 0% / 0.1);
         --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-        0 8px 10px -1px hsl(0 0% 0% / 0.1);
+            0 8px 10px -1px hsl(0 0% 0% / 0.1);
         --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
     }
 
@@ -116,14 +116,14 @@
         --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
         --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
         --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-        0 1px 2px -1px hsl(0 0% 0% / 0.1);
+            0 1px 2px -1px hsl(0 0% 0% / 0.1);
         --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
         --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-        0 2px 4px -1px hsl(0 0% 0% / 0.1);
+            0 2px 4px -1px hsl(0 0% 0% / 0.1);
         --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-        0 4px 6px -1px hsl(0 0% 0% / 0.1);
+            0 4px 6px -1px hsl(0 0% 0% / 0.1);
         --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-        0 8px 10px -1px hsl(0 0% 0% / 0.1);
+            0 8px 10px -1px hsl(0 0% 0% / 0.1);
         --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
     }
 }
@@ -138,10 +138,17 @@
     }
 }
 
+@layer utilities {
+    .border-e {
+        @apply border border-red-300;
+    }
+}
+
 @keyframes scrollX {
     0% {
         background-position: 0 0;
     }
+
     100% {
         background-position: 200% 0;
     }
@@ -151,12 +158,18 @@
     box-sizing: border-box;
 }
 
-h1, h2, h3, h5, h6 {
+h1,
+h2,
+h3,
+h5,
+h6 {
     line-height: 1.5;
     letter-spacing: -0.01em;
 }
 
-p, span,a {
+p,
+span,
+a {
     letter-spacing: -0.04em;
     line-height: 1.15;
 }
