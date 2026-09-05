@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { readInterns, createIntern } from "@/lib/career/db";
 import { generateUniqueSlug } from "@/lib/career/slugify";

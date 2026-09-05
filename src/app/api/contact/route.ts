@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 //@ts-nocheck
 
 function isValidSubmission({ name, email, phone, subject, message, company }) {
