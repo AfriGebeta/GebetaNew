@@ -1,10 +1,11 @@
-import { getDb } from "./neon";
+import { getTaggedDb as getDb } from "./neon";
 
 export interface Intern {
   id: string;
   name: string;
   slug: string;
   role: string;
+  email: string;
   presentedOn: string;
   createdAt: string;
 }
@@ -38,7 +39,7 @@ const DEFAULT_CONFIG: CertificateConfig = {
   signatorySignatureUrl: "",
   badgeImageUrl: "/cert-seal.png",
   wavyPatternUrl: "/cert-wavy.png",
-  primaryColor: "#C9A227",
+  primaryColor: "#ffa500",
   awardLabel: "AWARD",
 };
 
@@ -48,6 +49,7 @@ function rowToIntern(row: Record<string, unknown>): Intern {
     name: row.name as string,
     slug: row.slug as string,
     role: row.role as string,
+    email: (row.email as string) ?? "",
     presentedOn: row.presented_on as string,
     createdAt: (row.created_at as Date).toISOString(),
   };
@@ -80,8 +82,8 @@ export async function readInterns(): Promise<Intern[]> {
 export async function createIntern(data: Omit<Intern, "id" | "createdAt">): Promise<Intern> {
   const sql = getDb();
   const rows = await sql`
-    INSERT INTO career_interns (name, slug, role, presented_on)
-    VALUES (${data.name}, ${data.slug}, ${data.role}, ${data.presentedOn})
+    INSERT INTO career_interns (name, slug, role, email, presented_on)
+    VALUES (${data.name}, ${data.slug}, ${data.role}, ${data.email ?? ""}, ${data.presentedOn})
     RETURNING *
   `;
   return rowToIntern(rows[0]);
@@ -134,6 +136,65 @@ export async function writeConfig(config: Partial<CertificateConfig>): Promise<C
       award_label = EXCLUDED.award_label
   `;
   return readConfig();
+}
+
+// ─── Email templates ──────────────────────────────────────────────────────────
+
+export interface EmailTemplate {
+  id: string;
+  label: string;
+  subject: string;
+  body: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
+function rowToTemplate(row: Record<string, unknown>): EmailTemplate {
+  return {
+    id: row.id as string,
+    label: row.label as string,
+    subject: row.subject as string,
+    body: row.body as string,
+    sortOrder: row.sort_order as number,
+    createdAt: (row.created_at as Date).toISOString(),
+  };
+}
+
+export async function readTemplates(): Promise<EmailTemplate[]> {
+  const sql = getDb();
+  const rows = await sql`SELECT * FROM career_templates ORDER BY sort_order ASC, created_at ASC`;
+  return rows.map(rowToTemplate);
+}
+
+export async function createTemplate(data: Omit<EmailTemplate, "id" | "createdAt">): Promise<EmailTemplate> {
+  const sql = getDb();
+  const rows = await sql`
+    INSERT INTO career_templates (label, subject, body, sort_order)
+    VALUES (${data.label}, ${data.subject}, ${data.body}, ${data.sortOrder})
+    RETURNING *
+  `;
+  return rowToTemplate(rows[0]);
+}
+
+export async function updateTemplate(id: string, data: Partial<Omit<EmailTemplate, "id" | "createdAt">>): Promise<EmailTemplate | null> {
+  const sql = getDb();
+  const rows = await sql`
+    UPDATE career_templates
+    SET
+      label      = COALESCE(${data.label ?? null}, label),
+      subject    = COALESCE(${data.subject ?? null}, subject),
+      body       = COALESCE(${data.body ?? null}, body),
+      sort_order = COALESCE(${data.sortOrder ?? null}, sort_order)
+    WHERE id = ${id}
+    RETURNING *
+  `;
+  return rows.length ? rowToTemplate(rows[0]) : null;
+}
+
+export async function deleteTemplate(id: string): Promise<boolean> {
+  const sql = getDb();
+  const rows = await sql`DELETE FROM career_templates WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
 }
 
 export async function getSlugExists(slug: string): Promise<boolean> {

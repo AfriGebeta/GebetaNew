@@ -2,6 +2,7 @@
 
 import { Intern, CertificateConfig } from "@/lib/career/db";
 import { Libre_Baskerville, Inter, Barlow } from "next/font/google";
+import Image from "next/image";
 
 const libreBaskerville = Libre_Baskerville({
   subsets: ["latin"],
@@ -28,7 +29,7 @@ interface Props {
 }
 
 export default function CertificateView({ intern, config }: Props) {
-  const gold = config.primaryColor || "#C9A227";
+  const gold = config.primaryColor || "#ffa500";
   const description = config.descriptionTemplate.replace("{companyName}", config.companyName);
   const fonts = `${libreBaskerville.variable} ${inter.variable} ${barlow.variable}`;
 
@@ -54,15 +55,13 @@ export default function CertificateView({ intern, config }: Props) {
             className="cert-right-panel"
             style={{ left: `${DIVIDER}%` }}
           >
-            {config.wavyPatternUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={config.wavyPatternUrl}
-                alt=""
+              <Image
+                src="/images/tile.png"
+                alt="tile"
                 aria-hidden
                 className="cert-wavy-img"
+                fill
               />
-            )}
           </div>
 
           <div
@@ -228,7 +227,6 @@ export default function CertificateView({ intern, config }: Props) {
           width: 100%;
           height: auto;
           object-fit: contain;
-          filter: drop-shadow(0 4px 16px rgba(0,0,0,.18));
         }
 
         .cert-left {

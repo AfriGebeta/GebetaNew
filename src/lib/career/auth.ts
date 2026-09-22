@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import nodemailer from "nodemailer";
 import { cookies } from "next/headers";
+import { emailLayout } from "@/lib/career/email-layout";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.CAREER_JWT_SECRET ?? "career-secret-fallback-change-me"
@@ -95,13 +96,15 @@ export async function sendMagicLink(to: string, token: string, baseUrl: string) 
     from: `"GebetaMaps Certificates" <${emailUser}>`,
     to,
     subject: "Admin Login — GebetaMaps Certificate Portal",
-    html: `
-      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
-        <h2 style="color:#1a1a1a;margin-bottom:8px">GebetaMaps Certificate Portal</h2>
-        <p style="color:#6b7280;margin-bottom:24px">Click the button below to log in. This link expires in 15 minutes.</p>
-        <a href="${link}" style="display:inline-block;background:#8B6914;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-weight:600">Login to Admin Portal</a>
-        <p style="color:#9ca3af;font-size:12px;margin-top:24px">If you didn't request this, ignore this email.</p>
-      </div>
-    `,
+    html: emailLayout({
+      preheader: "Your admin login link for the GebetaMaps Certificate Portal.",
+      body: `
+        <h2 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#111827;">Admin Login</h2>
+        <p style="margin:0 0 4px;color:#374151;">Click the button below to access the GebetaMaps Certificate Portal. This link expires in 15 minutes.</p>
+      `,
+      ctaUrl: link,
+      ctaLabel: "Login to Admin Portal",
+      footerNote: "If you didn't request this, you can safely ignore this email.",
+    }),
   });
 }

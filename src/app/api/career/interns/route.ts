@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { name, role, presentedOn } = body;
+  const { name, role, presentedOn, email } = body;
 
   if (!name || !role) {
     return NextResponse.json({ error: "name and role are required" }, { status: 400 });
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         .toUpperCase();
 
   const slug = await generateUniqueSlug(name);
-  const intern = await createIntern({ name, slug, role, presentedOn: formattedDate });
+  const intern = await createIntern({ name, slug, role, email: email ?? "", presentedOn: formattedDate });
 
   return NextResponse.json(intern, { status: 201 });
 }

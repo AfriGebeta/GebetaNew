@@ -7,7 +7,7 @@ import { ArrowLeft, CheckCircle2 } from "lucide-react";
 
 export default function AddInternClient() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", role: "", presentedOn: "" });
+  const [form, setForm] = useState({ name: "", role: "", presentedOn: "", email: "" });
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState<{ slug: string; name: string } | null>(null);
   const [error, setError] = useState("");
@@ -119,6 +119,20 @@ export default function AddInternClient() {
                 placeholder="Software Engineering Intern"
                 className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                placeholder="selam@example.com"
+                className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Optional — used to send the certificate by email</p>
             </div>
 
             <div>
