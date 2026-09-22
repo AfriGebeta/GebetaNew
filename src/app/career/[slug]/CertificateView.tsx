@@ -1,7 +1,7 @@
 "use client";
 
 import { Intern, CertificateConfig } from "@/lib/career/db";
-import { Libre_Baskerville, Inter, Barlow } from "next/font/google";
+import { Libre_Baskerville, Inter } from "next/font/google";
 import Image from "next/image";
 
 const libreBaskerville = Libre_Baskerville({
@@ -13,14 +13,8 @@ const libreBaskerville = Libre_Baskerville({
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-inter",
-});
-
-const barlow = Barlow({
-  subsets: ["latin"],
   weight: ["400", "500", "600"],
-  variable: "--font-barlow",
+  variable: "--font-inter",
 });
 
 interface Props {
@@ -31,7 +25,7 @@ interface Props {
 export default function CertificateView({ intern, config }: Props) {
   const gold = config.primaryColor || "#ffa500";
   const description = config.descriptionTemplate.replace("{companyName}", config.companyName);
-  const fonts = `${libreBaskerville.variable} ${inter.variable} ${barlow.variable}`;
+  const fonts = `${libreBaskerville.variable} ${inter.variable}`;
 
   const certUrl =
     typeof window !== "undefined"
@@ -138,7 +132,7 @@ export default function CertificateView({ intern, config }: Props) {
                   </p>
                 )}
                 <div className="cert-signature-line" />
-                <p className="cert-signatory-title" style={{ fontFamily: "var(--font-barlow)" }}>
+                <p className="cert-signatory-title" style={{ fontFamily: "var(--font-inter)" }}>
                   {config.signatoryTitle}
                 </p>
               </div>
@@ -146,10 +140,10 @@ export default function CertificateView({ intern, config }: Props) {
               <div className="cert-qr-block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={qrUrl} alt="Certificate QR" className="cert-qr-img" />
-                <p className="cert-presented-on-label" style={{ fontFamily: "var(--font-barlow)" }}>
+                <p className="cert-presented-on-label" style={{ fontFamily: "var(--font-inter)" }}>
                   PRESENTED ON
                 </p>
-                <p className="cert-presented-on-date" style={{ fontFamily: "var(--font-barlow)" }}>
+                <p className="cert-presented-on-date" style={{ fontFamily: "var(--font-inter)" }}>
                   {intern.presentedOn}
                 </p>
               </div>
