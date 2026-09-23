@@ -11,6 +11,7 @@ const SESSION_COOKIE = "career_session";
 const MAGIC_COOKIE = "career_magic";
 
 export function getAdminCredentials() {
+  console.log({ username: process.env.CAREER_ADMIN_USERNAME, password: process.env.CAREER_ADMIN_PASSWORD, email: process.env.CAREER_ADMIN_EMAIL })
   return {
     username: process.env.CAREER_ADMIN_USERNAME ?? "admin",
     password: process.env.CAREER_ADMIN_PASSWORD ?? "admin123",
