@@ -90,6 +90,7 @@ jobs:
           cp pnpm-lock.yaml deploy/
           cp next.config.mjs deploy/
           cp start.sh deploy/
+          cp .env deploy/
           chmod +x deploy/start.sh
 
       - uses: actions/upload-artifact@v4
