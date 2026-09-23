@@ -32,8 +32,9 @@ export const AuthProvider = ({children}) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const pathname = usePathname()
 
+    // Auth pages bounce signed-in users to the dashboard. The landing page ("/")
+    // intentionally does not — it shows a "Go to Dashboard" button instead.
     const UN_PROTECTED_ROUTES = [
-        "/",
         "/auth/signin",
         "/auth/register",
         "/auth/reset-password",
@@ -41,6 +42,7 @@ export const AuthProvider = ({children}) => {
 
     const clearSession = useCallback(() => {
         setIsAuthenticated(false);
+        delete document.documentElement.dataset.auth;
         setCurrentUser(null);
         clearAuthStorage();
         queryClient.clear();
@@ -103,6 +105,7 @@ export const AuthProvider = ({children}) => {
     const login = (user) => {
         expiringRef.current = false;
         setIsAuthenticated(true);
+        document.documentElement.dataset.auth = '1';
         setCurrentUser(user); // Set the user data when logging in
         if (typeof window !== 'undefined') {
             localStorage.setItem('isAuthenticated', JSON.stringify(true));

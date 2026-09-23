@@ -9,7 +9,7 @@ import NextTopLoader from 'nextjs-toploader';
 import { PostHogProvider } from "@/app/posthug-provider";
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
-import { GeistPixelSquare, GeistPixelGrid, GeistPixelCircle, GeistPixelTriangle, GeistPixelLine } from 'geist/font/pixel';
+import { GeistPixelSquare } from 'geist/font/pixel';
 
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -182,9 +182,10 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <head>
                 <script
-                    async
-                    crossOrigin="anonymous"
-                    src="https://tweakcn.com/live-preview.min.js"
+                    dangerouslySetInnerHTML={{
+                        // Mirrors isTokenExpired() in src/lib/session.ts so an expired session never shows as signed in.
+                        __html: `try{if(JSON.parse(localStorage.getItem('isAuthenticated'))){var t=(JSON.parse(localStorage.getItem('currentUser'))||{}).token,e=null;if(t){try{var p=JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));if(typeof p.exp==='number')e=p.exp*1000}catch(x){}}if(e===null||Date.now()<e-5000)document.documentElement.dataset.auth='1'}}catch(x){}`,
+                    }}
                 />
             </head>
             <body

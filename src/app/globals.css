@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html[data-auth] .auth-signed-out,
+html:not([data-auth]) .auth-signed-in {
+    display: none !important;
+}
+
 ::selection {
     background: #FFA500;
     color: white;
