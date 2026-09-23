@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[career/auth/login]", msg);
     return NextResponse.json(
-      { error: msg },
+      { error: process.env.NODE_ENV !== "production" ? msg : "Failed to send login link" },
       { status: 500 }
     );
   }
