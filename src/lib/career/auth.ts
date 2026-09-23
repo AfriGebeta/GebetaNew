@@ -10,9 +10,13 @@ const JWT_SECRET = new TextEncoder().encode(
 const SESSION_COOKIE = "career_session";
 const MAGIC_COOKIE = "career_magic";
 
-export const ADMIN_USERNAME = process.env.CAREER_ADMIN_USERNAME ?? "admin";
-export const ADMIN_PASSWORD = process.env.CAREER_ADMIN_PASSWORD ?? "admin123";
-export const ADMIN_EMAIL = process.env.CAREER_ADMIN_EMAIL ?? process.env.NEXT_PUBLIC_EMAIL_USER ?? "";
+export function getAdminCredentials() {
+  return {
+    username: process.env.CAREER_ADMIN_USERNAME ?? "admin",
+    password: process.env.CAREER_ADMIN_PASSWORD ?? "admin123",
+    email: process.env.CAREER_ADMIN_EMAIL ?? process.env.NEXT_PUBLIC_EMAIL_USER ?? "",
+  };
+}
 
 export async function signMagicToken(username: string): Promise<string> {
   return new SignJWT({ username, type: "magic" })
