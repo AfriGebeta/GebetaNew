@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import {
   getAdminCredentials,
+  getBaseUrl,
   signMagicToken,
   sendMagicLink,
 } from "@/lib/career/auth";
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     const token = await signMagicToken(username);
-    const baseUrl = req.nextUrl.origin;
+    const baseUrl = getBaseUrl(req);
 
     await sendMagicLink(adminEmail, token, baseUrl);
 

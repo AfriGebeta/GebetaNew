@@ -10,6 +10,12 @@ const JWT_SECRET = new TextEncoder().encode(
 const SESSION_COOKIE = "career_session";
 const MAGIC_COOKIE = "career_magic";
 
+// Behind the reverse proxy req.nextUrl.origin resolves to localhost, so use the public URL in production.
+export function getBaseUrl(req: { nextUrl: { origin: string } }): string {
+  if (process.env.NODE_ENV !== "production") return req.nextUrl.origin;
+  return (process.env.CAREER_BASE_URL ?? "https://gebeta.app").replace(/\/$/, "");
+}
+
 export function getAdminCredentials() {
   console.log({ username: process.env.CAREER_ADMIN_USERNAME, password: process.env.CAREER_ADMIN_PASSWORD, email: process.env.CAREER_ADMIN_EMAIL })
   return {
