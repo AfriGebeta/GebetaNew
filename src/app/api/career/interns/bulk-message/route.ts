@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { getSessionUser } from "@/lib/career/auth";
 import { readInterns } from "@/lib/career/db";
-import { emailLayout } from "@/lib/career/email-layout";
+import { emailLayout, htmlToText } from "@/lib/career/email-layout";
 
 export async function POST(req: NextRequest) {
   const user = await getSessionUser();
@@ -48,15 +48,17 @@ export async function POST(req: NextRequest) {
     try {
       const baseUrl = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://gebetamaps.com";
       const certUrl = `${baseUrl}/career/${intern.slug}`;
+      const html = emailLayout({
+        body: `<div style="color:#374151;line-height:1.7;">${resolvedMessage}</div>`,
+        ctaUrl: certUrl,
+        ctaLabel: "View Your Certificate",
+      });
       await transporter.sendMail({
         from: `"GebetaMaps" <${emailUser}>`,
         to: intern.email,
         subject: resolvedSubject,
-        html: emailLayout({
-          body: `<div style="color:#374151;line-height:1.7;">${resolvedMessage}</div>`,
-          ctaUrl: certUrl,
-          ctaLabel: "View Your Certificate",
-        }),
+        html,
+        text: htmlToText(html),
       });
     } catch {
       errors.push(intern.email);

@@ -88,3 +88,24 @@ export function emailLayout({
 </body>
 </html>`;
 }
+
+// Plain-text alternative for the HTML emails; HTML-only messages score worse with spam filters.
+export function htmlToText(html: string): string {
+  return html
+    .replace(/<(head|style)[\s\S]*?<\/\1>/gi, "")
+    .replace(/<div style="display:none[\s\S]*?<\/div>/i, "")
+    .replace(/<a [^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, label) => {
+      const text = label.replace(/<[^>]+>/g, "").trim();
+      return text && text !== href ? `${text}: ${href}` : href;
+    })
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|h[1-6]|tr|li)>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&bull;/g, "•")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&zwnj;/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n\s*\n\s*/g, "\n\n")
+    .trim();
+}

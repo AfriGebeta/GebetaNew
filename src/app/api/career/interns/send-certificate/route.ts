@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { getSessionUser } from "@/lib/career/auth";
 import { getInternBySlug } from "@/lib/career/db";
-import { emailLayout } from "@/lib/career/email-layout";
+import { emailLayout, htmlToText } from "@/lib/career/email-layout";
 
 export async function POST(req: NextRequest) {
   const user = await getSessionUser();
@@ -38,17 +38,20 @@ export async function POST(req: NextRequest) {
     ${hasMessage ? `<div style="margin:0 0 4px;color:#374151;line-height:1.7;">${message}</div>` : ""}
   `;
 
+  const html = emailLayout({
+    preheader: `Your certificate for ${intern.role} at GebetaMaps is ready.`,
+    body,
+    ctaUrl: certUrl,
+    ctaLabel: "View Your Certificate",
+    footerNote: `You can also copy this link: <a href="${certUrl}" style="color:#1A1A2E;">${certUrl}</a>`,
+  });
+
   await transporter.sendMail({
     from: `"GebetaMaps" <${emailUser}>`,
     to: intern.email,
     subject: `Your GebetaMaps Certificate — ${intern.name}`,
-    html: emailLayout({
-      preheader: `Your certificate for ${intern.role} at GebetaMaps is ready.`,
-      body,
-      ctaUrl: certUrl,
-      ctaLabel: "View Your Certificate",
-      footerNote: `You can also copy this link: <a href="${certUrl}" style="color:#1A1A2E;">${certUrl}</a>`,
-    }),
+    html,
+    text: htmlToText(html),
   });
 
   return NextResponse.json({ success: true });

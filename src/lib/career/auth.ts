@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import nodemailer from "nodemailer";
 import { cookies } from "next/headers";
-import { emailLayout } from "@/lib/career/email-layout";
+import { emailLayout, htmlToText } from "@/lib/career/email-layout";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.CAREER_JWT_SECRET ?? "career-secret-fallback-change-me"
@@ -103,19 +103,22 @@ export async function sendMagicLink(to: string, token: string, baseUrl: string) 
     auth: { user: emailUser, pass: emailPass },
   });
 
+  const html = emailLayout({
+    preheader: "Your admin login link for the GebetaMaps Certificate Portal.",
+    body: `
+      <h2 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#111827;">Admin Login</h2>
+      <p style="margin:0 0 4px;color:#374151;">Click the button below to access the GebetaMaps Certificate Portal. This link expires in 15 minutes.</p>
+    `,
+    ctaUrl: link,
+    ctaLabel: "Login to Admin Portal",
+    footerNote: "If you didn't request this, you can safely ignore this email.",
+  });
+
   await transporter.sendMail({
     from: `"GebetaMaps Certificates" <${emailUser}>`,
     to,
     subject: "Admin Login — GebetaMaps Certificate Portal",
-    html: emailLayout({
-      preheader: "Your admin login link for the GebetaMaps Certificate Portal.",
-      body: `
-        <h2 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#111827;">Admin Login</h2>
-        <p style="margin:0 0 4px;color:#374151;">Click the button below to access the GebetaMaps Certificate Portal. This link expires in 15 minutes.</p>
-      `,
-      ctaUrl: link,
-      ctaLabel: "Login to Admin Portal",
-      footerNote: "If you didn't request this, you can safely ignore this email.",
-    }),
+    html,
+    text: htmlToText(html),
   });
 }
