@@ -147,6 +147,9 @@ jobs:
             -e "ssh -o StrictHostKeyChecking=no" \
             build/ $AZURE_SERVER_USER@$AZURE_SERVER_IP:~/gebeta-remade/releases/$NEW_VERSION/
           
+          # Link the server-side runtime env file (kept outside releases so it survives deploys)
+          ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "ln -sfn ~/gebeta-remade/shared/.env ~/gebeta-remade/releases/$NEW_VERSION/.env"
+
           # Update the symlink to point to the new version
           ssh -o StrictHostKeyChecking=no $AZURE_SERVER_USER@$AZURE_SERVER_IP "ln -sfn ~/gebeta-remade/releases/$NEW_VERSION ~/gebeta-remade/current"
           
