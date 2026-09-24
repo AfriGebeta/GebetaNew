@@ -1,8 +1,8 @@
-"use client";
-
 import { Intern, CertificateConfig } from "@/lib/career/db";
-import { Libre_Baskerville, Inter } from "next/font/google";
+import { Libre_Baskerville, Inter, Dancing_Script } from "next/font/google";
 import Image from "next/image";
+import QRCode from "qrcode";
+import PrintButton from "./PrintButton";
 
 const libreBaskerville = Libre_Baskerville({
   subsets: ["latin"],
@@ -17,31 +17,36 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-dancing",
+});
+
 interface Props {
   intern: Intern;
   config: CertificateConfig;
 }
 
-export default function CertificateView({ intern, config }: Props) {
+export default async function CertificateView({ intern, config }: Props) {
   const gold = config.primaryColor || "#ffa500";
   const description = config.descriptionTemplate.replace("{companyName}", config.companyName);
-  const fonts = `${libreBaskerville.variable} ${inter.variable}`;
+  const fonts = `${libreBaskerville.variable} ${inter.variable} ${dancingScript.variable}`;
 
-  const certUrl =
-    typeof window !== "undefined"
-      ? window.location.href
-      : `https://gebeta.app/career/${intern.slug}`;
-
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(certUrl)}&color=${gold.replace("#", "")}&bgcolor=ffffff&format=svg&margin=2`;
+  const certUrl = `https://gebeta.app/career/${intern.slug}`;
+  // Rendered on the server as an inline SVG so the QR is in the first paint (no external request).
+  const qrSvg = await QRCode.toString(certUrl, {
+    type: "svg",
+    margin: 1,
+    color: { dark: gold, light: "#ffffff" },
+  });
 
   const DIVIDER = 66;
 
   return (
     <>
       <div className={`cert-screen-wrapper ${fonts}`}>
-        <button className="cert-download-btn" onClick={() => window.print()}>
-          Download / Print
-        </button>
+        <PrintButton />
 
         <div id="certificate" className="cert-root">
 
@@ -55,6 +60,7 @@ export default function CertificateView({ intern, config }: Props) {
                 aria-hidden
                 className="cert-wavy-img"
                 fill
+                priority
               />
           </div>
 
@@ -138,8 +144,12 @@ export default function CertificateView({ intern, config }: Props) {
               </div>
 
               <div className="cert-qr-block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={qrUrl} alt="Certificate QR" className="cert-qr-img" />
+                <div
+                  role="img"
+                  aria-label="Certificate QR"
+                  className="cert-qr-img"
+                  dangerouslySetInnerHTML={{ __html: qrSvg }}
+                />
                 <p className="cert-presented-on-label" style={{ fontFamily: "var(--font-inter)" }}>
                   PRESENTED ON
                 </p>
@@ -151,11 +161,6 @@ export default function CertificateView({ intern, config }: Props) {
           </div>
         </div>
       </div>
-
-      <link
-        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap"
-        rel="stylesheet"
-      />
 
       <style>{`
         .cert-screen-wrapper {
@@ -181,6 +186,11 @@ export default function CertificateView({ intern, config }: Props) {
         }
         .cert-download-btn:hover { opacity: .85; }
 
+        @media (max-width: 640px) {
+          .cert-screen-wrapper { padding: 16px 12px; }
+          .cert-root { box-shadow: 0 4px 20px rgba(0,0,0,.14); }
+        }
+
         .cert-root {
           position: relative;
           background: #ffffff;
@@ -188,6 +198,8 @@ export default function CertificateView({ intern, config }: Props) {
           overflow: hidden;
           width: min(980px, 100%);
           aspect-ratio: 1920 / 1362;
+          /* Everything inside is sized in cqw (1% of card width, designed at 980px) so the certificate scales as one piece. */
+          container-type: inline-size;
         }
 
         .cert-right-panel {
@@ -234,21 +246,21 @@ export default function CertificateView({ intern, config }: Props) {
         .cert-logo-row {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 1cqw;
           margin-bottom: 4%;
         }
         .cert-logo-img {
-          height: clamp(22px, 3.5%, 40px);
+          height: 3.1cqw;
           width: auto;
           object-fit: contain;
         }
         .cert-company-name {
           font-weight: 600;
-          font-size: clamp(10px, 1.4vw, 18px);
+          font-size: 1.84cqw;
         }
 
         .cert-title-small {
-          font-size: clamp(8px, 1vw, 13px);
+          font-size: 1.33cqw;
           letter-spacing: .18em;
           text-transform: uppercase;
           color: #555;
@@ -256,7 +268,7 @@ export default function CertificateView({ intern, config }: Props) {
           margin: 0 0 2px;
         }
         .cert-title-big {
-          font-size: clamp(20px, 4vw, 40px);
+          font-size: 4.08cqw;
           font-weight: 700;
           color: #111;
           line-height: 1;
@@ -265,7 +277,7 @@ export default function CertificateView({ intern, config }: Props) {
         }
 
         .cert-presented-label {
-          font-size: clamp(18px, 0.78vw, 30px);
+          font-size: 1.84cqw;
           letter-spacing: 0.25px;
           text-transform: uppercase;
           color: #C1BFB3;
@@ -274,11 +286,11 @@ export default function CertificateView({ intern, config }: Props) {
         }
 
         .cert-name {
-          font-family: 'Dancing Script', var(--font-libre), cursive;
-          font-size: clamp(16px, 2.8vw, 44px);
+          font-family: var(--font-dancing), var(--font-libre), cursive;
+          font-size: 4.2cqw;
           font-weight: 700;
           line-height: 1.1;
-          margin: 0 0 4px;
+          margin: 0 0 0.4cqw;
           letter-spacing: .01em;
         }
         .cert-name-underline {
@@ -288,7 +300,7 @@ export default function CertificateView({ intern, config }: Props) {
         }
 
         .cert-description {
-          font-size: clamp(16px, 0.82vw, 20px);
+          font-size: 1.63cqw;
           line-height: 1.65;
           color: #444;
           max-width: 82%;
@@ -301,25 +313,25 @@ export default function CertificateView({ intern, config }: Props) {
           justify-content: space-between;
         }
         .cert-signature-img {
-          height: clamp(24px, 3.5vw, 48px);
+          height: 4.9cqw;
           width: auto;
           object-fit: contain;
-          margin-bottom: 4px;
+          margin-bottom: 0.4cqw;
         }
         .cert-signature-text {
-          font-size: clamp(12px, 1.8vw, 26px);
+          font-size: 2.65cqw;
           font-style: italic;
           color: #333;
-          margin: 0 0 4px;
+          margin: 0 0 0.4cqw;
         }
         .cert-signature-line {
-          width: clamp(70px, 9vw, 130px);
+          width: 13.3cqw;
           height: 1px;
           background: #bbb;
-          margin-bottom: 4px;
+          margin-bottom: 0.4cqw;
         }
         .cert-signatory-title {
-          font-size: clamp(12px, 0.58vw, 8px);
+          font-size: 1.22cqw;
           letter-spacing: .2em;
           text-transform: uppercase;
           font-weight: 600;
@@ -330,21 +342,26 @@ export default function CertificateView({ intern, config }: Props) {
           display: flex;
           flex-direction: column;
           align-items: flex-end;
-          gap: 3px;
+          gap: 0.3cqw;
         }
         .cert-qr-img {
-          width: clamp(48px, 6.5vw, 86px);
-          height: clamp(48px, 6.5vw, 86px);
+          width: 8.8cqw;
+          height: 8.8cqw;
+        }
+        .cert-qr-img svg {
+          display: block;
+          width: 100%;
+          height: 100%;
         }
         .cert-presented-on-label {
-          font-size: clamp(12px, 0.58vw, 8px);
+          font-size: 1.22cqw;
           font-weight: 600;
           text-transform: uppercase;
           color: #8C8773;
-          margin-top: 20px;
+          margin-top: 2cqw;
         }
         .cert-presented-on-date {
-          font-size: clamp(18px, 0.82vw, 11px);
+          font-size: 1.84cqw;
           font-weight: 600;
           letter-spacing: .08em;
           color: #222;
