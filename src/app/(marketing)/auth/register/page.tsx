@@ -38,6 +38,16 @@ const Register: React.FC = () => {
     const [selectedCountryCode, setSelectedCountryCode] = useState("+251");
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState<string>("");
+    const [passwordError, setPasswordError] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+    const validatePassword = (value: string) => {
+        if (value.length < 8) return 'Password must be at least 8 characters';
+        if (!/[A-Z]/.test(value)) return 'Password must contain at least one uppercase letter';
+        if (!/[0-9]/.test(value)) return 'Password must contain at least one number';
+        return '';
+    };
 
     const [registrationData, setRegistrationData] = useState({
         firstname: "",
@@ -158,6 +168,15 @@ const Register: React.FC = () => {
         e.preventDefault();
         if (!agreeToTerms) {
             setError("Please agree to the Terms of Service and Privacy Policy");
+            return;
+        }
+        const pwdErr = validatePassword(registrationData.password);
+        if (pwdErr) {
+            setPasswordError(pwdErr);
+            return;
+        }
+        if (registrationData.password !== confirmPassword) {
+            setConfirmPasswordError('Passwords do not match');
             return;
         }
 
@@ -343,14 +362,51 @@ const Register: React.FC = () => {
                         type="password"
                         id="password"
                         value={registrationData.password}
-                        onChange={(e) => setRegistrationData({...registrationData, password: e.target.value})}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setRegistrationData({...registrationData, password: value});
+                            setPasswordError(validatePassword(value));
+                            if (confirmPassword) {
+                                setConfirmPasswordError(value !== confirmPassword ? 'Passwords do not match' : '');
+                            }
+                        }}
                         required
                         placeholder="Create a password"
-                        className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
+                        className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm
                            focus:outline-none focus:ring focus:ring-[#FFA500]
                            focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                           dark:text-gray-300 transition duration-200 ease-in-out"
+                           dark:text-gray-300 transition duration-200 ease-in-out
+                           ${passwordError ? 'border-red-500' : 'border-[#D1D5DB]'}`}
                     />
+                    {passwordError && (
+                        <p className="mt-1 text-xs text-red-500">{passwordError}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Confirm Password
+                    </label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        value={confirmPassword}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setConfirmPassword(value);
+                            setConfirmPasswordError(value !== registrationData.password ? 'Passwords do not match' : '');
+                        }}
+                        required
+                        placeholder="Re-enter your password"
+                        className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm
+                           focus:outline-none focus:ring focus:ring-[#FFA500]
+                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
+                           dark:text-gray-300 transition duration-200 ease-in-out
+                           ${confirmPasswordError ? 'border-red-500' : 'border-[#D1D5DB]'}`}
+                    />
+                    {confirmPasswordError && (
+                        <p className="mt-1 text-xs text-red-500">{confirmPasswordError}</p>
+                    )}
                 </div>
             </>
         );

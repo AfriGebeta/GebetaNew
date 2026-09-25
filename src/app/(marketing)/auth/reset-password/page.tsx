@@ -1,12 +1,12 @@
 //@ts-nocheck
 
 "use client";
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from "next/link";
-import {useMutation} from "@tanstack/react-query";
-import {apiClient} from "@/service/apiClient";
-import {useRouter} from 'nextjs-toploader/app';
-import {BarLoader} from "react-spinners";
+import { useMutation } from "@tanstack/react-query";
+import { apiClient } from "@/service/apiClient";
+import { useRouter } from 'nextjs-toploader/app';
+import { BarLoader } from "react-spinners";
 
 const ResetPassword: React.FC = () => {
     const router = useRouter();
@@ -14,6 +14,7 @@ const ResetPassword: React.FC = () => {
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
     const requestOtpMutation = useMutation({
@@ -95,16 +96,45 @@ const ResetPassword: React.FC = () => {
         }
     };
 
+    const [passwordError, setPasswordError] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+    const validatePassword = (value: string) => {
+        if (value.length < 8) return 'Password must be at least 8 characters';
+        if (!/[A-Z]/.test(value)) return 'Password must contain at least one uppercase letter';
+        if (!/[0-9]/.test(value)) return 'Password must contain at least one number';
+        return '';
+    };
+
+    const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setNewPassword(value);
+        setPasswordError(validatePassword(value));
+        if (confirmPassword) {
+            setConfirmPasswordError(value !== confirmPassword ? 'Passwords do not match' : '');
+        }
+    };
+
+    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setConfirmPassword(value);
+        setConfirmPasswordError(value !== newPassword ? 'Passwords do not match' : '');
+    };
+
     const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const otpString = otp.join('');
-        if (newPassword.length < 6) {
-            setError("Password must be at least 6 characters long");
+        const pwdErr = validatePassword(newPassword);
+        if (pwdErr) {
+            setPasswordError(pwdErr);
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setConfirmPasswordError('Passwords do not match');
             return;
         }
 
         try {
-            await changePasswordMutation.mutateAsync({ email, otp: otpString, newPassword });
+            await changePasswordMutation.mutateAsync({ email, otp: otp.join(''), newPassword });
         } catch (error) {
             console.error('Change password error:', error);
         }
@@ -153,7 +183,6 @@ const ResetPassword: React.FC = () => {
                         </label>
                         <input
                             type="email"
-                            id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -214,27 +243,55 @@ const ResetPassword: React.FC = () => {
 
             {step === 3 && (
                 <form className="space-y-6 mt-[40px]" onSubmit={handleChangePassword}>
-                    <div>
-                        <label htmlFor="newPassword"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            New Password
-                        </label>
-                        <input
-                            type="password"
-                            id="newPassword"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            required
-                            placeholder="Enter new password"
-                            className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
+                    <div className='space-y-4'>
+                        <div>
+                            <label htmlFor="newPassword"
+                                className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                New Password
+                            </label>
+                            <input
+                                id="newPassword"
+                                type="password"
+                                value={newPassword}
+                                placeholder='Enter password'
+                                onChange={handleNewPasswordChange}
+                                required
+                                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm
                                        focus:outline-none focus:ring focus:ring-[#FFA500]
                                        focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                                       dark:text-gray-300 transition duration-200 ease-in-out"
-                        />
+                                       dark:text-gray-300 transition duration-200 ease-in-out
+                                       ${passwordError ? 'border-red-500' : 'border-[#D1D5DB]'}`}
+                            />
+                            {passwordError && (
+                                <p className="mt-1 text-xs text-red-500">{passwordError}</p>
+                            )}
+                        </div>
+                        <div>
+                            <label htmlFor="confirmPassword"
+                                className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Confirm Password
+                            </label>
+                            <input
+                                id="confirmPassword"
+                                type="password"
+                                value={confirmPassword}
+                                placeholder='Re-enter password'
+                                onChange={handleConfirmPasswordChange}
+                                required
+                                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm
+                                       focus:outline-none focus:ring focus:ring-[#FFA500]
+                                       focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
+                                       dark:text-gray-300 transition duration-200 ease-in-out
+                                       ${confirmPasswordError ? 'border-red-500' : 'border-[#D1D5DB]'}`}
+                            />
+                            {confirmPasswordError && (
+                                <p className="mt-1 text-xs text-red-500">{confirmPasswordError}</p>
+                            )}
+                        </div>
                     </div>
                     <button
                         type="submit"
-                        disabled={changePasswordMutation.isPending}
+                        disabled={changePasswordMutation.isPending || !!passwordError || !!confirmPasswordError}
                         className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
                     >
                         {changePasswordMutation.isPending ? <BarLoader /> : 'Change Password'}
