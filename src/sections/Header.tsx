@@ -13,8 +13,12 @@ export default function Header() {
                     technology for businesses, developers, and logistics providers</p>
                 <div className="flex justify-center items-center gap-[32px] mt-[44px]">
                     <Link
+                        href="/dashboard"
+                        className="auth-signed-in transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Go
+                        to Dashboard</Link>
+                    <Link
                         href="/auth/register"
-                        className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Get
+                        className="auth-signed-out transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Get
                         Started</Link>
                     <Link
                         href="/contact"

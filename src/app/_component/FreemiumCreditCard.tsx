@@ -1,24 +1,24 @@
 //@ts-nocheck
 "use client";
 
-import {useContext, useEffect, useState} from 'react';
-import {Crown, Gift} from 'lucide-react';
-import {useMutation} from "@tanstack/react-query";
-import {AuthContext} from "@/providers/AuthProvider";
-import {useToast} from "@/hooks/use-toast";
-import {useRouter} from "nextjs-toploader/app";
-import {apiClient} from "@/service/apiClient";
+import { useContext, useEffect, useState } from 'react';
+import { Crown, Gift } from 'lucide-react';
+import { useMutation } from "@tanstack/react-query";
+import { AuthContext } from "@/providers/AuthProvider";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "nextjs-toploader/app";
+import { apiClient } from "@/service/apiClient";
 
 const FreemiumCreditCard = () => {
-    const {toast}= useToast()
+    const { toast } = useToast()
     const router = useRouter()
-    const {currentUser} = useContext(AuthContext)
+    const { currentUser } = useContext(AuthContext)
 
     const [claimed, setClaimed] = useState(currentUser?.user?.claimed_freemium);
     const [totalCredit, setTotalCredit] = useState(0);
 
     // const isSubscribedUser =  currentUser?.user?.map(i)
-    
+
 
     useEffect(() => {
         const freemiumCredit = currentUser?.user?.remaining?.filter((item) => item?.is_freeemium) ?? {}
@@ -42,15 +42,15 @@ const FreemiumCreditCard = () => {
             return response.data;
         },
         onSuccess: () => {
-         setClaimed(true);
+            setClaimed(true);
         },
         onError: (error) => {
-            toast({description: error?.response?.data?.error?.additional.claim?.[0], variant: "destructive"})
+            toast({ description: error?.response?.data?.error?.additional.claim?.[0], variant: "destructive" })
         }
     })
 
     const handleClaimFreemiumCredit = async () => {
-        if(!claimed) {
+        if (!claimed) {
             await claimFreemiumCredit.mutateAsync()
         } else {
             router.push("/pricing")
@@ -61,12 +61,12 @@ const FreemiumCreditCard = () => {
         <div
             className="flex justify-center items-center p-2"
             style={{
-                visibility: currentUser?.user?.purchased_date ? "hidden": "block",
+                visibility: currentUser?.user?.purchased_date ? "hidden" : "block",
             }}
         >
-            <div className="w-full max-w-md rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <div className="w-full max-w-md rounded-xl overflow-hidden">
                 <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#FFA500] to-pink-500 opacity-90" />
+                    <div className="absolute inset-0 bg-[#FFA500]/80" />
 
                     <div className="relative p-6">
                         <div className="flex justify-between items-center mb-8">
@@ -86,9 +86,9 @@ const FreemiumCreditCard = () => {
                                 onClick={handleClaimFreemiumCredit}
                                 className={`w-full py-3 px-4 rounded-lg whitespace-nowrap font-semibold transition-all duration-300 
                   ${claimed
-                                    ? 'bg-yellow-400 hover:bg-yellow-500 text-white'
-                                    : 'bg-white hover:bg-gray-100 text-[#FFA500]'
-                                }`}
+                                        ? 'bg-yellow-400 hover:bg-yellow-500 text-white'
+                                        : 'bg-white hover:bg-gray-100 text-[#FFA500]'
+                                    }`}
                             >
                                 {claimed ? 'Subscribe to Pro' : 'Claim Free'}
                             </button>

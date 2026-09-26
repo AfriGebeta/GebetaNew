@@ -19,6 +19,10 @@ export default function Footer() {
                             <p className="mt-[24px] text-[12px] font-medium">© {new Date().getFullYear()} GebetaMaps,
                                 Inc. All rights
                                 reserved.</p>
+
+                                <Link className={"mt-[24px] text-[12px] font-medium"} href="https://gebeta.app/status"
+                                      className="hover:underline">Status</Link>
+
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-[32px]">

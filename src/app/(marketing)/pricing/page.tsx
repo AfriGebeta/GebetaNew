@@ -74,13 +74,6 @@ export default function PricingPage() {
 
                     <Plans />
 
-                    <div className="bg-white dark:bg-[#111116] rounded-2xl md:px-8 mb-[60px]">
-                        <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white mb-6 text-center">
-                            Calculate Your Usage Cost
-                        </h3>
-                        <PricingSlider />
-                    </div>
-
                     <div className="max-w-[800px] mx-auto">
                         <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white mb-6 text-center">
                             Frequently Asked Questions

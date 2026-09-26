@@ -60,7 +60,6 @@ export default function FeatureCard({feature, index}: FeatureCardProps) {
                                     placeholder="blur"
                                     blurDataURL={feature.blurData}
                                     onLoadingComplete={() => setImageLoaded(true)}
-                                    priority
                                 />
                             </div>
                         </div>

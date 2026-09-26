@@ -2,12 +2,45 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
+const PLAY_STORE_LINK = "https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map";
+const APP_STORE_LINK = "https://apps.apple.com/us/app/gebeta-maps/id6793868587";
+
+const STORES = {
+    android: { name: "the Play Store", link: PLAY_STORE_LINK },
+    ios: { name: "the App Store", link: APP_STORE_LINK },
+    other: { name: "the Play Store and App Store", link: PLAY_STORE_LINK },
+};
+
+function detectPlatform() {
+    if (typeof navigator === "undefined") {
+        return "other";
+    }
+
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera || "";
+
+    if (/android/i.test(userAgent)) {
+        return "android";
+    }
+    if (/iPad|iPhone|iPod/.test(userAgent) || (/Macintosh/.test(userAgent) && navigator.maxTouchPoints > 1)) {
+        return "ios";
+    }
+
+    return "other";
+}
 
 export default function Announcement({
     showAnnouncement,
     setShowAnnouncement,
-                                     }) {
+}) {
+    const [platform, setPlatform] = useState("other");
 
+    useEffect(() => {
+        setPlatform(detectPlatform());
+    }, []);
+
+    const store = STORES[platform];
     return (
         <div
             className="w-full isolate z-[999] fixed top-0 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1"
@@ -43,14 +76,14 @@ export default function Announcement({
                     <svg viewBox="0 0 2 2" className="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
                         <circle cx="1" cy="1" r="1" />
                     </svg>
-                    We've updated our pricing structure
+                    Gebeta Maps App is now available on {store.name}.
                 </p>
-                <Link
-                    href="/pricing"
+                <a
+                    href={store.link}
                     className="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
                 >
-                    View new pricing <span aria-hidden="true">&rarr;</span>
-                </Link>
+                    Download App <span aria-hidden="true">&rarr;</span>
+                </a>
             </div>
             <div className="flex flex-1 justify-end">
                 <button
