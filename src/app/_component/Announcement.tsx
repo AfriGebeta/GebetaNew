@@ -3,11 +3,24 @@
 
 import Link from "next/link";
 
+function getAppLink() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    if (/android/i.test(userAgent)) {
+        return 'https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map';
+    }
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return 'https://apps.apple.com/us/app/gebeta-maps/id6793868587';
+    }
+
+    return "https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map"
+}
+
 export default function Announcement({
     showAnnouncement,
     setShowAnnouncement,
 }) {
-
+    const appLink = getAppLink()
     return (
         <div
             className="w-full isolate z-[999] fixed top-0 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1"
@@ -46,7 +59,7 @@ export default function Announcement({
                     Gebeta Maps App is now available on the Play Store.
                 </p>
                 <a
-                    href="https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map"
+                    href={appLink}
                     className="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
                 >
                     Download App <span aria-hidden="true">&rarr;</span>
