@@ -3,8 +3,16 @@ import {Globe2, HeartHandshake, Lightbulb, Navigation, Shield} from 'lucide-reac
 import type {Metadata} from "next";
 
 
-export const metadata:Metadata = {
-    title:"About GebetaMaps"
+export const metadata: Metadata = {
+    title: "About",
+    description: "GebetaMaps builds mapping and location infrastructure for Africa - geocoding, routing and location intelligence designed around local data, from Addis Ababa.",
+    alternates: { canonical: "/company" },
+    openGraph: {
+        title: "About GebetaMaps",
+        description: "GebetaMaps builds mapping and location infrastructure for Africa, designed around local data.",
+        url: "/company",
+        type: "website",
+    },
 }
 
 export default function Company() {

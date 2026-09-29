@@ -16,18 +16,21 @@ const plusJakarta = Plus_Jakarta_Sans({
     subsets: ["latin"],
 });
 
+const SITE_URL = "https://gebeta.app";
+
 export const metadata: Metadata = {
-    metadataBase: new URL("https://gebeta.app"),
-    title: "GebetaMaps - Location Solutions Simplified",
+    metadataBase: new URL(SITE_URL),
+    title: {
+        default: "GebetaMaps - Location Solutions Simplified",
+        // Page-level titles render as "<page> | GebetaMaps".
+        template: "%s | GebetaMaps",
+    },
     description: "GebetaMaps delivers powerful APIs for all your location-based needs, from geocoding to route optimization. With up-to-date data and easy-to-use features, build precise, scalable solutions quickly.",
-    keywords: ["maps", "geocoding", "route optimization", "directions", "matrix api"],
+    keywords: ["maps", "geocoding", "route optimization", "directions", "matrix api", "ethiopia maps", "africa maps api"],
     authors: [{ name: "GebetaMaps" }],
     creator: 'GebetaMaps',
     publisher: 'GebetaMaps, Inc.',
     applicationName: 'GebetaMaps',
-    alternates: {
-        canonical: 'https://gebeta.app',
-    },
     robots: {
         index: true,
         follow: true,
@@ -42,7 +45,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'GebetaMaps - Location Solutions Simplified',
         description: 'GebetaMaps delivers powerful APIs for all your location-based needs, from geocoding to route optimization.',
-        url: 'https://gebeta.app',
+        url: SITE_URL,
         siteName: 'GebetaMaps',
         images: [
             {
@@ -55,122 +58,126 @@ export const metadata: Metadata = {
         locale: 'en_US',
         type: 'website',
     },
+    twitter: {
+        card: 'summary_large_image',
+        site: '@gebetamaps',
+        creator: '@gebetamaps',
+        title: 'GebetaMaps - Location Solutions Simplified',
+        description: 'GebetaMaps delivers powerful APIs for all your location-based needs, from geocoding to route optimization.',
+        images: ['/assets/opengraph-image.png'],
+    },
 };
 
-// app/layout.tsx
+// Emitted as a @graph so each entity (company, site, product) is its own node
+// and can be matched to the right rich result.
 const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': ['Organization', 'SoftwareApplication', 'TechnologyCompany'],
-    name: 'GebetaMaps',
-    legalName: 'GebetaMaps, Inc.',
-    url: 'https://gebeta.app',
-    logo: 'https://gebeta.app/logo.png',
-    foundingDate: '2023',
-    founders: [{
-        '@type': 'Person',
-        name: 'Bemhreth Gezahgh',
-        jobTitle: 'Chief Executive Officer',
-        sameAs: [
-            'https://linkedin.com/in/bemhreth-gezahgh',  // Replace with actual URL
-        ]
-    }],
-    address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Kazantchis Bloom tech',
-        addressLocality: 'Addis Ababa',
-        postalCode: '1000',
-        addressCountry: 'Ethiopia'
-    },
-    contactPoint: [{
-        '@type': 'ContactPoint',
-        contactType: 'customer support',
-        email: 'info@gebeta.app',
-        availableLanguage: ['en', 'am']
-    }],
-    sameAs: [
-        'https://twitter.com/gebetamaps',
-        'https://instagram.com/gebetamaps',
-        'https://linkedin.com/company/gebetamaps'
-    ],
-    applicationCategory: 'MapApplication',
-    applicationSubCategory: 'NavigationApplication',
-    operatingSystem: 'All',
-    offers: {
-        '@type': 'AggregateOffer',
-        priceCurrency: 'USD',
-        lowPrice: '0',
-        highPrice: '1000',
-        offerCount: '4',
-        offers: [{
-            '@type': 'Offer',
-            name: 'Pay As You Go',
-            description: 'Pay only for what you use'
-        }, {
-            '@type': 'Offer',
-            name: 'Custom Enterprise Plan',
-            description: 'Unlimited API calls for high-volume needs'
-        }]
-    },
-    hasMap: 'https://gebeta.app',
-    areaServed: {
-        '@type': 'Continent',
-        name: 'Africa'
-    },
-    knowsAbout: [
-        'Geocoding',
-        'Route Optimization',
-        'Location Intelligence',
-        'Navigation Systems',
-        'African Maps',
-        'API Development'
-    ],
-    keywords: 'maps, geocoding, route optimization, directions, matrix api, african maps, ethiopia maps',
-    slogan: 'Let us find your way',
-    description: 'Advanced location technology for businesses, developers, and logistics providers in Africa. Offering geocoding, routing, and location intelligence through powerful APIs.',
-    mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': 'https://gebeta.app'
-    },
-    aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: '150',
-        bestRating: '5',
-        worstRating: '1'
-    },
-    award: [
-        'Best Mobility & Logistics',
-    ],
-    availableChannel: [{
-        '@type': 'ServiceChannel',
-        serviceUrl: 'https://docs.gebeta.app',
-        serviceType: 'API Documentation'
-    }],
-    featuredCustomers: [{
-        '@type': 'Organization',
-        name: 'ZayRide',
-        review: {
-            '@type': 'Review',
-            reviewBody: 'Their accurate and up-to-date maps have greatly improved navigation for our taxi drivers',
-            author: {
+    '@graph': [
+        {
+            '@type': 'Organization',
+            '@id': `${SITE_URL}/#organization`,
+            name: 'GebetaMaps',
+            legalName: 'GebetaMaps, Inc.',
+            url: SITE_URL,
+            logo: {
+                '@type': 'ImageObject',
+                url: `${SITE_URL}/assets/logo.svg`,
+            },
+            image: `${SITE_URL}/assets/opengraph-image.png`,
+            foundingDate: '2023',
+            slogan: 'Let us find your way',
+            description: 'Advanced location technology for businesses, developers, and logistics providers in Africa. Offering geocoding, routing, and location intelligence through powerful APIs.',
+            founder: {
                 '@type': 'Person',
-                name: 'Habtamu Tadesse',
-                jobTitle: 'Founder and CEO'
-            }
-        }
-    }, {
-        '@type': 'Organization',
-        name: 'NID',
-        review: {
-            '@type': 'Review',
-            reviewBody: 'Helping citizens locate our Registration centers with ease',
-            author: {
-                '@type': 'Person',
-                name: 'Abenezer Feleke',
-                jobTitle: 'Head of Communications'
-            }
-        }
-    }]
+                name: 'Bemhreth Gezahgh',
+                jobTitle: 'Chief Executive Officer',
+                sameAs: ['https://linkedin.com/in/bemhreth-gezahgh'],
+            },
+            address: {
+                '@type': 'PostalAddress',
+                streetAddress: 'Kazantchis, Bloom Tech',
+                addressLocality: 'Addis Ababa',
+                postalCode: '1000',
+                addressCountry: 'ET',
+            },
+            contactPoint: [{
+                '@type': 'ContactPoint',
+                contactType: 'customer support',
+                email: 'info@gebeta.app',
+                url: `${SITE_URL}/contact`,
+                availableLanguage: ['en', 'am'],
+            }],
+            sameAs: [
+                'https://twitter.com/gebetamaps',
+                'https://instagram.com/gebetamaps',
+                'https://linkedin.com/company/gebetamaps',
+            ],
+            areaServed: {
+                '@type': 'Continent',
+                name: 'Africa',
+            },
+            knowsAbout: [
+                'Geocoding',
+                'Route Optimization',
+                'Location Intelligence',
+                'Navigation Systems',
+                'African Maps',
+                'API Development',
+            ],
+            award: ['Best Mobility & Logistics'],
+        },
+        {
+            '@type': 'WebSite',
+            '@id': `${SITE_URL}/#website`,
+            url: SITE_URL,
+            name: 'GebetaMaps',
+            description: 'Location APIs for Africa - geocoding, directions, matrix and map tiles.',
+            publisher: { '@id': `${SITE_URL}/#organization` },
+            inLanguage: 'en',
+        },
+        {
+            '@type': 'SoftwareApplication',
+            '@id': `${SITE_URL}/#software`,
+            name: 'GebetaMaps API',
+            url: SITE_URL,
+            applicationCategory: 'DeveloperApplication',
+            applicationSubCategory: 'MapApplication',
+            operatingSystem: 'All',
+            publisher: { '@id': `${SITE_URL}/#organization` },
+            description: 'Geocoding, directions, distance matrix, route optimization and vector map tiles delivered as REST APIs.',
+            featureList: [
+                'Geocoding and reverse geocoding',
+                'Turn-by-turn directions',
+                'Distance matrix',
+                'Route optimization',
+                'Vector map tiles',
+            ],
+            offers: {
+                '@type': 'AggregateOffer',
+                priceCurrency: 'USD',
+                lowPrice: '0',
+                highPrice: '1000',
+                offerCount: '4',
+                url: `${SITE_URL}/pricing`,
+                offers: [{
+                    '@type': 'Offer',
+                    name: 'Pay As You Go',
+                    description: 'Pay only for what you use',
+                    url: `${SITE_URL}/pricing`,
+                }, {
+                    '@type': 'Offer',
+                    name: 'Custom Enterprise Plan',
+                    description: 'Unlimited API calls for high-volume needs',
+                    url: `${SITE_URL}/pricing`,
+                }],
+            },
+            softwareHelp: {
+                '@type': 'CreativeWork',
+                url: 'https://docs.gebeta.app',
+                name: 'API Documentation',
+            },
+        },
+    ],
 };
 
 export default function RootLayout({

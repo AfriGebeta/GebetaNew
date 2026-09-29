@@ -43,8 +43,26 @@ export default function PricingPage() {
         }
     ];
 
+    // Mirrors the accordion below so the same Q&As are eligible for the FAQ rich result.
+    const faqJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqsList.map((faq) => ({
+            '@type': 'Question',
+            name: faq.q,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.a,
+            },
+        })),
+    };
+
     return (
         <div className=" dark:from-[#05050a] dark:to-[#05050a] mt-[120px]">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{__html: JSON.stringify(faqJsonLd)}}
+            />
             <div className="px-12">
                 <div className="md:pb-[60px]">
                     <div className="text-center mb-[80px]">

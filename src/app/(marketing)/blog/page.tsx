@@ -4,8 +4,15 @@ import Container from "@/sections/Container";
 import Post from "@/app/(marketing)/blog/_components/Post";
 
 export const metadata = {
-    title: 'Blog | GebetaMaps',
-    description: 'Read our latest blog posts',
+    title: 'Blog',
+    description: 'Guides, engineering notes and product updates from GebetaMaps - covering geocoding, routing, map tiles and building location features for African markets.',
+    alternates: { canonical: '/blog' },
+    openGraph: {
+        title: 'GebetaMaps Blog',
+        description: 'Guides, engineering notes and product updates on geocoding, routing and map tiles.',
+        url: '/blog',
+        type: 'website',
+    },
 };
 
 export default async function BlogPage() {

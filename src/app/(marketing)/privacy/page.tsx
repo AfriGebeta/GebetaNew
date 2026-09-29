@@ -1,8 +1,10 @@
 import Container from "@/sections/Container";
 import type {Metadata} from "next";
 
-export const metadata:Metadata = {
-    title:"Privacy Policy"
+export const metadata: Metadata = {
+    title: "Privacy Policy",
+    description: "How GebetaMaps collects, uses and protects your data across our website and location APIs.",
+    alternates: { canonical: "/privacy" },
 }
 
 export default function PrivacyPolicy() {
