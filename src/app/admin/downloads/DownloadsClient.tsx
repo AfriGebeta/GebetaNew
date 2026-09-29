@@ -27,7 +27,6 @@ function StatCard({ label, value, hint }: { label: string; value: number; hint?:
   );
 }
 
-// Ranked breakdown; each row carries a proportional bar so the split reads at a glance.
 function Breakdown({ title, rows, empty }: { title: string; rows: CountRow[]; empty: string }) {
   const max = rows.reduce((m, r) => Math.max(m, r.count), 0) || 1;
   const total = rows.reduce((s, r) => s + r.count, 0) || 1;
@@ -132,6 +131,11 @@ export default function DownloadsClient({ initialStats }: { initialStats: Downlo
           <Breakdown title="Medium" rows={stats.byMedium} empty="No medium tags yet." />
           <Breakdown title="Platform" rows={stats.byPlatform} empty="No clicks yet." />
           <Breakdown title="Referrer" rows={stats.byReferrer} empty="No referrers recorded." />
+          <Breakdown
+            title="How it was attributed"
+            rows={stats.bySourceType}
+            empty="No clicks yet."
+          />
           <Breakdown title="Per day" rows={stats.daily} empty="No clicks yet." />
         </div>
 

@@ -5,6 +5,7 @@ export interface DownloadClick {
   createdAt: string;
   platform: string;
   source: string;
+  sourceType: string;
   medium: string;
   campaign: string;
   content: string;
@@ -25,6 +26,7 @@ export interface DownloadStats {
   today: number;
   bots: number;
   bySource: CountRow[];
+  bySourceType: CountRow[];
   byMedium: CountRow[];
   byCampaign: CountRow[];
   byPlatform: CountRow[];
@@ -45,6 +47,7 @@ export async function initDownloadTables() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       platform TEXT NOT NULL DEFAULT 'other',
       source TEXT NOT NULL DEFAULT 'direct',
+      source_type TEXT NOT NULL DEFAULT 'unknown',
       medium TEXT NOT NULL DEFAULT '',
       campaign TEXT NOT NULL DEFAULT '',
       content TEXT NOT NULL DEFAULT '',
@@ -57,6 +60,8 @@ export async function initDownloadTables() {
     )
   `;
 
+  await sql`ALTER TABLE download_clicks ADD COLUMN IF NOT EXISTS source_type TEXT NOT NULL DEFAULT 'unknown'`;
+
   await sql`CREATE INDEX IF NOT EXISTS download_clicks_created_at_idx ON download_clicks (created_at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS download_clicks_source_idx ON download_clicks (source)`;
 
@@ -66,6 +71,7 @@ export async function initDownloadTables() {
 export interface ClickInput {
   platform: string;
   source: string;
+  sourceType: string;
   medium: string;
   campaign: string;
   content: string;
@@ -81,9 +87,9 @@ export async function recordClick(click: ClickInput) {
   const sql = getDb();
   await sql`
     INSERT INTO download_clicks
-      (platform, source, medium, campaign, content, referrer, landed_on, user_agent, country, ip, is_bot)
+      (platform, source, source_type, medium, campaign, content, referrer, landed_on, user_agent, country, ip, is_bot)
     VALUES
-      (${click.platform}, ${click.source}, ${click.medium}, ${click.campaign}, ${click.content},
+      (${click.platform}, ${click.source}, ${click.sourceType}, ${click.medium}, ${click.campaign}, ${click.content},
        ${click.referrer}, ${click.landedOn}, ${click.userAgent}, ${click.country}, ${click.ip}, ${click.isBot})
   `;
 }
@@ -94,6 +100,7 @@ function rowToClick(row: Record<string, unknown>): DownloadClick {
     createdAt: (row.created_at as Date).toISOString(),
     platform: (row.platform as string) ?? "other",
     source: (row.source as string) ?? "direct",
+    sourceType: (row.source_type as string) ?? "unknown",
     medium: (row.medium as string) ?? "",
     campaign: (row.campaign as string) ?? "",
     content: (row.content as string) ?? "",
@@ -119,7 +126,7 @@ export async function readDownloadStats(days = 30): Promise<DownloadStats> {
   const since = days > 0 ? `${days} days` : "100 years";
 
   // Column names can't be bound as parameters, so they come from this fixed list only.
-  const GROUPABLE = ["source", "medium", "campaign", "platform", "referrer"] as const;
+  const GROUPABLE = ["source", "source_type", "medium", "campaign", "platform", "referrer"] as const;
   const pool = getPool();
   const window = async (column: (typeof GROUPABLE)[number]) => {
     const { rows } = await pool.query(
@@ -132,7 +139,7 @@ export async function readDownloadStats(days = 30): Promise<DownloadStats> {
     return rowsToCounts(rows);
   };
 
-  const [totals, bySource, byMedium, byCampaign, byPlatform, byReferrer, daily, recent] =
+  const [totals, bySource, bySourceType, byMedium, byCampaign, byPlatform, byReferrer, daily, recent] =
     await Promise.all([
       sql`
         SELECT
@@ -143,6 +150,7 @@ export async function readDownloadStats(days = 30): Promise<DownloadStats> {
         WHERE created_at >= NOW() - ${since}::interval
       `,
       window("source"),
+      window("source_type"),
       window("medium"),
       window("campaign"),
       window("platform"),
@@ -167,6 +175,7 @@ export async function readDownloadStats(days = 30): Promise<DownloadStats> {
     today: Number(t.today ?? 0),
     bots: Number(t.bots ?? 0),
     bySource,
+    bySourceType,
     byMedium,
     byCampaign,
     byPlatform,
