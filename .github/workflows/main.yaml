@@ -40,6 +40,8 @@ jobs:
           echo "EDGE_STORE_ACCESS_KEY=${{ secrets.EDGE_STORE_ACCESS_KEY }}" >> .env
           echo "EDGE_STORE_SECRET_KEY=${{ secrets.EDGE_STORE_SECRET_KEY }}" >> .env
           echo "DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}" >> .env
+          echo "DOWNLOAD_STATS_PASSWORD=${{ secrets.DOWNLOAD_STATS_PASSWORD }}" >> .env
+          echo "DOWNLOAD_STATS_SECRET=${{ secrets.DOWNLOAD_STATS_SECRET }}" >> .env
       - name: Verify .env file exists
         run: ls -la
       - name: Show .env file contents
