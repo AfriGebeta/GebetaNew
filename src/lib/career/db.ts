@@ -28,7 +28,7 @@ export interface CertificateConfig {
 
 const DEFAULT_CONFIG: CertificateConfig = {
   companyName: "GebetaMaps",
-  companyLogoUrl: "/cert-logo.png",
+  companyLogoUrl: "/cert-logo.webp",
   certificateTitle: "CERTIFICATE OF",
   certificateSubtitle: "ACHIEVEMENT",
   presentedToLabel: "THIS IS PROUDLY PRESENTED TO",
@@ -37,7 +37,7 @@ const DEFAULT_CONFIG: CertificateConfig = {
   signatoryName: "Signature",
   signatoryTitle: "MANAGER, CTO",
   signatorySignatureUrl: "",
-  badgeImageUrl: "/cert-seal.png",
+  badgeImageUrl: "/cert-seal.webp",
   wavyPatternUrl: "/cert-wavy.png",
   primaryColor: "#ffa500",
   awardLabel: "AWARD",
@@ -58,7 +58,7 @@ function rowToIntern(row: Record<string, unknown>): Intern {
 function rowToConfig(row: Record<string, unknown>): CertificateConfig {
   return {
     companyName: (row.company_name as string) ?? DEFAULT_CONFIG.companyName,
-    companyLogoUrl: (row.company_logo_url as string) || "/cert-logo.png",
+    companyLogoUrl: (row.company_logo_url as string) || "/cert-logo.webp",
     certificateTitle: (row.certificate_title as string) ?? DEFAULT_CONFIG.certificateTitle,
     certificateSubtitle: (row.certificate_subtitle as string) ?? DEFAULT_CONFIG.certificateSubtitle,
     presentedToLabel: (row.presented_to_label as string) ?? DEFAULT_CONFIG.presentedToLabel,
@@ -66,7 +66,7 @@ function rowToConfig(row: Record<string, unknown>): CertificateConfig {
     signatoryName: (row.signatory_name as string) ?? DEFAULT_CONFIG.signatoryName,
     signatoryTitle: (row.signatory_title as string) ?? DEFAULT_CONFIG.signatoryTitle,
     signatorySignatureUrl: (row.signatory_signature_url as string) ?? "",
-    badgeImageUrl: (row.badge_image_url as string) || "/cert-seal.png",
+    badgeImageUrl: (row.badge_image_url as string) || "/cert-seal.webp",
     wavyPatternUrl: (row.wavy_pattern_url as string) || "/cert-wavy.png",
     primaryColor: (row.primary_color as string) ?? DEFAULT_CONFIG.primaryColor,
     awardLabel: (row.award_label as string) ?? DEFAULT_CONFIG.awardLabel,

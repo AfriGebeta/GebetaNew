@@ -38,7 +38,7 @@ interface ApiResponse {
 const API_URL = "https://mapapi.gebeta.app/api/v1/uptime";
 
 function statusColor(status: string, uptime: number) {
-    if (status ===  "Scheduled Maintenance")
+    if (status === "Scheduled Maintenance")
         return "bg-[hsl(210,95%,55%)]"; // blue
 
     if (status === "Major Outage" || uptime < 90)
@@ -87,9 +87,9 @@ function overallStatusForService(days: ServiceDay[]) {
 }
 
 function LegendDot({
-                       className,
-                       label,
-                   }: {
+    className,
+    label,
+}: {
     className: string;
     label: string;
 }) {
@@ -198,41 +198,19 @@ export default function UptimeStatus() {
     }
 
     return (
-        <div className="min-h-screen mt-[5%] bg-[#fffaf3]">
-            <header className="border-b border-[#f1e4cf] bg-white/70 backdrop-blur">
-                <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[hsl(32,100%,52%)] font-bold text-white">
-                            G
-                        </div>
-
-                        <span className="text-xl font-semibold text-[#2b2b2b]">
-                            GebetaMaps Status
-                        </span>
-                    </div>
-
-                    <a
-                        href="https://gebeta.app"
-                        className="rounded-md bg-[#1a1a1a] px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white hover:bg-black"
-                    >
-                        Subscribe to Updates
-                    </a>
-                </div>
-            </header>
-
+        <div className="mt-[5%]">
             <main className="mx-auto max-w-6xl px-6 py-10">
                 <div
-                    className={`rounded-xl px-8 py-7 text-white shadow-sm ${
-                        loading
+                    className={`rounded-xl px-8 py-7 text-white ${loading
                             ? "bg-gray-400"
                             : error
                                 ? "bg-[hsl(0,75%,55%)]"
                                 : allOperational
                                     ? "bg-[hsl(140,55%,42%)]"
-                                    : "bg-[hsl(35,95%,50%)]"
-                    }`}
+                                    : "bg-[hsl(35,100%,60%)]"
+                        }`}
                 >
-                    <h1 className="text-2xl font-bold sm:text-3xl">
+                    <h1 className="text-2xl font-bold sm:text-2xl">
                         {loading
                             ? "Loading status…"
                             : error
@@ -282,11 +260,10 @@ export default function UptimeStatus() {
                                 return (
                                     <div
                                         key={name}
-                                        className={`px-6 py-5 ${
-                                            idx !== 0
+                                        className={`px-6 py-5 ${idx !== 0
                                                 ? "border-t border-[#f5ecdb]"
                                                 : ""
-                                        }`}
+                                            }`}
                                     >
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-base font-semibold text-[#2b2b2b]">
@@ -318,19 +295,17 @@ export default function UptimeStatus() {
                                                             isIncident &&
                                                             setSelected(d)
                                                         }
-                                                        title={`${d.date} — ${d.uptime}% uptime${
-                                                            d.downtime_hours
+                                                        title={`${d.date} — ${d.uptime}% uptime${d.downtime_hours
                                                                 ? ` · ${d.downtime_hours}h downtime`
                                                                 : ""
-                                                        } · ${d.status}`}
+                                                            } · ${d.status}`}
                                                         className={`flex-1 rounded-sm transition-transform hover:scale-y-110 ${statusColor(
                                                             d.status,
                                                             d.uptime,
-                                                        )} ${
-                                                            isIncident
+                                                        )} ${isIncident
                                                                 ? "cursor-pointer"
                                                                 : "cursor-default"
-                                                        }`}
+                                                            }`}
                                                         aria-label={`${name} on ${d.date}`}
                                                     />
                                                 );
@@ -355,11 +330,10 @@ export default function UptimeStatus() {
                             Array.from({ length: 4 }).map((_, i) => (
                                 <div
                                     key={i}
-                                    className={`px-6 py-5 ${
-                                        i !== 0
+                                    className={`px-6 py-5 ${i !== 0
                                             ? "border-t border-[#f5ecdb]"
                                             : ""
-                                    }`}
+                                        }`}
                                 >
                                     <div className="h-4 w-32 animate-pulse rounded bg-[#f1e4cf]" />
 

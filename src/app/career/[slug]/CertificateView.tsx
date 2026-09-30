@@ -55,7 +55,7 @@ export default async function CertificateView({ intern, config }: Props) {
             style={{ left: `${DIVIDER}%` }}
           >
               <Image
-                src="/images/tile.png"
+                src="/images/tile.webp"
                 alt="tile"
                 aria-hidden
                 className="cert-wavy-img"
@@ -73,22 +73,36 @@ export default async function CertificateView({ intern, config }: Props) {
             className="cert-seal"
             style={{ left: `${DIVIDER}%` }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={config.badgeImageUrl || "/cert-seal.png"}
-              alt="Certificate Seal"
-              className="cert-seal-img"
-            />
+            {config.badgeImageUrl && config.badgeImageUrl !== "/cert-seal.png" ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={config.badgeImageUrl} alt="Certificate Seal" className="cert-seal-img" />
+            ) : (
+              <Image
+                src="/cert-seal.webp"
+                alt="Certificate Seal"
+                width={300}
+                height={304}
+                className="cert-seal-img"
+                priority
+              />
+            )}
           </div>
 
           <div className="cert-left" style={{ width: `${DIVIDER}%` }}>
             <div className="cert-logo-row">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={config.companyLogoUrl || "/cert-logo.png"}
-                alt={config.companyName}
-                className="cert-logo-img"
-              />
+              {config.companyLogoUrl && config.companyLogoUrl !== "/cert-logo.png" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={config.companyLogoUrl} alt={config.companyName} className="cert-logo-img" />
+              ) : (
+                <Image
+                  src="/cert-logo.webp"
+                  alt={config.companyName}
+                  width={70}
+                  height={70}
+                  className="cert-logo-img"
+                  priority
+                />
+              )}
               <span className="cert-company-name" style={{ color: gold, fontFamily: "var(--font-libre)" }}>
                 {config.companyName}
               </span>
@@ -138,6 +152,9 @@ export default async function CertificateView({ intern, config }: Props) {
                   </p>
                 )}
                 <div className="cert-signature-line" />
+                <p className="cert-signatory-name" style={{ fontFamily: "var(--font-inter)" }}>
+                  {config.signatoryName}
+                </p>
                 <p className="cert-signatory-title" style={{ fontFamily: "var(--font-inter)" }}>
                   {config.signatoryTitle}
                 </p>
@@ -329,6 +346,12 @@ export default async function CertificateView({ intern, config }: Props) {
           height: 1px;
           background: #bbb;
           margin-bottom: 0.4cqw;
+        }
+        .cert-signatory-name {
+          font-size: 1.33cqw;
+          font-weight: 600;
+          color: #333;
+          margin: 0 0 0.2cqw;
         }
         .cert-signatory-title {
           font-size: 1.22cqw;
