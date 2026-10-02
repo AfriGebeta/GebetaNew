@@ -1,8 +1,8 @@
 //@ts-nocheck
 "use client";
-import React, {useEffect, useState} from "react";
-import {Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {ScaleLoader} from "react-spinners";
+import React, { useEffect, useState } from "react";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ScaleLoader } from "react-spinners";
 
 function APIUsage({ graphData, isLoading }) {
     const [chartData, setChartData] = useState([]);
@@ -17,7 +17,7 @@ function APIUsage({ graphData, isLoading }) {
 
                 const sortedData = dataArray.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-                    setChartData(sortedData);
+                setChartData(sortedData);
             } catch (error) {
                 console.error("Error formatting data:", error);
                 setChartData([]);
@@ -94,10 +94,12 @@ function APIUsage({ graphData, isLoading }) {
                                     axisLine={false}
                                     tickMargin={8}
                                     tick={{ fill: 'currentColor' }}
-                                    // Format large numbers with K (thousands)
                                     tickFormatter={(value) => {
-                                        if (value >= 1000) {
+                                        if (value >= 1000 && value < 1_000_000) {
                                             return `${(value / 1000).toFixed(1)}K`;
+                                        }
+                                        if (value >= 1_000_000) {
+                                            return `${(value / 1_000_000).toFixed(1)}M`;
                                         }
                                         return value;
                                     }}

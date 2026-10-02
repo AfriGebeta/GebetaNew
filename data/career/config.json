@@ -1,0 +1,14 @@
+{
+  "companyName": "GebetaMaps",
+  "companyLogoUrl": "/gebeta-logo.png",
+  "certificateTitle": "CERTIFICATE OF",
+  "certificateSubtitle": "ACHIEVEMENT",
+  "presentedToLabel": "THIS IS PROUDLY PRESENTED TO",
+  "descriptionTemplate": "This certificate acknowledges your participation in the {companyName} Internship Program and your Dedication, Skill, and Outstanding Commitment",
+  "signatoryName": "Signature",
+  "signatoryTitle": "MANAGER, CTO",
+  "badgeImageUrl": "",
+  "primaryColor": "#8B6914",
+  "backgroundColor": "#ffffff",
+  "awardLabel": "AWARD"
+}

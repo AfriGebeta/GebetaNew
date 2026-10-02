@@ -43,8 +43,26 @@ export default function PricingPage() {
         }
     ];
 
+    // Mirrors the accordion below so the same Q&As are eligible for the FAQ rich result.
+    const faqJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqsList.map((faq) => ({
+            '@type': 'Question',
+            name: faq.q,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.a,
+            },
+        })),
+    };
+
     return (
         <div className=" dark:from-[#05050a] dark:to-[#05050a] mt-[120px]">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{__html: JSON.stringify(faqJsonLd)}}
+            />
             <div className="px-12">
                 <div className="md:pb-[60px]">
                     <div className="text-center mb-[80px]">
@@ -73,13 +91,6 @@ export default function PricingPage() {
                     </div>
 
                     <Plans />
-
-                    <div className="bg-white dark:bg-[#111116] rounded-2xl md:px-8 mb-[60px]">
-                        <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white mb-6 text-center">
-                            Calculate Your Usage Cost
-                        </h3>
-                        <PricingSlider />
-                    </div>
 
                     <div className="max-w-[800px] mx-auto">
                         <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white mb-6 text-center">

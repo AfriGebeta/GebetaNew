@@ -14,7 +14,7 @@ const testimonials = [
         author: {
             name: "Habtamu Tadesse",
             role: "Founder and CEO",
-            image: "/assets/habtamu.png"
+            image: "/assets/habtamu.webp"
         },
         message: "I highly recommend Gebeta Maps as an essential mapping service for ZayRide. Their accurate and up-to-date maps have greatly improved navigation for our taxi drivers, ensuring efficient and reliable transportation services for our passengers.",
     },
@@ -40,7 +40,7 @@ const testimonials = [
         author: {
             name: "Biruk Fekade",
             role: "CTO at Adika",
-            image: "/assets/biruk.png"
+            image: "/assets/biruk.webp"
         },
         message: "Gebeta Maps has consistently proven to be an invaluable asset for Adika. The seamless integration of their API into our systems has significantly enhanced our location-based services. The accuracy and up-to-date information provided by Gebeta Maps have played a crucial role in improving the overall user experience for our customers.",
     }

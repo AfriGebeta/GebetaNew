@@ -120,7 +120,7 @@ export const features: Array<Features> = [
         subtitle: "Geocoding",
         description: "makes it effortless to access and integrate detailed local data. Whether for web or mobile platforms, we empower you to customize and include all the data you need, ensuring your users get the most relevant and up-to-date information.",
         image: {
-            source: "/assets/geocoding.jpg",
+            source: "/assets/geocoding-feature.webp",
             alt: "searching places",
             width: 586,
             height: 494
@@ -132,7 +132,7 @@ export const features: Array<Features> = [
         subtitle: "Route Optimization",
         description: "API provides your users with the most optimal routes, making navigation easy. Whether you're developing for web or mobile, we ensure streamlined navigation, helping users save time and reach their destinations faster.",
         image: {
-            source: "/assets/route-optimization.jpg",
+            source: "/assets/route-optimization.webp",
             alt: "searching places",
             width: 586,
             height: 494
@@ -144,7 +144,7 @@ export const features: Array<Features> = [
         subtitle: "ONM",
         description: "API one-to-many routing feature allows you to easily generate optimized routes from a single point to multiple destinations. Whether managing deliveries, planning logistics, or mapping out multiple stops, our API ensures that your users receive the most efficient paths to all their endpoints in one go",
         image: {
-            source: "/assets/onm.jpg",
+            source: "/assets/onm.webp",
             alt: "searching places",
             width: 586,
             height: 494
@@ -252,19 +252,19 @@ export const testimonial: Array<Testimonial> = [
         companyLogo: "/assets/zayride",
         reviewerName: "Habtamu Tadesse",
         reviewerRole: "Founder and CEO",
-        reviewerImage: "/assets/habtamu.png",
+        reviewerImage: "/assets/habtamu.webp",
         description: "I highly recommend Gebeta Maps as an essential mapping service for ZayRide. Their accurate and up-to-date maps have greatly improved navigation for our taxi drivers, ensuring efficient and reliable transportation services for our passengers."
     }, {
         companyLogo: "/assets/nid",
         reviewerName: "Abenezer Feleke",
         reviewerRole: "NID, Head of Communications",
-        reviewerImage: "/assets/habtamu.png",
+        reviewerImage: "/assets/habtamu.webp",
         description: "Our experience with Gebeta Maps was very satisfactory and would like to express our utmost appreciation with their mapping services. Their expertise has made a tangible impact on our website by enhancing its functionality and user-friendliness, particularly in terms of helping citizens locate our Registration centers with ease. We are pleased to recommend their services to others seeking reliable and effective mapping solutions."
     }, {
         companyLogo: "/assets/adika",
         reviewerName: "Biruk Fekade",
         reviewerRole: "Founder and CEO",
-        reviewerImage: "/assets/habtamu.png",
+        reviewerImage: "/assets/habtamu.webp",
         description: "Gebeta Maps has consistently proven to be an invaluable asset forI highly recommend Gebeta Maps as an essential mapping service for ZayRide. Their accurate and up-to-date maps have greatly improved navigation for our taxi drivers, ensuring efficient and reliable transportation services for our passengers. Adika. The seamless integration of their API into our systems has significantly enhanced our location-based services. The accuracy and up-to-date information provided by Gebeta Maps have played a crucial role in improving the overall user experience for our customers."
     },
 ]

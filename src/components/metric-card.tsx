@@ -1,6 +1,7 @@
-import {Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
-import {Badge} from "@/components/ui/badge";
+import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import React from "react";
+import { GeistPixelSquare } from "geist/font/pixel";
 
 type MetricCardProps = {
     description: string;
@@ -11,24 +12,24 @@ type MetricCardProps = {
 };
 
 export function MetricCard({
-                               description,
-                               title,
-                               footer,
-                               badgeLabel,
-                               icon,
-                           }: MetricCardProps) {
+    description,
+    title,
+    footer,
+    badgeLabel,
+    icon,
+}: MetricCardProps) {
     return (
         <Card className="@container/card">
             <CardHeader>
-                <CardDescription>{description}</CardDescription>
+                <CardDescription className="font-mono">{description}</CardDescription>
 
-                <CardTitle className="text-2xl font-semibold tabular-nums">
+                <CardTitle className="tabular-nums">
                     {title}
                 </CardTitle>
 
                 <CardAction>
                     <Badge variant="outline">
-                        {icon}
+                        <span className="mr-2">{icon}</span>
                         {badgeLabel}
                     </Badge>
                 </CardAction>

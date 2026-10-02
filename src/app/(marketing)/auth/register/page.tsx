@@ -38,6 +38,16 @@ const Register: React.FC = () => {
     const [selectedCountryCode, setSelectedCountryCode] = useState("+251");
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState<string>("");
+    const [passwordError, setPasswordError] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+    const validatePassword = (value: string) => {
+        if (value.length < 8) return 'Password must be at least 8 characters';
+        if (!/[A-Z]/.test(value)) return 'Password must contain at least one uppercase letter';
+        if (!/[0-9]/.test(value)) return 'Password must contain at least one number';
+        return '';
+    };
 
     const [registrationData, setRegistrationData] = useState({
         firstname: "",
@@ -57,13 +67,41 @@ const Register: React.FC = () => {
     ];
 
     const requestOtpMutation = useMutation({
-        mutationFn: (email: string) =>
-            apiClient.post("/auth/request/otp", {
+        mutationFn: (email: string) => {
+            const fullPhoneNumber = `${selectedCountryCode}${registrationData.phone}`;
+            const requestData = {
+                contactType: "EMAIL",
                 contact: email,
-                contactType: "EMAIL"
-            }, {
+                additional: {
+                    requestedOtpFor: "registration",
+                    data: {
+                        email: email,
+                        coupon: registrationData.coupon || "",
+                        username: registrationData.username,
+                        password: registrationData.password,
+                        phone: fullPhoneNumber,
+                        otp: "",
+                        ...(accountType === "Business"
+                            ? {
+                                companyname: registrationData.companyname,
+                                is_organization: true,
+                                firstname: "",
+                                lastname: ""
+                            }
+                            : {
+                                firstname: registrationData.firstname,
+                                lastname: registrationData.lastname,
+                                companyname: "",
+                                is_organization: false,
+                            }
+                        )
+                    }
+                }
+            };
+            return apiClient.post("/auth/request/otp", requestData, {
                 headers: {"Content-Type": "application/json"}
-            }),
+            });
+        },
         onSuccess: () => {
             setStep(2);
             setError("");
@@ -83,8 +121,8 @@ const Register: React.FC = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            login(); // Update authentication state
-            setCurrentUser(data.data); // Store user data in local storage
+            login(data.data);
+            setCurrentUser(data.data); 
             trackUserAction.auth.loginSuccessful({
                 user_id: data?.data?.id,
                 username: data?.data?.username,
@@ -132,6 +170,15 @@ const Register: React.FC = () => {
             setError("Please agree to the Terms of Service and Privacy Policy");
             return;
         }
+        const pwdErr = validatePassword(registrationData.password);
+        if (pwdErr) {
+            setPasswordError(pwdErr);
+            return;
+        }
+        if (registrationData.password !== confirmPassword) {
+            setConfirmPasswordError('Passwords do not match');
+            return;
+        }
 
         try {
             await requestOtpMutation.mutateAsync(registrationData.email);
@@ -169,18 +216,18 @@ const Register: React.FC = () => {
             phone: fullPhoneNumber,
             otp: otpString,
             ...(accountType === "Business"
-                    ? {
-                        companyname: registrationData.companyname,
-                        is_organization: true,
-                        firstname: "",
-                        lastname: ""
-                    }
-                    : {
-                        firstname: registrationData.firstname,
-                        lastname: registrationData.lastname,
-                        companyname: "",
-                        is_organization: false,
-                    }
+                ? {
+                    companyname: registrationData.companyname,
+                    is_organization: true,
+                    firstname: "",
+                    lastname: ""
+                }
+                : {
+                    firstname: registrationData.firstname,
+                    lastname: registrationData.lastname,
+                    companyname: "",
+                    is_organization: false,
+                }
             )
         };
 
@@ -315,14 +362,51 @@ const Register: React.FC = () => {
                         type="password"
                         id="password"
                         value={registrationData.password}
-                        onChange={(e) => setRegistrationData({...registrationData, password: e.target.value})}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setRegistrationData({...registrationData, password: value});
+                            setPasswordError(validatePassword(value));
+                            if (confirmPassword) {
+                                setConfirmPasswordError(value !== confirmPassword ? 'Passwords do not match' : '');
+                            }
+                        }}
                         required
                         placeholder="Create a password"
-                        className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
+                        className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm
                            focus:outline-none focus:ring focus:ring-[#FFA500]
                            focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                           dark:text-gray-300 transition duration-200 ease-in-out"
+                           dark:text-gray-300 transition duration-200 ease-in-out
+                           ${passwordError ? 'border-red-500' : 'border-[#D1D5DB]'}`}
                     />
+                    {passwordError && (
+                        <p className="mt-1 text-xs text-red-500">{passwordError}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Confirm Password
+                    </label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        value={confirmPassword}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setConfirmPassword(value);
+                            setConfirmPasswordError(value !== registrationData.password ? 'Passwords do not match' : '');
+                        }}
+                        required
+                        placeholder="Re-enter your password"
+                        className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm
+                           focus:outline-none focus:ring focus:ring-[#FFA500]
+                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
+                           dark:text-gray-300 transition duration-200 ease-in-out
+                           ${confirmPasswordError ? 'border-red-500' : 'border-[#D1D5DB]'}`}
+                    />
+                    {confirmPasswordError && (
+                        <p className="mt-1 text-xs text-red-500">{confirmPasswordError}</p>
+                    )}
                 </div>
             </>
         );
@@ -332,7 +416,7 @@ const Register: React.FC = () => {
                 <>
                     <div>
                         <label htmlFor="firstname"
-                               className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             First Name
                         </label>
                         <input
@@ -350,7 +434,7 @@ const Register: React.FC = () => {
                     </div>
                     <div>
                         <label htmlFor="lastname"
-                               className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Last Name
                         </label>
                         <input
@@ -486,7 +570,7 @@ const Register: React.FC = () => {
                         />
                         <label className="text-[12px]">
                             I agree to the GebetaMaps <Link href="/terms" className="text-[#FFA500]">Terms of
-                            Service</Link> and{" "}
+                                Service</Link> and{" "}
                             <Link href="/privacy" className="text-[#FFA500]">Privacy Policy</Link>
                         </label>
                     </div>
