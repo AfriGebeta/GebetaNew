@@ -1,27 +1,8 @@
 import { Intern, CertificateConfig } from "@/lib/career/db";
-import { Libre_Baskerville, Inter, Dancing_Script } from "next/font/google";
 import Image from "next/image";
 import QRCode from "qrcode";
 import PrintButton from "./PrintButton";
-
-const libreBaskerville = Libre_Baskerville({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-libre",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-inter",
-});
-
-const dancingScript = Dancing_Script({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  variable: "--font-dancing",
-});
+import { libreBaskerville, inter, dancingScript } from "./fonts";
 
 interface Props {
   intern: Intern;
