@@ -3,13 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import Container from "@/sections/Container";
-import {menuItems} from "@/constants";
-import {trackPageView} from "@/lib/track";
-import {useNavbarLogic} from "@/utils/useNavbarLogic";
-import {User2Icon} from "lucide-react";
-import {useRouter} from 'nextjs-toploader/app';
-import {useEffect, useState} from "react";
-import {usePathname} from "next/navigation";
+import { menuItems } from "@/constants";
+import { trackPageView } from "@/lib/track";
+import { useNavbarLogic } from "@/utils/useNavbarLogic";
+import { User2Icon } from "lucide-react";
+import { useRouter } from 'nextjs-toploader/app';
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import Announcement from "../_component/Announcement";
 
 export default function Navbar() {
     const {
@@ -36,16 +37,16 @@ export default function Navbar() {
 
     return (
         <>
-            {/*<Announcement showAnnouncement={showAnnouncement} setShowAnnouncement={setShowAnnouncement} />*/}
+            <Announcement showAnnouncement={showAnnouncement} setShowAnnouncement={setShowAnnouncement} />
             <header
-                className={`w-full h-15 flex items-center transition-colors z-50 fixed top-0 ${isScrolled && 'bg-background/80 backdrop-blur-lg'}`}
+                className={`${showAnnouncement ? 'top-12' : 'top-0'} w-full h-15 flex items-center transition-colors z-50 fixed ${isScrolled && 'bg-background/80 backdrop-blur-lg'}`}
             >
                 <Container>
                     <nav className="flex justify-between items-center py-4">
                         <div className="flex items-center">
-                            <Image src="/assets/logo.svg" width={30} height={30} alt="logo" className="mr-2"/>
+                            <Image src="/assets/logo.svg" width={30} height={30} alt="logo" className="mr-2" />
                             <Link href="/" onClick={closeMobileMenu}
-                                  className="text-[16px] text-[#2E384E] dark:text-white font-semibold tracking-wider">
+                                className="text-[16px] text-[#2E384E] dark:text-white font-semibold tracking-wider">
                                 GebetaMaps
                             </Link>
                         </div>
@@ -58,12 +59,12 @@ export default function Navbar() {
                                 {isMobileMenuOpen ? (
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M6 18L18 6M6 6l12 12"/>
+                                            d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 ) : (
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M4 6h16M4 12h16m-7 6h7"/>
+                                            d="M4 6h16M4 12h16m-7 6h7" />
                                     </svg>
                                 )}
                             </button>
@@ -85,9 +86,9 @@ export default function Navbar() {
                                             {item.title}
                                             {item.submenu && (
                                                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor"
-                                                     viewBox="0 0 24 24">
+                                                    viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                          d="M19 9l-7 7-7-7"/>
+                                                        d="M19 9l-7 7-7-7" />
                                                 </svg>
                                             )}
                                         </a>
@@ -96,25 +97,22 @@ export default function Navbar() {
                             </ul>
                         </div>
                         <div className="hidden md:flex gap-8">
-                            <div className="flex items-center gap-[4px]">
+                            <div className="flex items-center gap-[4px] cursor-pointer"
+                                onClick={() => router.push("/auth/signin")}>
                                 <Image
                                     className="dark:fill-whitesmoke"
                                     src="/assets/user.svg"
                                     alt="user icon"
                                     width={24}
-                                    height={24}/>
+                                    height={24} />
                                 <a
-                                    className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400 cursor-pointer"
-                                    onClick={() => router.push("/auth/signin")}
+                                    className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400"
                                 >Sign In</a>
                             </div>
-                            <div
-                                className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">
-                                <a
-                                    className="font-bold cursor-pointer"
-                                    onClick={() => router.push("/auth/register")}
-                                >Get Started</a>
-                            </div>
+                            <Link
+                                href="/auth/register"
+                                className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Get
+                                Started</Link>
                         </div>
                     </nav>
 
@@ -124,7 +122,7 @@ export default function Navbar() {
                                 {menuItems.map((item, index) => (
                                     <li key={index} className="px-4 py-2">
                                         <div className="flex justify-between items-center"
-                                             onClick={() => item?.submenu && toggleMobileSubmenu(item.title)}>
+                                            onClick={() => item?.submenu && toggleMobileSubmenu(item.title)}>
                                             <a onClick={() => {
                                                 router.push(item.link)
                                                 closeMobileMenu()
@@ -136,7 +134,7 @@ export default function Navbar() {
                                                     className={`w-4 h-4 dark:stroke-white transform ${activeMobileSubmenu === item.title ? 'rotate-180' : ''}`}
                                                     viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                          d="M19 9l-7 7-7-7"/>
+                                                        d="M19 9l-7 7-7-7" />
                                                 </svg>
                                             )}
                                         </div>
@@ -161,7 +159,7 @@ export default function Navbar() {
                             </ul>
                             <div className="mt-4 space-y-4 px-4">
                                 <div className="flex items-center gap-[4px]">
-                                    <User2Icon className="w-[16px] h-[16px]"/>
+                                    <User2Icon className="w-[16px] h-[16px]" />
                                     <a
                                         className="font-medium"
                                         onClick={() => {
@@ -204,7 +202,7 @@ export default function Navbar() {
                                         className="block space-y-2 p-3 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md"
                                     >
                                         {subItem.icon && (
-                                            <subItem.icon className="w-6 h-6 text-[#ffa500] mb-4"/>
+                                            <subItem.icon className="w-6 h-6 text-[#ffa500] mb-4" />
                                         )}
                                         <h3 className="text-[14px] font-semibold">{subItem.title}</h3>
                                         <p className="text-[12px] text-gray-600 dark:text-gray-400">{subItem.description}</p>

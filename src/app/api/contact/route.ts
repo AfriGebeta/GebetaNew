@@ -1,6 +1,6 @@
 //@ts-nocheck
 
-function isValidSubmission({ name, email, subject, message, company }) {
+function isValidSubmission({ name, email, phone, subject, message, company }) {
     //honeypot
     if (company) return false;
 
@@ -10,6 +10,11 @@ function isValidSubmission({ name, email, subject, message, company }) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) return false;
+
+    if (!phone || phone.length <= 4) return false;
+
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) return false;
 
     const wordCount = message.trim().split(/\s+/).length;
     if (wordCount < 3) return false;
@@ -28,7 +33,7 @@ export async function POST(req) {
     try {
         const { name, email, phone, subject, message, company } = await req.json();
 
-        if (!isValidSubmission({ name, email, subject, message, company })) {
+        if (!isValidSubmission({ name, email, phone, subject, message, company })) {
             return new Response(JSON.stringify({ error: 'Invalid submission' }), {
                 status: 400,
             });

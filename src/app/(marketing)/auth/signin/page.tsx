@@ -1,19 +1,27 @@
 //@ts-nocheck
 "use client";
-import React, {useContext, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Link from "next/link";
-import {useRouter} from 'nextjs-toploader/app';
-import {useMutation} from "@tanstack/react-query";
-import {apiClient} from "@/service/apiClient";
-import {AuthContext} from "@/providers/AuthProvider";
-import {BarLoader} from "react-spinners";
+import { useRouter } from 'nextjs-toploader/app';
+import { useMutation } from "@tanstack/react-query";
+import { apiClient } from "@/service/apiClient";
+import { AuthContext } from "@/providers/AuthProvider";
+import { BarLoader } from "react-spinners";
 
 const SignIn: React.FC = () => {
-    const {login, setCurrentUser} = useContext(AuthContext);
+    const { login, setCurrentUser } = useContext(AuthContext);
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+
+    //read from location
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('session') === 'expired') {
+            setError('Your session has expired. Please sign in again.');
+        }
+    }, []);
 
     const signInMutation = useMutation({
         mutationFn: async () => {
@@ -21,13 +29,13 @@ const SignIn: React.FC = () => {
                 username,
                 password
             });
-            return response.data; // Assuming the response contains user data
+            return response.data; 
         },
         onSuccess: (data) => {
-            login(); // Update authentication state
-            setCurrentUser(data.data); // Store user data in local storage
+            login(data.data); 
+            setCurrentUser(data.data); 
             // setAuthToken(data.data.token); // Store auth token in local storage
-            router.push('/dashboard'); // Redirect to dashboard
+            router.push('/dashboard'); 
         },
         onError: (error: any) => {
             const errorCode = error.response?.data?.error?.code;
@@ -101,13 +109,13 @@ const SignIn: React.FC = () => {
                     <p className="text-red-500 text-sm text-center">{error}</p>
                 )}
                 <button type="submit"
-                        className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75">
+                    className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75">
                     {signInMutation.isPending ? <BarLoader color="white"/> : "Sign In"}
                 </button>
                 <p className="text-[12px] text-gray-600 dark:text-gray-300">
                     Don't have an account? <Link href="/auth/register"
-                                                 className="text-[#FFA500] hover:opacity-75"> Sign up for
-                    GebetaMaps</Link>
+                        className="text-[#FFA500] hover:opacity-75"> Sign up for
+                        GebetaMaps</Link>
                 </p>
                 <Link href="/auth/reset-password" className="text-[12px] text-[#FFA500] mt-[12px]">Forgot
                     your password?</Link>

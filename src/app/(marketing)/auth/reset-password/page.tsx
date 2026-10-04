@@ -7,6 +7,7 @@ import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
 import {useRouter} from 'nextjs-toploader/app';
 import {BarLoader} from "react-spinners";
+import {getErrorMessage} from "@/lib/errors";
 
 const ResetPassword: React.FC = () => {
     const router = useRouter();
@@ -19,15 +20,18 @@ const ResetPassword: React.FC = () => {
     const requestOtpMutation = useMutation({
         mutationFn: (email: string) =>
             apiClient.post("/auth/request/otp", {
+                contactType: "EMAIL",
                 contact: email,
-                contactType: "EMAIL"
+                additional: {
+                    requestedOtpFor: "reset_password"
+                }
             }),
         onSuccess: () => {
             setStep(2);
             setError('');
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Failed to send OTP");
+            setError(getErrorMessage(error, "Failed to send OTP"));
         }
     });
 
@@ -39,7 +43,7 @@ const ResetPassword: React.FC = () => {
             setError('');
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Verification failed");
+            setError(getErrorMessage(error, "Verification failed"));
         }
     });
 
@@ -51,7 +55,7 @@ const ResetPassword: React.FC = () => {
             setError('');
         },
         onError: (error: any) => {
-            setError(error.response?.data?.message || "Failed to change password");
+            setError(getErrorMessage(error, "Failed to change password"));
         }
     });
 
@@ -213,7 +217,7 @@ const ResetPassword: React.FC = () => {
                 <form className="space-y-6 mt-[40px]" onSubmit={handleChangePassword}>
                     <div>
                         <label htmlFor="newPassword"
-                               className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             New Password
                         </label>
                         <input

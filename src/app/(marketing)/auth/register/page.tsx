@@ -57,13 +57,41 @@ const Register: React.FC = () => {
     ];
 
     const requestOtpMutation = useMutation({
-        mutationFn: (email: string) =>
-            apiClient.post("/auth/request/otp", {
+        mutationFn: (email: string) => {
+            const fullPhoneNumber = `${selectedCountryCode}${registrationData.phone}`;
+            const requestData = {
+                contactType: "EMAIL",
                 contact: email,
-                contactType: "EMAIL"
-            }, {
+                additional: {
+                    requestedOtpFor: "registration",
+                    data: {
+                        email: email,
+                        coupon: registrationData.coupon || "",
+                        username: registrationData.username,
+                        password: registrationData.password,
+                        phone: fullPhoneNumber,
+                        otp: "",
+                        ...(accountType === "Business"
+                            ? {
+                                companyname: registrationData.companyname,
+                                is_organization: true,
+                                firstname: "",
+                                lastname: ""
+                            }
+                            : {
+                                firstname: registrationData.firstname,
+                                lastname: registrationData.lastname,
+                                companyname: "",
+                                is_organization: false,
+                            }
+                        )
+                    }
+                }
+            };
+            return apiClient.post("/auth/request/otp", requestData, {
                 headers: {"Content-Type": "application/json"}
-            }),
+            });
+        },
         onSuccess: () => {
             setStep(2);
             setError("");
@@ -83,8 +111,8 @@ const Register: React.FC = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            login(); // Update authentication state
-            setCurrentUser(data.data); // Store user data in local storage
+            login(data.data);
+            setCurrentUser(data.data); 
             trackUserAction.auth.loginSuccessful({
                 user_id: data?.data?.id,
                 username: data?.data?.username,
@@ -169,18 +197,18 @@ const Register: React.FC = () => {
             phone: fullPhoneNumber,
             otp: otpString,
             ...(accountType === "Business"
-                    ? {
-                        companyname: registrationData.companyname,
-                        is_organization: true,
-                        firstname: "",
-                        lastname: ""
-                    }
-                    : {
-                        firstname: registrationData.firstname,
-                        lastname: registrationData.lastname,
-                        companyname: "",
-                        is_organization: false,
-                    }
+                ? {
+                    companyname: registrationData.companyname,
+                    is_organization: true,
+                    firstname: "",
+                    lastname: ""
+                }
+                : {
+                    firstname: registrationData.firstname,
+                    lastname: registrationData.lastname,
+                    companyname: "",
+                    is_organization: false,
+                }
             )
         };
 
@@ -332,7 +360,7 @@ const Register: React.FC = () => {
                 <>
                     <div>
                         <label htmlFor="firstname"
-                               className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             First Name
                         </label>
                         <input
@@ -350,7 +378,7 @@ const Register: React.FC = () => {
                     </div>
                     <div>
                         <label htmlFor="lastname"
-                               className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Last Name
                         </label>
                         <input
@@ -486,7 +514,7 @@ const Register: React.FC = () => {
                         />
                         <label className="text-[12px]">
                             I agree to the GebetaMaps <Link href="/terms" className="text-[#FFA500]">Terms of
-                            Service</Link> and{" "}
+                                Service</Link> and{" "}
                             <Link href="/privacy" className="text-[#FFA500]">Privacy Policy</Link>
                         </label>
                     </div>
