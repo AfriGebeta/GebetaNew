@@ -229,7 +229,7 @@ function EditDialog({ intern, onClose, onSave }: { intern: Intern; onClose: () =
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-card border border-border rounded-2xl shadow-xl w-full max-w-md p-6 z-10">
+      <div className="relative bg-card border border-border rounded-2xl shadow-xl w-full max-w-md p-6 z-10 bg-white">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-foreground text-lg">Edit Intern</h2>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
