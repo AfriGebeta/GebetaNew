@@ -21,12 +21,12 @@ import {CopyIcon, EyeIcon, NetworkIcon, PencilIcon, PlusIcon, Trash2Icon} from "
 import {AuthContext} from "@/providers/AuthProvider";
 import ScopeSelectionModal from "@/components/ScopeSelectionModal";
 import { useReferenceData } from "@/hooks/useReferenceData";
-import { getDefaultSelectedScopes } from "@/lib/referenceData";
+import { getDefaultSelectedScopes, getGrantedScopes } from "@/lib/referenceData";
 import { formatAllowedIpDate, maskApiKey, normalizeAllowedIp } from "@/lib/allowedIp";
 
 export default function APIToken() {
     const { currentUser, setCurrentUser } = useContext(AuthContext)
-    const [tokenList, setTokenList] = useState(currentUser?.user?.token || []);
+    const [tokenList, setTokenList] = useState((currentUser?.user?.token || []).filter(t => !t.revoked));
     const [newToken, setNewToken] = useState("");
     const [selectedToken, setSelectedToken] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -47,15 +47,20 @@ export default function APIToken() {
     const [allowedIpsCount, setAllowedIpsCount] = useState(0);
 
     const { allowedScopes, loading: scopesLoading } = useReferenceData();
+    // allowedScopes is the platform-wide list of scope types that exist; a given
+    // account can only be issued a token for the subset the backend has actually
+    // granted it (currentUser.user.allowed_scopes) - requesting anything outside
+    // that subset gets rejected with a 422, so the picker must offer only these.
+    const grantedScopes = getGrantedScopes(allowedScopes, currentUser?.user?.allowed_scopes);
     const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
     const [defaultsApplied, setDefaultsApplied] = useState(false);
 
     useEffect(() => {
-        if (!scopesLoading && allowedScopes.length > 0 && !defaultsApplied) {
-            setSelectedScopes(getDefaultSelectedScopes(allowedScopes));
+        if (!scopesLoading && grantedScopes.length > 0 && !defaultsApplied) {
+            setSelectedScopes(getDefaultSelectedScopes(grantedScopes));
             setDefaultsApplied(true);
         }
-    }, [scopesLoading, allowedScopes, defaultsApplied]);
+    }, [scopesLoading, grantedScopes, defaultsApplied]);
 
     const fetchAllowedIps = async () => {
         if (!currentUser?.token) return;
@@ -130,7 +135,7 @@ export default function APIToken() {
                 toast({
                     description: response.message || "Token created successfully",
                 });
-                setSelectedScopes(getDefaultSelectedScopes(allowedScopes));
+                setSelectedScopes(getDefaultSelectedScopes(grantedScopes));
             } else {
                 toast({
                     description: `${response.message}`,
@@ -270,8 +275,9 @@ export default function APIToken() {
                     onToggleScope={toggleScope}
                     onCreateToken={createToken}
                     isCreating={isCreating}
-                    availableScopes={allowedScopes}
+                    availableScopes={grantedScopes}
                     scopesLoading={scopesLoading}
+                    emptyScopesMessage="Your account has no API scopes granted yet. Contact support to enable them."
                     trigger={
                         <Button className="bg-[#FFA500] text-white hover:bg-[#FF8C00] text-sm px-4 py-2">
                             Create Token

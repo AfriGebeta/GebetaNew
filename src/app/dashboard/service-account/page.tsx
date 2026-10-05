@@ -22,7 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { useReferenceData } from "@/hooks/useReferenceData";
-import { formatScopeLabel } from "@/lib/referenceData";
+import { formatScopeLabel, getGrantedScopes } from "@/lib/referenceData";
 
 export default function ServiceAccount() {
     const { currentUser } = useContext(AuthContext)
@@ -32,6 +32,10 @@ export default function ServiceAccount() {
     const [description, setDescription] = useState("");
     const [isAdmin, setIsAdmin] = useState(false);
     const { allowedScopes, loading: scopesLoading } = useReferenceData();
+    // Restrict to the subset of scopes actually granted to this account (see the
+    // same reasoning in dashboard/api-token/page.tsx) rather than the full
+    // platform-wide reference list.
+    const grantedScopes = getGrantedScopes(allowedScopes, currentUser?.user?.allowed_scopes);
     const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
     const [defaultsApplied, setDefaultsApplied] = useState(false);
     const [showClientToken, setShowClientToken] = useState({});
@@ -61,11 +65,11 @@ export default function ServiceAccount() {
     }, [currentUser?.token]);
 
     useEffect(() => {
-        if (!scopesLoading && allowedScopes.length > 0 && !defaultsApplied) {
-            setSelectedScopes([...allowedScopes]);
+        if (!scopesLoading && grantedScopes.length > 0 && !defaultsApplied) {
+            setSelectedScopes([...grantedScopes]);
             setDefaultsApplied(true);
         }
-    }, [scopesLoading, allowedScopes, defaultsApplied]);
+    }, [scopesLoading, grantedScopes, defaultsApplied]);
 
     const toggleScope = (scopeValue) => {
         setSelectedScopes(prev =>
@@ -109,7 +113,7 @@ export default function ServiceAccount() {
                 setDialogOpen(false);
                 setDescription("");
                 setIsAdmin(false);
-                setSelectedScopes([...allowedScopes]);
+                setSelectedScopes([...grantedScopes]);
 
                 if (response.data?.token) {
                     setNewlyCreatedToken(response.data.token);
@@ -220,10 +224,10 @@ export default function ServiceAccount() {
                                 <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto p-2 border rounded">
                                     {scopesLoading ? (
                                         <p className="text-sm text-[#aaa] col-span-2">Loading scopes...</p>
-                                    ) : allowedScopes.length === 0 ? (
-                                        <p className="text-sm text-[#aaa] col-span-2">No scopes available</p>
+                                    ) : grantedScopes.length === 0 ? (
+                                        <p className="text-sm text-[#aaa] col-span-2">Your account has no API scopes granted yet. Contact support to enable them.</p>
                                     ) : (
-                                        allowedScopes.map((scope) => (
+                                        grantedScopes.map((scope) => (
                                             <div key={scope} className="flex items-center space-x-2">
                                                 <Checkbox
                                                     id={scope}

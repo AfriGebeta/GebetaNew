@@ -1,9 +1,10 @@
 import { apiClient } from "@/service/apiClient";
+import { getErrorMessage } from "@/lib/errors";
 
 
 export const getUser = async (apiToken) => {
     try {
-        const data = await apiClient.get(
+        const { data } = await apiClient.get(
             `/user/me`,
             {
                 headers: {
@@ -11,21 +12,22 @@ export const getUser = async (apiToken) => {
                 }
             }
         );
-        return data.data.data;
+        return data.user;
     } catch (error) {
         return error;
     }
 };
 
-export const updateUser = async (apiToken, { username, email, phone, allow_abuse_detection }) => {
+export const updateUser = async (apiToken, { username, phone, allow_abuse_detection, companyname, lastname }) => {
     try {
         const { data } = await apiClient.patch(
             `/user/`,
             {
                 username,
-                email,
                 phone,
-                allow_abuse_detection
+                allow_abuse_detection,
+                companyname,
+                lastname
             },
             {
                 headers: {
@@ -37,9 +39,7 @@ export const updateUser = async (apiToken, { username, email, phone, allow_abuse
         return { success: true, data: data.data, message: data.data };
     } catch (error) {
         console.error('Update user error:', error.message);
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.data || 'Failed to update user';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to update user' };
+        return { success: false, message: getErrorMessage(error, 'Failed to update user') };
     }
 };
 
@@ -70,18 +70,10 @@ export const setToken = async ({ apiToken, userId, scopes, identifierName }) => 
         };
     } catch (error) {
         const errorData = error.response?.data?.error;
-        let errorMessage = 'Failed to create token';
-
-        if (errorData?.code === 'HE00008' && errorData?.additional?.body?.scopes) {
-            const invalidScope = errorData.additional.body.scopes[1];
-            errorMessage = `You don't have permission to use ${invalidScope}`;
-        } else if (errorData?.message) {
-            errorMessage = errorData.message;
-        }
 
         return {
             success: false,
-            message: errorMessage,
+            message: getErrorMessage(error, 'Failed to create token'),
             error: errorData,
         };
     }
@@ -120,7 +112,7 @@ export const revokeToken = async (apiToken, token) => {
 
         return {
             success: false,
-            message: error.response?.data?.message || error.response?.data?.error?.message || 'Failed to revoke token',
+            message: getErrorMessage(error, 'Failed to revoke token'),
             error: error.response?.data
         }
     }
@@ -201,7 +193,7 @@ export const getAllBilling = async (apiToken, page, limit) => {
                 Authorization: `Bearer ${apiToken}`,
             },
         });
-        return { billing: response.data.data.places || [], count: response.data.data.count };
+        return { billing: response.data.data.sales || [], count: response.data.data.count };
     } catch (error) {
         return error;
     }
@@ -250,7 +242,7 @@ export const claimFreemium = async (apiToken) => {
         );
         return data?.data
     } catch (error) {
-        return error?.response?.data?.error?.additional.claim?.[0];
+        return error?.response?.data?.error?.additional?.claim?.[0] || getErrorMessage(error, 'Unable to claim freemium credit');
     }
 }
 
@@ -285,9 +277,7 @@ export const createAllowedIp = async (apiToken, { ipAddress, apiKey, description
         });
         return { success: true };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to add allowed IP';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to add allowed IP' };
+        return { success: false, message: getErrorMessage(error, 'Failed to add allowed IP') };
     }
 };
 
@@ -298,9 +288,7 @@ export const deleteAllowedIp = async (apiToken, id) => {
         });
         return { success: true };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || 'Failed to remove allowed IP';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to remove allowed IP' };
+        return { success: false, message: getErrorMessage(error, 'Failed to remove allowed IP') };
     }
 };
 
@@ -315,9 +303,7 @@ export const updateAllowedIp = async (apiToken, { id, ipAddress, apiKey, descrip
         });
         return { success: true };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || 'Failed to update allowed IP';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to update allowed IP' };
+        return { success: false, message: getErrorMessage(error, 'Failed to update allowed IP') };
     }
 };
 
@@ -343,9 +329,7 @@ export const createUsageQuota = async (apiToken, { call_type, max_calls, duratio
         });
         return { success: true, data: data.data };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to create quota';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to create quota' };
+        return { success: false, message: getErrorMessage(error, 'Failed to create quota') };
     }
 };
 
@@ -356,9 +340,7 @@ export const updateUsageQuota = async (apiToken, { id, max_calls }) => {
         });
         return { success: true, data: data.data };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to update quota';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to update quota' };
+        return { success: false, message: getErrorMessage(error, 'Failed to update quota') };
     }
 };
 
@@ -369,9 +351,7 @@ export const deleteUsageQuota = async (apiToken, id) => {
         });
         return { success: true };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to delete quota';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to delete quota' };
+        return { success: false, message: getErrorMessage(error, 'Failed to delete quota') };
     }
 };
 
@@ -383,7 +363,7 @@ export const getBillingCaps = async (apiToken, page = 1, limit = 20) => {
         });
         return { success: true, data: data.data };
     } catch (error) {
-        return { success: false, message: error.response?.data?.message || 'Failed to fetch billing caps' };
+        return { success: false, message: getErrorMessage(error, 'Failed to fetch billing caps') };
     }
 };
 
@@ -394,7 +374,7 @@ export const createBillingCap = async (apiToken, capAmount) => {
         });
         return { success: true, data: data.data };
     } catch (error) {
-        return { success: false, message: error.response?.data?.message || 'Failed to set billing cap' };
+        return { success: false, message: getErrorMessage(error, 'Failed to set billing cap') };
     }
 };
 
@@ -405,7 +385,7 @@ export const updateBillingCap = async (apiToken, { id, max_calls }) => {
         });
         return { success: true, data: data.data };
     } catch (error) {
-        return { success: false, message: error.response?.data?.message || 'Failed to update billing cap' };
+        return { success: false, message: getErrorMessage(error, 'Failed to update billing cap') };
     }
 };
 
@@ -416,7 +396,7 @@ export const deleteBillingCap = async (apiToken, id) => {
         });
         return { success: true };
     } catch (error) {
-        return { success: false, message: error.response?.data?.message || 'Failed to delete billing cap' };
+        return { success: false, message: getErrorMessage(error, 'Failed to delete billing cap') };
     }
 };
 
@@ -444,9 +424,7 @@ export const createServiceAccount = async ({ apiToken, description, scopes, isAd
         });
         return { success: true, data: data.data };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to create service account';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to create service account' };
+        return { success: false, message: getErrorMessage(error, 'Failed to create service account') };
     }
 };
 
@@ -457,9 +435,7 @@ export const deleteServiceAccount = async (apiToken, id) => {
         });
         return { success: true };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || 'Failed to delete service account';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to delete service account' };
+        return { success: false, message: getErrorMessage(error, 'Failed to delete service account') };
     }
 };
 
@@ -493,12 +469,10 @@ export const createAccessBlock = async (apiToken, { type, value, reason }) => {
         return { success: true, data: data.data };
     } catch (error) {
         console.error('Create access block error:', error.response?.data);
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || res?.error || 'Failed to create access block';
         return {
             success: false,
-            message: typeof message === 'string' ? message : JSON.stringify(message),
-            details: res
+            message: getErrorMessage(error, 'Failed to create access block'),
+            details: error.response?.data
         };
     }
 };
@@ -510,9 +484,7 @@ export const deleteAccessBlock = async (apiToken, id) => {
         });
         return { success: true };
     } catch (error) {
-        const res = error.response?.data;
-        const message = res?.message || res?.error?.message || res?.msg || 'Failed to delete access block';
-        return { success: false, message: typeof message === 'string' ? message : 'Failed to delete access block' };
+        return { success: false, message: getErrorMessage(error, 'Failed to delete access block') };
     }
 };
 
@@ -547,14 +519,14 @@ export const getRecentCalls = async (apiToken, { startDate, endDate, page = 1, p
             page: 1,
             limit: pageSize,
             totalCount: 0,
-            message: error.response?.data?.message || 'Failed to fetch recent calls'
+            message: getErrorMessage(error, 'Failed to fetch recent calls')
         };
     }
 };
 
 export const getReferenceData = async () => {
     try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mapapi.gebeta.app/api";
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8085/api";
         const response = await fetch(`${baseUrl}/v1/reference-data`, {
             cache: "no-store",
         });

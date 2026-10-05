@@ -12,15 +12,26 @@ import {Label } from "@/components/ui/label";
 import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs";
 import {useToast} from "@/hooks/use-toast";
 import {Switch } from "@/components/ui/switch";
+import {getErrorMessage} from "@/lib/errors";
 
 export default function Account() {
     const { currentUser, setCurrentUser, logout } = useContext(AuthContext);
     const {toast} = useToast()
 
     // State for account info
+    // `is_organization` decides which name field(s) this account can edit: a
+    // company account has a single "Company Name" (backed by the same DB
+    // column GoServer calls `company_name`), an individual account has a
+    // "First Name" (same column) + "Last Name" pair instead. Defaults to true
+    // (the DB's own default for isOrganization) so an already-logged-in
+    // session's stale cached user - from before this field existed - falls
+    // back to the single-field company view rather than rendering nothing.
+    const isOrganization = currentUser?.user?.is_organization ?? true;
     const [username, setUsername] = useState(currentUser?.user?.username || '');
-    const [email, setEmail] = useState(currentUser?.user?.email || '');
+    const [email] = useState(currentUser?.user?.email || '');
     const [phone, setPhone] = useState(currentUser?.user?.phone || '');
+    const [companyOrFirstName, setCompanyOrFirstName] = useState(currentUser?.user?.company_name || '');
+    const [lastName, setLastName] = useState(currentUser?.user?.lastname || '');
     const [allowAbuseDetection, setAllowAbuseDetection] = useState(currentUser?.user?.allow_alert || false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -35,9 +46,10 @@ export default function Account() {
         mutationFn: async () => {
             return await updateUser(currentUser?.token, {
                 username,
-                email,
                 phone,
-                allow_abuse_detection: allowAbuseDetection
+                allow_abuse_detection: allowAbuseDetection,
+                companyname: companyOrFirstName,
+                lastname: isOrganization ? undefined : lastName
             });
         },
         onSuccess: (response) => {
@@ -50,9 +62,10 @@ export default function Account() {
                     user: {
                         ...currentUser.user,
                         username,
-                        email,
                         phone,
-                        allow_alert: allowAbuseDetection
+                        allow_alert: allowAbuseDetection,
+                        company_name: companyOrFirstName,
+                        ...(isOrganization ? {} : { lastname: lastName })
                     }
                 });
             } else {
@@ -64,7 +77,7 @@ export default function Account() {
         },
         onError: (error: any) => {
             toast({
-                description: `${error?.response?.data?.message || "Update failed. Please try again."}`,
+                description: getErrorMessage(error, "Update failed. Please try again."),
                 variant: 'destructive'
             })
         }
@@ -96,7 +109,7 @@ export default function Account() {
         onError: (error: any) => {
             // setError(error.response?.data?.message || "Failed to send OTP");
             toast({
-                description: `${error?.response?.data?.message || "Failed to send OTP"}`,
+                description: getErrorMessage(error, "Failed to send OTP"),
                 variant: 'destructive'
             })
         }
@@ -112,7 +125,7 @@ export default function Account() {
         onError: (error: any) => {
             // setError(error.response?.data?.message || "Verification failed");
             toast({
-                description: `${error?.response?.data?.message || "Verification failed"}`,
+                description: getErrorMessage(error, "Verification failed"),
                 variant: 'destructive'
             })
         }
@@ -129,7 +142,7 @@ export default function Account() {
         onError: (error: any) => {
             // setError(error.response?.data?.message || "Failed to change password");
             toast({
-                description: `${error?.response?.data?.message || "Failed to change password"}`,
+                description: getErrorMessage(error, "Failed to change password"),
                 variant: 'destructive'
             })
         }
@@ -232,6 +245,36 @@ export default function Account() {
                         onChange={(e) => setUsername(e.target.value)}
                     />
                 </div>
+                {isOrganization ? (
+                    <div className="space-y-1">
+                        <Label htmlFor="company-name">Company Name</Label>
+                        <Input
+                            id="company-name"
+                            className="w-full md:w-1/2"
+                            value={companyOrFirstName}
+                            onChange={(e) => setCompanyOrFirstName(e.target.value)}
+                        />
+                    </div>
+                ) : (
+                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-1/2">
+                        <div className="space-y-1 flex-1">
+                            <Label htmlFor="first-name">First Name</Label>
+                            <Input
+                                id="first-name"
+                                value={companyOrFirstName}
+                                onChange={(e) => setCompanyOrFirstName(e.target.value)}
+                            />
+                        </div>
+                        <div className="space-y-1 flex-1">
+                            <Label htmlFor="last-name">Last Name</Label>
+                            <Input
+                                id="last-name"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                )}
                 <div className="space-y-1">
                     <Label htmlFor="email">Email</Label>
                     <Input
@@ -239,8 +282,12 @@ export default function Account() {
                         className="w-full md:w-1/2"
                         id="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        disabled
+                        readOnly
                     />
+                    <p className="text-xs text-[#aaa]">
+                        Email can't be changed here — contact support to update it.
+                    </p>
                 </div>
                 <div className="space-y-1">
                     <Label htmlFor="phone">Phone Number</Label>

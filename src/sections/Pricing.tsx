@@ -204,7 +204,7 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
                     .then(response => {
                         queryClient.invalidateQueries('history')
                         if (response.data.data.status === "success") {
-                            window.open(response.data.data.Data.checkout_url, '_blank');
+                            window.open(response.data.data.data.checkout_url, '_blank');
                         }
                     })
                     .catch(err => {
@@ -261,11 +261,11 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
                             </>
                         ) : "Let's talk"}
                     </h3>
-                    <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{data.name !== "Custom" ? pricing[index].subtitle : data.description}</p>
+                    <p className="text-wrap text-[#62677F] dark:text-gray-400 text-[14px] leading-17 mt-[20px]">{data.name !== "Custom" ? pricing[index]?.subtitle : data.description}</p>
 
                     <ul className="relative text-[#62677F] dark:text-gray-400 text-[14px] font-semibold leading-17 mt-[30px] mb-[30px] space-y-[12px]">
                         {
-                            data.included_call_types.map((feature, featureIndex) => (
+                            (data.included_call_types || []).map((feature, featureIndex) => (
                                 <div className="relative flex items-center gap-[12px]"
                                     key={featureIndex}>
                                     <Image
@@ -275,7 +275,7 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
                                         width={36}
                                         height={36}
                                     />
-                                    <li>{data.call_caps[featureIndex] + " " + feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase() + " calls" + `${feature === "TILE" ? " (daily limit)" : ""}`}</li>
+                                    <li>{(data.call_caps?.[featureIndex] != null ? data.call_caps[featureIndex] + " " : "") + feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase() + " calls" + `${feature === "TILE" ? " (daily limit)" : ""}`}</li>
                                     {feature.showInfo &&
                                         <div className="relative">
                                             <Image
@@ -286,7 +286,7 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
                                                 onMouseEnter={() => showTooltip(index, featureIndex)}
                                                 onMouseLeave={() => hideTooltip(index)}
                                             />
-                                            {tooltips[index][featureIndex] && (
+                                            {tooltips[index]?.[featureIndex] && (
                                                 <div
                                                     className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 w-24 p-2 bg-red-100 text-xs rounded dark:bg-gray-800 dark:text-white">
                                                     {feature.toolTip}
