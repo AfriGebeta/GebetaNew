@@ -10,8 +10,12 @@ export const useNavbarLogic = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > -20);
+            setIsScrolled(window.scrollY > 10);
         };
+
+        // Sync on mount: the browser may restore a scrolled position on reload
+        // without firing a scroll event, leaving a transparent navbar over content.
+        handleScroll();
 
         const handleClickOutside = (event) => {
             const navbar = document.getElementById('navbar-container');
@@ -20,7 +24,7 @@ export const useNavbarLogic = () => {
             }
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, {passive: true});
         document.addEventListener('mousedown', handleClickOutside);
 
         return () => {

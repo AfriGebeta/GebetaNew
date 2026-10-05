@@ -1,8 +1,10 @@
 import React from 'react';
 
 export const MDXComponents = {
+    // The page already renders the post title as the H1, so a leading "# " in the
+    // MDX becomes an H2 to keep one H1 per page and a clean heading hierarchy.
     h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h1 {...props} className="text-3xl font-bold text-zinc-700 dark:text-white mb-4 mt-6" />
+        <h2 {...props} className="text-3xl font-bold text-zinc-700 dark:text-white mb-4 mt-6" />
     ),
     h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
         <h2 {...props} className="text-2xl font-semibold text-zinc-700 dark:text-white mb-3 mt-5" />

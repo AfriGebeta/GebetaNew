@@ -32,7 +32,9 @@ interface TermsResponse {
 }
 
 export const metadata: Metadata = {
-    title: "Terms"
+    title: "Terms of Service",
+    description: "The terms governing use of the GebetaMaps website, APIs and developer services.",
+    alternates: { canonical: "/terms" },
 };
 
 export const dynamic = 'force-dynamic';

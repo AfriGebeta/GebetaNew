@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html[data-auth] .auth-signed-out,
+html:not([data-auth]) .auth-signed-in {
+    display: none !important;
+}
+
 ::selection {
     background: #FFA500;
     color: white;
@@ -230,4 +235,13 @@ a {
     .react-multi-carousel-arrow {
         display: none !important;
     }
+}
+
+/* TipTap placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
+  height: 0;
 }

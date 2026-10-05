@@ -1,0 +1,70 @@
+---
+title: "Introducing Access Block: Lock Your GebetaMaps API Keys to the Places They Belong"
+excerpt: "Assign IP addresses to your GebetaMaps API tokens so a leaked key becomes a non-event instead of an incident."
+date: "2026-08-10"
+coverImage: "/images/blog/access-block.jpg"
+coverImageCaption: "Access block cover image"
+readingTime: "7 min read"
+tags: ["security", "api", "product"]
+---
+
+Your API key is only as secure as where it's allowed to work.
+
+That's the question we kept coming back to as we built this feature: **what if someone copied your GebetaMaps API key today?** Not in some hypothetical breach scenario, just today, this afternoon, pasted into the wrong Slack channel, left in a public repo by accident, or picked up by a scraper crawling old commits. What actually happens next?
+
+Until now, the honest answer was: whatever they want. A leaked key is a working key, and it stays that way until someone notices and revokes it. That gap, between the moment a key leaks and the moment someone catches it, is where the damage happens. With **Access Block**, our new IP restriction feature, the answer changes completely. **Nothing happens.**
+
+## A Familiar Scenario
+
+Picture this. A developer on your team is debugging an integration late at night and pastes a curl command into a public forum to ask for help, key included. Or a mobile build ships with a hardcoded key sitting in the bundle, waiting for anyone curious enough to decompile it. Or an intern's laptop syncs a `.env` file to a personal GitHub account by mistake.
+
+None of these are exotic attacks. They're ordinary human mistakes, the kind that happen on every engineering team eventually, no matter how careful everyone tries to be. Historically, the moment one of these happens, the clock starts ticking. Someone has to notice the exposure, rotate the key, update every service that used it, and hope nothing was abused in between. With Access Block turned on, that entire chain of events simply doesn't start. The exposed key sits there, technically valid, practically useless, because it isn't calling from anywhere you've approved.
+
+## What Access Block Does
+
+Access Block lets you assign specific IP addresses to your GebetaMaps API tokens. Once a token is restricted, only requests coming from the IP addresses you've approved can use it. Every other request gets blocked automatically, no matter how valid the key itself is.
+
+In practice, that means a leaked key stops being a threat. Even if someone gets hold of one of your API keys, they can't make a single call with it unless the request is coming directly from your whitelisted IP. The key on its own is no longer enough. It has to be the right key, from the right place, at the same time.
+
+This is a small change in how authentication works, but it's a large change in what a leak actually costs you. Instead of an emergency, a leaked key becomes a non-event, something you can rotate calmly on your own schedule rather than something you're forced to react to at 2am.
+
+## Why We Built This
+
+API keys travel more than most people realize. They sit in client-side code, in mobile app bundles, in CI logs, in a teammate's `.env` file that gets committed by mistake, in error monitoring tools that accidentally capture request headers. We've talked to enough developers building on GebetaMaps, including some of you, to know that "just don't leak the key" isn't a security strategy. It's a hope, and hope isn't something you want standing between your account and unexpected charges or misuse.
+
+We also know that GebetaMaps increasingly sits underneath serious infrastructure: logistics dispatch systems, government citizen services, ride hailing platforms moving real people around real cities. When location APIs power that kind of work, "we'll notice eventually" isn't good enough. The systems relying on us needed a way to make key exposure a non-event rather than an incident.
+
+Access Block does that by moving the trust boundary. Historically, authentication asked one question: "do you have the key." Now it asks a second one too: "are you calling from a place we recognize." A key without the right IP behind it is just a string of characters, no more useful to an attacker than a random guess.
+
+## Who This Is For
+
+- **Backend services and servers** with fixed, known IPs. Lock your production token to your server's IP and stop worrying about what happens if that key ever ends up somewhere it shouldn't.
+- **Logistics and delivery platforms** running dispatch or routing from a defined set of infrastructure, where any call from outside that infrastructure should never be trusted in the first place.
+- **Government and enterprise integrations** that need to demonstrate real, verifiable access control around location data, not just a key sitting in a header.
+- **Teams shipping fast**, who want one less thing to think about when a key inevitably ends up somewhere it wasn't supposed to. Move quickly without treating every leaked credential as a five alarm fire.
+
+## How to Set It Up
+
+Setting up IP restrictions takes a couple of minutes, and there are two ways to do it depending on which direction makes more sense for your setup.
+
+**Option 1: Whitelist IPs on a key**
+
+Head to [gebeta.app/dashboard/api-token](https://gebeta.app/dashboard/api-token), open the token you want to protect, and add the IP addresses you want to allow. Once saved, that key will only work for requests coming from the addresses you've listed. Everything else gets rejected automatically. This is the more common approach for backend services and servers with fixed, known IPs, where you know exactly where traffic should be coming from.
+
+**Option 2: Block specific IPs**
+
+Head to [gebeta.app/dashboard/access-blocks](https://gebeta.app/dashboard/access-blocks) and add the IP addresses you want to block. Instead of narrowing access down to an approved list, this flips it around and lets you deny traffic from specific addresses while leaving the rest open. This is useful if you've already spotted suspicious activity from a particular IP, or if you want to keep a key broadly usable but shut the door on one or two known bad sources.
+
+You don't have to pick just one approach for your whole account. You can restrict some tokens with a whitelist and leave others open, so you're free to keep things flexible for local development while locking down anything running in production. A common pattern we've seen already: keep a loose, unrestricted key for local testing and prototyping, then issue a separate, tightly restricted key the moment something moves toward production traffic, adding blocked IPs on top if anything suspicious ever shows up.
+
+## What This Doesn't Replace
+
+Access Block is one layer, not the whole wall. It works best alongside the habits you should already have in place: rotating keys periodically, keeping credentials out of client-side code where you can, and using service accounts for mobile and frontend integrations rather than shipping a static key directly in the app bundle. Think of Access Block as the layer that catches the mistakes everything else was supposed to prevent.
+
+## Peace of Mind, Built In
+
+Access Block won't stop a key from leaking. Nothing really can guarantee that, mistakes happen no matter how disciplined a team is. What it does is make sure a leak isn't the end of the story. Unauthorized traffic gets blocked before it ever reaches your data, and you get to build with the confidence that a moment of carelessness somewhere down the chain won't turn into a real incident.
+
+Protect your workflow today. Visit [gebeta.app/dashboard/api-token](https://gebeta.app/dashboard/api-token) to whitelist IPs on a token, or [gebeta.app/dashboard/access-blocks](https://gebeta.app/dashboard/access-blocks) to block specific ones.
+
+For more on what else we've been shipping, check out the rest of our posts at [gebeta.app/blog](https://gebeta.app/blog).

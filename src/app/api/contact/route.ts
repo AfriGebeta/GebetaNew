@@ -1,4 +1,5 @@
 //@ts-nocheck
+export const dynamic = "force-dynamic";
 
 function isValidSubmission({ name, email, phone, subject, message, company }) {
     //honeypot

@@ -3,12 +3,35 @@ import {getAllPosts, getPostBySlug} from '@/lib/mdx';
 import Image from 'next/image';
 import Container from "@/sections/Container";
 
+const SITE_URL = 'https://gebeta.app';
+
 export async function generateMetadata({params}) {
     const {frontMatter} = await getPostBySlug(params.slug);
+    const url = `${SITE_URL}/blog/${params.slug}`;
+    const image = frontMatter.coverImage ?? '/assets/opengraph-image.png';
 
     return {
         title: frontMatter.title,
         description: frontMatter.excerpt,
+        keywords: frontMatter.tags,
+        authors: frontMatter.author ? [{name: frontMatter.author}] : undefined,
+        alternates: {canonical: `/blog/${params.slug}`},
+        openGraph: {
+            type: 'article',
+            title: frontMatter.title,
+            description: frontMatter.excerpt,
+            url,
+            publishedTime: frontMatter.date,
+            authors: frontMatter.author ? [frontMatter.author] : undefined,
+            tags: frontMatter.tags,
+            images: [{url: image, alt: frontMatter.title}],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: frontMatter.title,
+            description: frontMatter.excerpt,
+            images: [image],
+        },
     };
 }
 
@@ -58,9 +81,48 @@ const components = {
 
 export default async function BlogPost({params}) {
     const {frontMatter, mdxSource} = await getPostBySlug(params.slug);
+    const url = `${SITE_URL}/blog/${params.slug}`;
+
+    const articleJsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'BlogPosting',
+                '@id': `${url}#article`,
+                headline: frontMatter.title,
+                description: frontMatter.excerpt,
+                datePublished: frontMatter.date,
+                dateModified: frontMatter.date,
+                image: frontMatter.coverImage
+                    ? `${SITE_URL}${frontMatter.coverImage}`
+                    : `${SITE_URL}/assets/opengraph-image.png`,
+                keywords: frontMatter.tags,
+                wordCount: frontMatter.readingDuration?.words,
+                inLanguage: 'en',
+                author: {
+                    '@type': frontMatter.author ? 'Person' : 'Organization',
+                    name: frontMatter.author ?? 'GebetaMaps',
+                },
+                publisher: {'@id': `${SITE_URL}/#organization`},
+                mainEntityOfPage: {'@type': 'WebPage', '@id': url},
+            },
+            {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    {'@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL},
+                    {'@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog`},
+                    {'@type': 'ListItem', position: 3, name: frontMatter.title, item: url},
+                ],
+            },
+        ],
+    };
 
     return (
         <div className="w-full antialiased pt-32 flex flex-col min-h-screen dark:bg-[#05050a]">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{__html: JSON.stringify(articleJsonLd)}}
+            />
             <Container>
                 <article className="max-w-[680px] mx-auto px-4 pt-10 pb-20">
                     <header className="mb-8">

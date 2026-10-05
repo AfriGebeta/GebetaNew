@@ -39,7 +39,7 @@ export default function Navbar() {
         <>
             <Announcement showAnnouncement={showAnnouncement} setShowAnnouncement={setShowAnnouncement} />
             <header
-                className={`${showAnnouncement ? 'top-12' : 'top-0'} w-full h-15 flex items-center transition-colors z-50 fixed ${isScrolled && 'bg-background/80 backdrop-blur-lg'}`}
+                className={`${showAnnouncement ? 'top-12' : 'top-0'} w-full h-15 flex items-center transition-shadow z-50 fixed bg-white/80 dark:bg-[#05050a]/80 backdrop-blur-lg ${isScrolled ? 'shadow-[0_1px_0_rgba(0,0,0,0.06)]' : ''}`}
             >
                 <Container>
                     <nav className="flex justify-between items-center py-4">
@@ -96,23 +96,29 @@ export default function Navbar() {
                                 ))}
                             </ul>
                         </div>
-                        <div className="hidden md:flex gap-8">
-                            <div className="flex items-center gap-[4px] cursor-pointer"
-                                onClick={() => router.push("/auth/signin")}>
-                                <Image
-                                    className="dark:fill-whitesmoke"
-                                    src="/assets/user.svg"
-                                    alt="user icon"
-                                    width={24}
-                                    height={24} />
-                                <a
-                                    className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400"
-                                >Sign In</a>
-                            </div>
-                            <Link
-                                href="/auth/register"
-                                className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Get
-                                Started</Link>
+                        <div className="auth-signed-in hidden md:flex">
+                                <Link
+                                    href="/dashboard"
+                                    className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Go
+                                    to Dashboard</Link>
+                        </div>
+                        <div className="auth-signed-out hidden md:flex gap-8">
+                                <div className="flex items-center gap-[4px] cursor-pointer"
+                                    onClick={() => router.push("/auth/signin")}>
+                                    <Image
+                                        className="dark:fill-whitesmoke"
+                                        src="/assets/user.svg"
+                                        alt="user icon"
+                                        width={24}
+                                        height={24} />
+                                    <a
+                                        className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400"
+                                    >Sign In</a>
+                                </div>
+                                <Link
+                                    href="/auth/register"
+                                    className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Get
+                                    Started</Link>
                         </div>
                     </nav>
 
@@ -157,27 +163,34 @@ export default function Navbar() {
                                     </li>
                                 ))}
                             </ul>
-                            <div className="mt-4 space-y-4 px-4">
-                                <div className="flex items-center gap-[4px]">
-                                    <User2Icon className="w-[16px] h-[16px]" />
-                                    <a
-                                        className="font-medium"
-                                        onClick={() => {
-                                            router.push("/auth/signin")
-                                            closeMobileMenu()
-                                        }}
-                                    >Sign In</a>
-                                </div>
-                                <div
-                                    className="w-fit px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
-                                    <a
-                                        className="font-bold"
-                                        onClick={() => {
-                                            router.push("/auth/register")
-                                            closeMobileMenu()
-                                        }}
-                                    >Get Started</a>
-                                </div>
+                            <div className="auth-signed-in mt-4 px-4">
+                                    <Link
+                                        href="/dashboard"
+                                        onClick={closeMobileMenu}
+                                        className="block w-fit px-[30px] py-[15px] transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 text-white text-[14px] font-bold rounded-[8px]"
+                                    >Go to Dashboard</Link>
+                            </div>
+                            <div className="auth-signed-out mt-4 space-y-4 px-4">
+                                    <div className="flex items-center gap-[4px]">
+                                        <User2Icon className="w-[16px] h-[16px]" />
+                                        <a
+                                            className="font-medium"
+                                            onClick={() => {
+                                                router.push("/auth/signin")
+                                                closeMobileMenu()
+                                            }}
+                                        >Sign In</a>
+                                    </div>
+                                    <div
+                                        className="w-fit px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
+                                        <a
+                                            className="font-bold"
+                                            onClick={() => {
+                                                router.push("/auth/register")
+                                                closeMobileMenu()
+                                            }}
+                                        >Get Started</a>
+                                    </div>
                             </div>
                         </div>
                     )}
