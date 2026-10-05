@@ -89,7 +89,7 @@ const TEXT_FIELDS: { key: keyof CertificateConfig; label: string; hint?: string 
   { key: "certificateTitle", label: "Certificate Title", hint: 'e.g. "CERTIFICATE OF"' },
   { key: "certificateSubtitle", label: "Certificate Subtitle", hint: 'e.g. "ACHIEVEMENT"' },
   { key: "presentedToLabel", label: "Presented To Label" },
-  { key: "descriptionTemplate", label: "Description", hint: "Use {companyName} as a placeholder" },
+  { key: "descriptionTemplate", label: "Description", hint: "Use {companyName} or {position} as placeholders" },
   { key: "signatoryName", label: "Signatory Name", hint: "Shown if no signature image is uploaded" },
   { key: "signatoryTitle", label: "Signatory Title", hint: 'e.g. "MANAGER, CTO"' },
   { key: "awardLabel", label: "Award Label", hint: 'e.g. "AWARD"' },
