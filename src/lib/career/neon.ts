@@ -71,6 +71,10 @@ export async function initCareerTables() {
   `;
 
   await sql`
+    ALTER TABLE career_interns ADD COLUMN IF NOT EXISTS description TEXT DEFAULT ''
+  `;
+
+  await sql`
     CREATE TABLE IF NOT EXISTS career_templates (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       label TEXT NOT NULL,

@@ -11,9 +11,10 @@ interface Props {
 
 export default async function CertificateView({ intern, config }: Props) {
   const gold = config.primaryColor || "#ffa500";
-  const description = config.descriptionTemplate
-    .replace("{companyName}", config.companyName)
-    .replace("{position}", intern.role);
+  const description = intern.description ||
+    config.descriptionTemplate
+      .replace("{companyName}", config.companyName)
+      .replace("{position}", intern.role);
   const fonts = `${libreBaskerville.variable} ${inter.variable} ${dancingScript.variable}`;
 
   const certUrl = `https://gebeta.app/career/${intern.slug}`;

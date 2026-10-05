@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   ExternalLink, Trash2, Plus, Settings, LogOut, Copy, Check,
-  Mail, Send, X, Minus, Maximize2, Minimize2, ChevronDown,
+  Mail, Send, X, Minus, Maximize2, Minimize2, ChevronDown, Pencil,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -194,12 +194,114 @@ function TemplateBar({
   );
 }
 
+// ─── EditDialog ────────────────────────────────────────────────────────────────
+function EditDialog({ intern, onClose, onSave }: { intern: Intern; onClose: () => void; onSave: (updated: Intern) => void }) {
+  const [form, setForm] = useState({
+    name: intern.name,
+    role: intern.role,
+    email: intern.email,
+    description: intern.description,
+    presentedOn: intern.presentedOn,
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  function update(field: string, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    const res = await fetch(`/api/career/interns/${intern.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (!res.ok) { setError(data.error ?? "Failed to save"); return; }
+    onSave(data);
+    onClose();
+  }
+
+  return (
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-card border border-border rounded-2xl shadow-xl w-full max-w-md p-6 z-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-bold text-foreground text-lg">Edit Intern</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <form onSubmit={handleSave} className="space-y-4">
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Full Name <span className="text-destructive">*</span></label>
+            <input
+              type="text" required value={form.name}
+              onChange={(e) => update("name", e.target.value)}
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Role / Position <span className="text-destructive">*</span></label>
+            <input
+              type="text" required value={form.role}
+              onChange={(e) => update("role", e.target.value)}
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Email Address</label>
+            <input
+              type="email" value={form.email}
+              onChange={(e) => update("email", e.target.value)}
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Certificate Description</label>
+            <textarea
+              value={form.description}
+              onChange={(e) => update("description", e.target.value)}
+              rows={4}
+              placeholder="Leave blank to use the default template from config"
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Presented On</label>
+            <input
+              type="text" value={form.presentedOn}
+              onChange={(e) => update("presentedOn", e.target.value)}
+              placeholder="e.g. 01 JAN 2025"
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div className="flex gap-3 pt-1">
+            <Button type="button" variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
+            <Button type="submit" disabled={saving} className="flex-1">{saving ? "Saving…" : "Save Changes"}</Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ─── Dashboard ─────────────────────────────────────────────────────────────────
 export default function DashboardClient({ initialInterns, initialTemplates }: { initialInterns: Intern[]; initialTemplates: EmailTemplate[] }) {
   const router = useRouter();
   const [interns, setInterns] = useState(initialInterns);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [editIntern, setEditIntern] = useState<Intern | null>(null);
 
   const [templates] = useState(initialTemplates);
 
@@ -421,6 +523,9 @@ export default function DashboardClient({ initialInterns, initialTemplates }: { 
                         <Button variant="ghost" size="sm" onClick={() => window.open(`/career/${intern.slug}`, "_blank")}>
                           <ExternalLink className="w-3.5 h-3.5" />
                         </Button>
+                        <Button variant="ghost" size="sm" title="Edit" onClick={() => setEditIntern(intern)}>
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
                         <Button
                           variant="ghost" size="sm"
                           disabled={deleting === intern.id}
@@ -438,6 +543,15 @@ export default function DashboardClient({ initialInterns, initialTemplates }: { 
           </div>
         )}
       </main>
+
+      {/* ── Edit Intern dialog ── */}
+      {editIntern && (
+        <EditDialog
+          intern={editIntern}
+          onClose={() => setEditIntern(null)}
+          onSave={(updated) => setInterns((prev) => prev.map((i) => i.id === updated.id ? updated : i))}
+        />
+      )}
 
       {/* ── Send Certificate compose ── */}
       {sendIntern && (

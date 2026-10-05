@@ -92,7 +92,6 @@ const TEXT_FIELDS: { key: keyof CertificateConfig; label: string; hint?: string 
   { key: "descriptionTemplate", label: "Description", hint: "Use {companyName} or {position} as placeholders" },
   { key: "signatoryName", label: "Signatory Name", hint: "Shown if no signature image is uploaded" },
   { key: "signatoryTitle", label: "Signatory Title", hint: 'e.g. "MANAGER, CTO"' },
-  { key: "awardLabel", label: "Award Label", hint: 'e.g. "AWARD"' },
   { key: "primaryColor", label: "Primary Color (hex)", hint: "e.g. #ffa500" },
 ];
 

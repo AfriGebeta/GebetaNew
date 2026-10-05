@@ -1,4 +1,4 @@
-import { getTaggedDb as getDb } from "./neon";
+import { getTaggedDb as getDb, getDb as getPool } from "./neon";
 
 export interface Intern {
   id: string;
@@ -6,6 +6,7 @@ export interface Intern {
   slug: string;
   role: string;
   email: string;
+  description: string;
   presentedOn: string;
   createdAt: string;
 }
@@ -50,6 +51,7 @@ function rowToIntern(row: Record<string, unknown>): Intern {
     slug: row.slug as string,
     role: row.role as string,
     email: (row.email as string) ?? "",
+    description: (row.description as string) ?? "",
     presentedOn: row.presented_on as string,
     createdAt: (row.created_at as Date).toISOString(),
   };
@@ -82,11 +84,27 @@ export async function readInterns(): Promise<Intern[]> {
 export async function createIntern(data: Omit<Intern, "id" | "createdAt">): Promise<Intern> {
   const sql = getDb();
   const rows = await sql`
-    INSERT INTO career_interns (name, slug, role, email, presented_on)
-    VALUES (${data.name}, ${data.slug}, ${data.role}, ${data.email ?? ""}, ${data.presentedOn})
+    INSERT INTO career_interns (name, slug, role, email, description, presented_on)
+    VALUES (${data.name}, ${data.slug}, ${data.role}, ${data.email ?? ""}, ${data.description ?? ""}, ${data.presentedOn})
     RETURNING *
   `;
   return rowToIntern(rows[0]);
+}
+
+export async function updateIntern(id: string, data: Partial<Pick<Intern, "name" | "role" | "email" | "description" | "presentedOn">>): Promise<Intern | null> {
+  const fields: string[] = [];
+  const values: unknown[] = [];
+  let i = 1;
+  if (data.name !== undefined) { fields.push(`name = $${i++}`); values.push(data.name); }
+  if (data.role !== undefined) { fields.push(`role = $${i++}`); values.push(data.role); }
+  if (data.email !== undefined) { fields.push(`email = $${i++}`); values.push(data.email); }
+  if (data.description !== undefined) { fields.push(`description = $${i++}`); values.push(data.description); }
+  if (data.presentedOn !== undefined) { fields.push(`presented_on = $${i++}`); values.push(data.presentedOn); }
+  if (fields.length === 0) return null;
+  values.push(id);
+  const db = getPool();
+  const result = await db.query(`UPDATE career_interns SET ${fields.join(", ")} WHERE id = $${i} RETURNING *`, values);
+  return result.rows.length ? rowToIntern(result.rows[0] as Record<string, unknown>) : null;
 }
 
 export async function deleteIntern(id: string): Promise<boolean> {
