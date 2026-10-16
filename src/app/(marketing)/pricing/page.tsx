@@ -1,5 +1,4 @@
 import {Plans} from "@/sections/Pricing";
-import PricingSlider from "@/components/PricingSlider";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Building2, CircleDollarSign, Scale, Shield} from 'lucide-react';
 import Container from "@/sections/Container";
@@ -58,59 +57,44 @@ export default function PricingPage() {
     };
 
     return (
-        <div className=" dark:from-[#05050a] dark:to-[#05050a] mt-[120px]">
+        <div className="py-24 md:py-28">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{__html: JSON.stringify(faqJsonLd)}}
             />
-            <div className="px-12">
-                <div className="md:pb-[60px]">
-                    <div className="text-center mb-[80px]">
-                        <h2 className="text-[48px] text-[#1B1E2B] dark:text-white leading-[1.2] mb-[20px]">Pricing</h2>
-                        <p className="text-gray-600 dark:text-gray-400 max-w-[600px] mx-auto text-lg mb-[40px]">
-                            Choose the perfect plan for your mapping needs
-                        </p>
-                        <Container>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-[60px]">
-                                {features.map((feature, index) => (
-                                    <div key={index} className="bg-white dark:bg-[#111116] p-6 rounded-xl border">
-                                        <div className="w-12 h-12 bg-[#FFA500]/10 rounded-full flex items-center justify-center mb-4 mx-auto">
-                                            <feature.icon className="w-6 h-6 text-[#FFA500]" />
-                                        </div>
-                                        <h3 className="text-lg font-semibold text-[#1B1E2B] dark:text-white mb-2">
-                                            {feature.title}
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-400 text-sm">
-                                            {feature.description}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        </Container>
-
-                    </div>
-
-                    <Plans />
-
-                    <div className="max-w-[800px] mx-auto">
-                        <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white mb-6 text-center">
-                            Frequently Asked Questions
-                        </h3>
-                        <Accordion type="single" collapsible className="w-full">
-                            {faqsList.map((faq, index) => (
-                                <AccordionItem key={index} value={`item-${index}`}>
-                                    <AccordionTrigger className="text-[#1B1E2B] dark:text-white transition-all">
-                                        {faq.q}
-                                    </AccordionTrigger>
-                                    <AccordionContent className="text-gray-600 dark:text-gray-400">
-                                        {faq.a}
-                                    </AccordionContent>
-                                </AccordionItem>
-                            ))}
-                        </Accordion>
-                    </div>
+            <Container className="flex flex-col gap-12">
+                <div className="flex flex-col gap-4">
+                    <h1 className="text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[64px]">Pricing</h1>
+                    <p className="max-w-[48ch] text-[18px] leading-[1.5] text-soft">
+                        Every plan includes every API. Start free and move up as your traffic grows.
+                    </p>
                 </div>
-            </div>
+                <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    {features.map((feature) => (
+                        <div key={feature.title} className="flex flex-col gap-2 rounded-lg bg-raised p-5">
+                            <dt className="flex items-center gap-2 text-[16px] font-medium text-foreground">
+                                <feature.icon aria-hidden className="size-4 text-soft"/>
+                                {feature.title}
+                            </dt>
+                            <dd className="text-[15px] leading-[1.5] text-soft">{feature.description}</dd>
+                        </div>
+                    ))}
+                </dl>
+            </Container>
+
+            <Plans/>
+
+            <Container className="mt-24 flex max-w-3xl flex-col gap-6">
+                <h2 className="text-[28px] font-medium tracking-[-0.02em] text-foreground">Frequently asked questions</h2>
+                <Accordion type="single" collapsible className="w-full">
+                    {faqsList.map((faq, index) => (
+                        <AccordionItem key={index} value={`item-${index}`}>
+                            <AccordionTrigger>{faq.q}</AccordionTrigger>
+                            <AccordionContent>{faq.a}</AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </Container>
         </div>
     );
 }

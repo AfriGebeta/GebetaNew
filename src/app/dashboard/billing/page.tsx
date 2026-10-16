@@ -7,14 +7,18 @@ import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/providers/QueryProvider";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Field from "@/components/ui/field";
+import Tag from "@/components/ui/tag";
+import SegmentBar from "@/components/ui/segment-bar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState, Page, PageIntro, Section } from "@/components/dashboard/page";
 import { AuthContext } from "@/providers/AuthProvider";
-import Spinner from "@/components/Spinner";
-import { PencilIcon, Trash2Icon } from "lucide-react";
+import { ChevronLeft, ChevronRight, ReceiptText, Trash2Icon, Wallet } from "lucide-react";
 import {
     Dialog,
+    DialogBody,
     DialogClose,
     DialogContent,
     DialogDescription,
@@ -22,7 +26,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import PricingSlider from "@/components/PricingSlider";
+import PricingCalculator from "@/components/pricing-calculator";
 
 export default function BillingHistory() {
     const { currentUser, setCurrentUser } = useContext(AuthContext)
@@ -123,193 +127,194 @@ export default function BillingHistory() {
         setIsUpdatingCap(false);
     };
 
+    const statusTone = (status) =>
+        status === "SUCCESS" || status === "PAID" || status === "COMPLETED"
+            ? "green"
+            : status === "PENDING"
+                ? "amber"
+                : status === "FAILED" || status === "CANCELLED"
+                    ? "red"
+                    : "neutral";
+
+    const cap = billingCaps?.success ? billingCaps?.data : null;
+    const capPercent = cap?.capAmount ? (Number(cap.estimatedSpend) / Number(cap.capAmount)) * 100 : 0;
+
     return (
-        <div className="p-4 rounded-lg min-h-[60vh]">
-            <h2 className="text-xl text-white font-semibold mb-4">Billing History</h2>
-            {isLoading ? (
-                <Spinner />
-            ) : data?.billing?.length > 0 ? (
-                <>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Package</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Payment Status</TableHead>
-                                <TableHead>Method</TableHead>
-                                <TableHead>Amount</TableHead>
-                                <TableHead>Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {data.billing.map((item, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{item.credit.credit_bundle.name} Pac.</TableCell>
-                                    <TableCell>{formatDate(item.created_at)}</TableCell>
-                                    <TableCell>
-                                        {item.installments.map((installment, idx) => (
-                                            <div key={idx} className="flex flex-col">
-                                                <span>{installment.status}</span>
-                                            </div>
-                                        ))}
-                                    </TableCell>
-                                    <TableCell>
-                                        {item.installments.map((installment, idx) => (
-                                            <div key={idx} className="flex items-center gap-2">
-                                                {installment.method === "CHAPA" && (
-                                                    <Image src="/assets/chapa.png" alt="chapa logo" width={20} height={20} />
-                                                )}
-                                                <span>{installment.method}</span>
-                                            </div>
-                                        ))}
-                                    </TableCell>
-                                    <TableCell>
-                                        {item.installments.map((installment, idx) => (
-                                            <div key={idx}>{installment.amount} ETB</div>
-                                        ))}
-                                    </TableCell>
-                                    <TableCell>
-                                        {item.installments.map((installment, idx) => (
-                                            installment.status === "PENDING" && (
-                                                <Button
-                                                    key={idx}
-                                                    onClick={handleVerifyPayment(installment.id)}
-                                                    className="bg-[#FFA500] px-4 py-2 rounded-md"
-                                                >
-                                                    Verify
-                                                </Button>
-                                            )
-                                        ))}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+        <Page>
+            <PageIntro
+                title="Billing"
+                description="Your payment history and spending controls."
+            />
 
-                    {/* Pagination */}
-                    <div className="mt-6 flex justify-between">
-                        <Button
-                            onClick={() => setCurrentPage((page) => page - 1)}
-                            disabled={currentPage === 1}
-                            className="bg-[#FFA500] px-4 py-2 rounded-md"
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            onClick={() => setCurrentPage((page) => page + 1)}
-                            disabled={currentPage === totalPages}
-                            className="bg-[#FFA500] px-4 py-2 rounded-md"
-                        >
-                            Next
-                        </Button>
+            <Section title="Billing history">
+                {isLoading ? (
+                    <div className="flex flex-col gap-2 rounded-lg bg-card p-4 shadow-card">
+                        {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-[26px] w-full" />)}
                     </div>
-                </>
-            ) : (
-                <div className="h-[350px] flex flex-col justify-center gap-4 items-center">
-                    <Image src="/assets/billing.svg" width={80} height={80} />
-                    <p>No Billing History</p>
-                </div>
-            )}
+                ) : data?.billing?.length > 0 ? (
+                    <div className="flex flex-col gap-4">
+                        <TableContainer>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Package</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Payment Status</TableHead>
+                                        <TableHead>Method</TableHead>
+                                        <TableHead className="text-right">Amount</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {data.billing.map((item, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell className="font-medium">{item.credit.credit_bundle.name}</TableCell>
+                                            <TableCell className="tabular-nums text-soft">{formatDate(item.created_at)}</TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-col items-start gap-1">
+                                                    {item.installments.map((installment, idx) => (
+                                                        <Tag key={idx} size="sm" tone={statusTone(installment.status)}>{installment.status}</Tag>
+                                                    ))}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                {item.installments.map((installment, idx) => (
+                                                    <div key={idx} className="flex items-center gap-2 text-soft">
+                                                        {installment.method === "CHAPA" && (
+                                                            <Image src="/assets/chapa.png" alt="" width={16} height={16} className="rounded-sm" />
+                                                        )}
+                                                        <span>{installment.method}</span>
+                                                    </div>
+                                                ))}
+                                            </TableCell>
+                                            <TableCell className="text-right tabular-nums">
+                                                {item.installments.map((installment, idx) => (
+                                                    <div key={idx}>{installment.amount} ETB</div>
+                                                ))}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {item.installments.map((installment, idx) => (
+                                                    installment.status === "PENDING" && (
+                                                        <Button
+                                                            key={idx}
+                                                            variant="secondary"
+                                                            size="sm"
+                                                            onClick={handleVerifyPayment(installment.id)}
+                                                        >
+                                                            Verify
+                                                        </Button>
+                                                    )
+                                                ))}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
 
-            {/*for spending cap*/}
-            <div className="mt-12">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                    <div>
-                        <h2 className="text-sm font-medium text-white">Spending Cap</h2>
-                        <p className="text-xs text-[#aaa] mt-1">Set a maximum spending limit to avoid unexpected charges</p>
-                    </div>
-                </div>
-
-                <div className="border border-dashed rounded-lg p-6 mb-4">
-                    <div className="space-y-3">
-                        <div className="space-y-1">
-                            <Label htmlFor="cap-amount">Cap Amount (ETB)</Label>
-                            <Input
-                                id="cap-amount"
-                                type="number"
-                                min="1"
-                                placeholder="e.g. 500"
-                                value={capAmountInput}
-                                onChange={(e) => setCapAmountInput(e.target.value)}
-                                className="max-w-xs"
-                            />
+                        <div className="flex items-center justify-between gap-2">
+                            <span className="caption-style text-subtle">
+                                Page {currentPage}{totalPages ? ` of ${totalPages}` : ""}
+                            </span>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => setCurrentPage((page) => page - 1)}
+                                    disabled={currentPage === 1}
+                                >
+                                    <ChevronLeft aria-hidden /> Previous
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => setCurrentPage((page) => page + 1)}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    Next <ChevronRight aria-hidden />
+                                </Button>
+                            </div>
                         </div>
-                        <Button
-                            className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
-                            onClick={handleSetCap}
-                            disabled={isSettingCap}
-                        >
-                            {isSettingCap ? "Setting..." : "Set Cap"}
-                        </Button>
-                    </div>
-                </div>
-
-                {capsLoading ? (
-                    <p className="text-sm text-[#aaa] py-4">Loading cap...</p>
-                ) : !billingCaps?.success || !billingCaps?.data ? (
-                    <div className="flex flex-col items-center justify-center py-8 gap-2 text-[#aaa] border border-dashed rounded-md">
-                        <p className="text-sm">No spending cap configured</p>
                     </div>
                 ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Cap Amount</TableHead>
-                                <TableHead>Estimated Spend</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Last Reset</TableHead>
-                                <TableHead>Next Reset</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell className="font-medium">{billingCaps.data.capAmount} ETB</TableCell>
-                                <TableCell>{billingCaps.data.estimatedSpend} ETB</TableCell>
-                                <TableCell>
-                                    <span className={billingCaps.data.exceeded ? "text-red-500" : "text-green-500"}>
-                                        {billingCaps.data.exceeded ? "Exceeded" : "Active"}
-                                    </span>
-                                </TableCell>
-                                <TableCell className="text-sm">{formatDate(billingCaps.data.lastResetAt)}</TableCell>
-                                <TableCell className="text-sm">{formatDate(billingCaps.data.nextResetAt)}</TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex justify-end space-x-1">
-                                        {/* <Button
-                                            variant="link"
-                                            onClick={() => openEditCap(billingCaps.data)}
-                                            className="p-2"
-                                        >
-                                            <PencilIcon className="w-4 h-4" />
-                                        </Button> */}
-                                        <Button
-                                            variant="link"
-                                            onClick={() => handleDeleteCap(billingCaps.data.id)}
-                                            className="p-2 text-red-500 hover:text-red-600"
-                                        >
-                                            <Trash2Icon className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
+                    <EmptyState
+                        icon={<ReceiptText />}
+                        title="No billing history"
+                        description="Purchases and payments will show up here."
+                    />
+                )}
+            </Section>
+
+            <Section
+                title="Spending cap"
+                description="Set a maximum spending limit to avoid unexpected charges"
+            >
+                {capsLoading ? (
+                    <Skeleton className="h-[120px] w-full rounded-lg" />
+                ) : cap ? (
+                    <article className="flex flex-col gap-4 rounded-lg bg-card p-4 shadow-card">
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="flex flex-col gap-2">
+                                <span className="eyebrow-style text-subtle">Estimated spend</span>
+                                <span className="text-[22px] font-medium leading-none tabular-nums text-foreground">
+                                    {cap.estimatedSpend} <span className="text-[14px] text-subtle">/ {cap.capAmount} ETB</span>
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Tag tone={cap.exceeded ? "red" : "green"}>{cap.exceeded ? "Exceeded" : "Active"}</Tag>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleDeleteCap(cap.id)}
+                                    aria-label="Remove spending cap"
+                                    className="hover:text-danger"
+                                >
+                                    <Trash2Icon aria-hidden />
+                                </Button>
+                            </div>
+                        </div>
+                        <SegmentBar percent={capPercent} segments={32} tone={cap.exceeded ? "danger" : capPercent > 75 ? "warning" : "success"} />
+                        <div className="caption-style flex flex-wrap gap-x-4 gap-y-2 text-subtle">
+                            <span>Last reset: <span className="text-soft">{formatDate(cap.lastResetAt)}</span></span>
+                            <span>Next reset: <span className="text-soft">{formatDate(cap.nextResetAt)}</span></span>
+                        </div>
+                    </article>
+                ) : (
+                    <EmptyState icon={<Wallet />} title="No spending cap configured" description="Set a cap below to stop calls once you hit your limit." />
                 )}
 
-                <div className="mt-4">
-                    <PricingSlider isComponent={true} />
+                <div className="flex flex-wrap items-end gap-3 rounded-lg border border-line-strong p-4">
+                    <Field label="Cap amount (ETB)" htmlFor="cap-amount" className="w-full max-w-[240px]">
+                        <Input
+                            id="cap-amount"
+                            type="number"
+                            min="1"
+                            placeholder="e.g. 500"
+                            value={capAmountInput}
+                            onChange={(e) => setCapAmountInput(e.target.value)}
+                        />
+                    </Field>
+                    <Button
+                        variant="primary"
+                        onClick={handleSetCap}
+                        disabled={isSettingCap}
+                        className="mb-[3px]"
+                    >
+                        {isSettingCap ? "Setting..." : "Set Cap"}
+                    </Button>
                 </div>
-            </div>
+            </Section>
+
+            <Section title="Pricing calculator" description="Estimate your cost per API before you scale up.">
+                <PricingCalculator />
+            </Section>
 
             <Dialog open={editCapDialogOpen} onOpenChange={setEditCapDialogOpen}>
-                <DialogContent className="sm:max-w-sm">
+                <DialogContent className="max-w-[400px]">
                     <DialogHeader>
                         <DialogTitle>Edit Spending Cap</DialogTitle>
                         <DialogDescription>Update the maximum spending limit.</DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-2">
-                        <div className="space-y-1">
-                            <Label htmlFor="edit-cap">Cap Amount (ETB)</Label>
+                    <DialogBody>
+                        <Field label="Cap Amount (ETB)" htmlFor="edit-cap">
                             <Input
                                 id="edit-cap"
                                 type="number"
@@ -317,14 +322,14 @@ export default function BillingHistory() {
                                 value={editCapForm.max_calls}
                                 onChange={(e) => setEditCapForm(f => ({ ...f, max_calls: e.target.value }))}
                             />
-                        </div>
-                    </div>
+                        </Field>
+                    </DialogBody>
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button type="button" variant="secondary">Cancel</Button>
+                            <Button variant="secondary">Cancel</Button>
                         </DialogClose>
                         <Button
-                            className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
+                            variant="primary"
                             onClick={handleUpdateCap}
                             disabled={isUpdatingCap}
                         >
@@ -333,6 +338,6 @@ export default function BillingHistory() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </Page>
     );
 }

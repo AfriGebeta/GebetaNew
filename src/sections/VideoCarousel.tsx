@@ -1,5 +1,6 @@
 "use client";
-import Image from "next/image";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
+import Button from "@/components/ui/button";
 import {CSSProperties, useState} from "react";
 import Container from "@/sections/Container";
 
@@ -24,9 +25,11 @@ export default function VideoCarousel() {
     const prevVideo = () => goTo((currentVideoIndex - 1 + videos.length) % videos.length);
 
     return (
-        <div
-            className="flex flex-col gap-4 sm:gap-8 justify-center items-center w-full mt-[60px] sm:mt-[120px] bg-custom pb-[20px] sm:pb-[40px] px-4 sm:px-[0px]">
-            <Container className="max-w-8xl">
+        <section className="flex w-full flex-col items-center gap-4 pb-24 pt-8 sm:gap-8 md:pb-28">
+            <Container className="flex flex-col gap-10">
+                <h2 className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
+                    See it in motion
+                </h2>
                 <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] overflow-hidden">
                     {videos.map((video, index) => {
                         const offset = index - currentVideoIndex;
@@ -52,7 +55,7 @@ export default function VideoCarousel() {
                             >
                                 {playingId === video.id ? (
                                     <iframe
-                                        className="w-full h-full rounded-[16px] border-none"
+                                        className="w-full h-full rounded-xl border-none"
                                         src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
                                         title={video.title}
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -63,7 +66,7 @@ export default function VideoCarousel() {
                                         type="button"
                                         aria-label={`Play video: ${video.title}`}
                                         onClick={() => (isActive ? setPlayingId(video.id) : goTo(index))}
-                                        className="group relative block w-full h-full overflow-hidden rounded-[16px] bg-black"
+                                        className="group relative block w-full h-full overflow-hidden rounded-xl bg-black"
                                     >
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
@@ -74,10 +77,8 @@ export default function VideoCarousel() {
                                             className="w-full h-full object-cover"
                                         />
                                         <span
-                                            className="absolute inset-0 m-auto flex h-12 w-[68px] items-center justify-center rounded-xl bg-[#FF0000] transition-transform group-hover:scale-110">
-                                            <svg viewBox="0 0 24 24" className="h-6 w-6 fill-white" aria-hidden="true">
-                                                <path d="M8 5v14l11-7z"/>
-                                            </svg>
+                                            className="absolute inset-0 m-auto flex size-14 items-center justify-center rounded-full bg-ink text-ink-foreground transition-transform duration-150 ease-power3-out group-hover:scale-110">
+                                            <Play aria-hidden className="size-6 fill-current"/>
                                         </span>
                                     </button>
                                 )}
@@ -85,35 +86,15 @@ export default function VideoCarousel() {
                         );
                     })}
                 </div>
-                <div className="flex justify-center gap-6 sm:gap-10 mt-2 sm:mt-4">
-                    <button
-                        onClick={prevVideo}
-                        aria-label="Previous video"
-                        className="focus:outline-none transition-transform hover:scale-[1.2] p-2"
-                    >
-                        <Image
-                            src="/assets/prev-icon.svg"
-                            alt="prev icon button for carousel"
-                            width={8}
-                            height={15}
-                            className="w-[8px] h-[15px] sm:w-[12px] sm:h-[19px]"
-                        />
-                    </button>
-                    <button
-                        onClick={nextVideo}
-                        aria-label="Next video"
-                        className="focus:outline-none transition-transform hover:scale-[1.2] p-2"
-                    >
-                        <Image
-                            src="/assets/next-icon.svg"
-                            alt="next icon button for carousel"
-                            width={8}
-                            height={15}
-                            className="w-[8px] h-[15px] sm:w-[12px] sm:h-[19px]"
-                        />
-                    </button>
+                <div className="flex justify-center gap-2">
+                    <Button variant="secondary" size="icon" onClick={prevVideo} aria-label="Previous video">
+                        <ChevronLeft aria-hidden/>
+                    </Button>
+                    <Button variant="secondary" size="icon" onClick={nextVideo} aria-label="Next video">
+                        <ChevronRight aria-hidden/>
+                    </Button>
                 </div>
             </Container>
-        </div>
+        </section>
     );
 }

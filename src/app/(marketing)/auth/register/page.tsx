@@ -6,7 +6,16 @@ import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
 import {useRouter} from 'nextjs-toploader/app';
 import {AuthContext} from "@/providers/AuthProvider";
-import {BarLoader} from "react-spinners";
+import Button from "@/components/ui/button";
+import Field from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import OtpInput from "@/components/ui/otp-input";
+import { RadioGroup, RadioCard } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Notice from "@/components/ui/notice";
+import AuthHeading from "../_components/auth-heading";
 import {trackUserAction} from "@/lib/track";
 
 interface RegistrationData {
@@ -187,19 +196,6 @@ const Register: React.FC = () => {
         }
     };
 
-    const handleOtpChange = (element: HTMLInputElement, index: number) => {
-        if (isNaN(Number(element.value))) return;
-
-        const newOtp = [...otp];
-        newOtp[index] = element.value;
-        setOtp(newOtp);
-
-        if (element.value && index < 5) {
-            const nextInput = document.querySelector(`input[name=otp-${index + 1}]`) as HTMLInputElement;
-            if (nextInput) nextInput.focus();
-        }
-    };
-
     const handleRegistration = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const otpString = otp.join('');
@@ -264,334 +260,154 @@ const Register: React.FC = () => {
         }
     };
 
-    const renderAccountTypeFields = () => {
-        const commonFields = (
-            <>
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Email Address
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={registrationData.email}
-                        onChange={(e) => setRegistrationData({...registrationData, email: e.target.value})}
-                        required
-                        placeholder="john@workmail.com"
-                        className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                           focus:outline-none focus:ring focus:ring-[#FFA500]
-                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                           dark:text-gray-300 transition duration-200 ease-in-out"
-                    />
-                </div>
+    const update = (key: keyof typeof registrationData) => (e: React.ChangeEvent<HTMLInputElement>) =>
+        setRegistrationData({...registrationData, [key]: e.target.value});
 
-                <div className="w-[160px]">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Coupon
-                    </label>
-                    <input
-                        type="coupon"
-                        id="coupon"
-                        value={registrationData.coupon}
-                        onChange={(e) => setRegistrationData({...registrationData, coupon: e.target.value})}
-                        placeholder="Optional"
-                        className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                           focus:outline-none focus:ring focus:ring-[#FFA500]
-                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                           dark:text-gray-300 transition duration-200 ease-in-out"
-                    />
+    const renderAccountTypeFields = () => (
+        <>
+            {accountType === "Individual" ? (
+                <div className="grid grid-cols-2 gap-3">
+                    <Field label="First name" htmlFor="firstname" required>
+                        <Input id="firstname" autoComplete="given-name" value={registrationData.firstname}
+                               onChange={update("firstname")} required placeholder="Abebe"/>
+                    </Field>
+                    <Field label="Last name" htmlFor="lastname" required>
+                        <Input id="lastname" autoComplete="family-name" value={registrationData.lastname}
+                               onChange={update("lastname")} required placeholder="Kebede"/>
+                    </Field>
                 </div>
+            ) : (
+                <Field label="Organization name" htmlFor="companyname" required>
+                    <Input id="companyname" autoComplete="organization" value={registrationData.companyname}
+                           onChange={update("companyname")} required placeholder="Your organization's name"/>
+                </Field>
+            )}
 
-                <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Phone Number
-                    </label>
-                    <div className="flex gap-2">
-                        <select
-                            value={selectedCountryCode}
-                            onChange={(e) => setSelectedCountryCode(e.target.value)}
-                            className="mt-1 w-24 px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                               focus:outline-none focus:ring focus:ring-[#FFA500]
-                               focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                               dark:text-gray-300 transition duration-200 ease-in-out"
-                        >
+            <Field label="Email address" htmlFor="email" required>
+                <Input id="email" type="email" autoComplete="email" value={registrationData.email}
+                       onChange={update("email")} required placeholder="you@company.com"/>
+            </Field>
+
+            <Field label="Phone number" htmlFor="phone" required>
+                <div className="flex gap-2">
+                    <Select value={selectedCountryCode} onValueChange={setSelectedCountryCode}>
+                        <SelectTrigger aria-label="Country code" className="w-24 shrink-0">
+                            <SelectValue/>
+                        </SelectTrigger>
+                        <SelectContent>
                             {countryCodes.map((country) => (
-                                <option key={country.code} value={country.dial_code}>
+                                <SelectItem key={country.code} value={country.dial_code}>
                                     {country.dial_code}
-                                </option>
+                                </SelectItem>
                             ))}
-                        </select>
-                        <input
-                            type="tel"
-                            id="phone"
-                            value={registrationData.phone}
-                            onChange={(e) => setRegistrationData({...registrationData, phone: e.target.value})}
-                            required
-                            placeholder="Phone number"
-                            className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                               focus:outline-none focus:ring focus:ring-[#FFA500]
-                               focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                               dark:text-gray-300 transition duration-200 ease-in-out"
-                        />
-                    </div>
+                        </SelectContent>
+                    </Select>
+                    <Input id="phone" type="tel" autoComplete="tel-national" value={registrationData.phone}
+                           onChange={update("phone")} required placeholder="911 234 567"/>
                 </div>
+            </Field>
 
-                <div>
-                    <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Username
-                    </label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={registrationData.username}
-                        onChange={(e) => setRegistrationData({...registrationData, username: e.target.value})}
-                        required
-                        placeholder="Create a username"
-                        className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                           focus:outline-none focus:ring focus:ring-[#FFA500]
-                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                           dark:text-gray-300 transition duration-200 ease-in-out"
-                    />
-                </div>
+            <Field label="Username" htmlFor="username" required>
+                <Input id="username" autoComplete="username" value={registrationData.username}
+                       onChange={update("username")} required placeholder="Create a username"/>
+            </Field>
 
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={registrationData.password}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            setRegistrationData({...registrationData, password: value});
-                            setPasswordError(validatePassword(value));
-                            if (confirmPassword) {
-                                setConfirmPasswordError(value !== confirmPassword ? 'Passwords do not match' : '');
-                            }
-                        }}
-                        required
-                        placeholder="Create a password"
-                        className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm
-                           focus:outline-none focus:ring focus:ring-[#FFA500]
-                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                           dark:text-gray-300 transition duration-200 ease-in-out
-                           ${passwordError ? 'border-red-500' : 'border-[#D1D5DB]'}`}
-                    />
-                    {passwordError && (
-                        <p className="mt-1 text-xs text-red-500">{passwordError}</p>
-                    )}
-                </div>
+            <Field label="Password" htmlFor="password" required error={passwordError}
+                   hint="At least 8 characters, one uppercase letter and one number.">
+                <Input
+                    id="password"
+                    type="password"
+                    autoComplete="new-password"
+                    aria-invalid={!!passwordError}
+                    value={registrationData.password}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        setRegistrationData({...registrationData, password: value});
+                        setPasswordError(validatePassword(value));
+                        if (confirmPassword) {
+                            setConfirmPasswordError(value !== confirmPassword ? 'Passwords do not match' : '');
+                        }
+                    }}
+                    required
+                    placeholder="Create a password"
+                />
+            </Field>
 
-                <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Confirm Password
-                    </label>
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        value={confirmPassword}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            setConfirmPassword(value);
-                            setConfirmPasswordError(value !== registrationData.password ? 'Passwords do not match' : '');
-                        }}
-                        required
-                        placeholder="Re-enter your password"
-                        className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm
-                           focus:outline-none focus:ring focus:ring-[#FFA500]
-                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                           dark:text-gray-300 transition duration-200 ease-in-out
-                           ${confirmPasswordError ? 'border-red-500' : 'border-[#D1D5DB]'}`}
-                    />
-                    {confirmPasswordError && (
-                        <p className="mt-1 text-xs text-red-500">{confirmPasswordError}</p>
-                    )}
-                </div>
-            </>
-        );
+            <Field label="Confirm password" htmlFor="confirmPassword" required error={confirmPasswordError}>
+                <Input
+                    id="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    aria-invalid={!!confirmPasswordError}
+                    value={confirmPassword}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        setConfirmPassword(value);
+                        setConfirmPasswordError(value !== registrationData.password ? 'Passwords do not match' : '');
+                    }}
+                    required
+                    placeholder="Re-enter your password"
+                />
+            </Field>
 
-        if (accountType === "Individual") {
-            return (
-                <>
-                    <div>
-                        <label htmlFor="firstname"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            First Name
-                        </label>
-                        <input
-                            type="text"
-                            id="firstname"
-                            value={registrationData.firstname}
-                            onChange={(e) => setRegistrationData({...registrationData, firstname: e.target.value})}
-                            required
-                            placeholder="eg. John"
-                            className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                               focus:outline-none focus:ring focus:ring-[#FFA500]
-                               focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                               dark:text-gray-300 transition duration-200 ease-in-out"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="lastname"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Last Name
-                        </label>
-                        <input
-                            type="text"
-                            id="lastname"
-                            value={registrationData.lastname}
-                            onChange={(e) => setRegistrationData({...registrationData, lastname: e.target.value})}
-                            required
-                            placeholder="eg. Smith"
-                            className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                               focus:outline-none focus:ring focus:ring-[#FFA500]
-                               focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                               dark:text-gray-300 transition duration-200 ease-in-out"
-                        />
-                    </div>
-                    {commonFields}
-                </>
-            );
-        }
-
-        return (
-            <>
-                <div>
-                    <label htmlFor="companyname" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Organization Name
-                    </label>
-                    <input
-                        type="text"
-                        id="companyname"
-                        value={registrationData.companyname}
-                        onChange={(e) => setRegistrationData({...registrationData, companyname: e.target.value})}
-                        required
-                        placeholder="Provide your organization's name"
-                        className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                           focus:outline-none focus:ring focus:ring-[#FFA500]
-                           focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                           dark:text-gray-300 transition duration-200 ease-in-out"
-                    />
-                </div>
-                {commonFields}
-            </>
-        );
-    };
-
-    const renderOtpStep = () => {
-        return (
-            <div className="space-y-6">
-                <p className="text-center text-gray-600 dark:text-gray-300 mt-[20px]">
-                    We've sent a verification code to {registrationData.email}
-                </p>
-                <form onSubmit={handleRegistration} className="space-y-6">
-                    <div className="flex justify-center gap-2">
-                        {otp.map((digit, index) => (
-                            <input
-                                key={index}
-                                type="text"
-                                name={`otp-${index}`}
-                                maxLength={1}
-                                value={digit}
-                                onChange={(e) => handleOtpChange(e.target, index)}
-                                className="w-12 h-12 text-center border-2 rounded-lg focus:border-[#FFA500]
-                                     focus:outline-none dark:bg-gray-700 dark:text-white"
-                            />
-                        ))}
-                    </div>
-                    {error && (
-                        <p className="text-red-500 text-sm text-center">{error}</p>
-                    )}
-                    <button
-                        type="submit"
-                        disabled={registerMutation.isPending}
-                        className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md
-                             hover:opacity-75 disabled:opacity-50"
-                    >
-                        {registerMutation.isPending ? <BarLoader color="white"/> : 'Create Account'}
-                    </button>
-                    <div className="flex justify-center">
-                        <button
-                            type="button"
-                            onClick={handleResendOtp}
-                            disabled={!canResend}
-                            className={`text-sm text-[#FFA500] ${canResend ? '' : 'opacity-50 cursor-not-allowed'}`}
-                        >
-                            Resend
-                            OTP {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        );
-    };
+            <Field label="Coupon" htmlFor="coupon" hint="Optional">
+                <Input id="coupon" value={registrationData.coupon} onChange={update("coupon")}
+                       placeholder="Have a code?" className="max-w-[180px]"/>
+            </Field>
+        </>
+    );
 
     return (
         <>
-            <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center leading-50 mt-[10px]">
-                {step === 1 ? 'Register' : 'Verify Account'}
-            </h2>
-            {error && step === 1 && (
-                <p className="text-red-500 text-sm text-center mt-2">{error}</p>
-            )}
+            <AuthHeading
+                title={step === 1 ? 'Create your account' : 'Verify your email'}
+                description={step === 1
+                    ? 'Start building with GebetaMaps.'
+                    : `We sent a 6-digit code to ${registrationData.email}.`}
+            />
             {step === 1 ? (
-                <form className="space-y-6 mt-[40px]" onSubmit={handleContinue}>
-                    <div className="flex flex-col">
-                        <div className="space-x-[8px]">
-                            <input
-                                type="radio"
-                                name="account_type"
-                                value="Business"
-                                onChange={() => setAccountType("Business")}
-                                defaultChecked
-                                className="accent-[#FFA500]"
-                            />
-                            <label className="text-[14px]">Business - for your work, school or organization</label>
-                        </div>
-                        <div className="space-x-[8px]">
-                            <input
-                                type="radio"
-                                name="account_type"
-                                value="Individual"
-                                onChange={() => setAccountType("Individual")}
-                            />
-                            <label className="text-[14px]">Individual - for your own projects</label>
-                        </div>
-                    </div>
+                <form className="mt-8 flex flex-col gap-5" onSubmit={handleContinue}>
+                    <RadioGroup value={accountType} onValueChange={setAccountType} aria-label="Account type">
+                        <RadioCard value="Business" title="Business"
+                                   description="For your work, school or organization"/>
+                        <RadioCard value="Individual" title="Individual" description="For your own projects"/>
+                    </RadioGroup>
 
                     {renderAccountTypeFields()}
 
-                    <div className="flex gap-[8px]">
-                        <input
-                            type="checkbox"
-                            checked={agreeToTerms}
-                            onChange={(e) => setAgreeToTerms(e.target.checked)}
-                        />
-                        <label className="text-[12px]">
-                            I agree to the GebetaMaps <Link href="/terms" className="text-[#FFA500]">Terms of
-                                Service</Link> and{" "}
-                            <Link href="/privacy" className="text-[#FFA500]">Privacy Policy</Link>
-                        </label>
+                    <div className="flex items-start gap-2">
+                        <Checkbox id="terms" checked={agreeToTerms}
+                                  onCheckedChange={(checked) => setAgreeToTerms(checked === true)}/>
+                        <Label htmlFor="terms" className="leading-[1.4]">
+                            I agree to the GebetaMaps{" "}
+                            <Link href="/terms" className="text-foreground underline underline-offset-2">Terms of Service</Link>
+                            {" "}and{" "}
+                            <Link href="/privacy" className="text-foreground underline underline-offset-2">Privacy Policy</Link>
+                        </Label>
                     </div>
 
-                    <button
-                        type="submit"
-                        disabled={requestOtpMutation.isPending}
-                        className="w-full h-[40px] flex justify-center items-center px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
-                    >
-                        {requestOtpMutation.isPending ? <BarLoader color="white"/> : 'Continue'}
-                    </button>
+                    {error && <Notice>{error}</Notice>}
 
-                    <p className="text-center text-sm text-gray-600 dark:text-gray-300">
+                    <Button type="submit" size="lg" className="w-full" loading={requestOtpMutation.isPending}>
+                        Continue
+                    </Button>
+
+                    <p className="text-center text-[13px] text-soft">
                         Already have an account?{" "}
-                        <Link href="/auth/signin" className="text-[#FFA500] hover:text-[#FF8C00]">
-                            Sign In
-                        </Link>
+                        <Link href="/auth/signin" className="font-medium text-foreground underline-offset-4 hover:underline">Sign in</Link>
                     </p>
                 </form>
             ) : (
-                renderOtpStep()
+                <form onSubmit={handleRegistration} className="mt-8 flex flex-col gap-5">
+                    <OtpInput value={otp} onChange={setOtp}/>
+                    {error && <Notice>{error}</Notice>}
+                    <Button type="submit" size="lg" className="w-full" loading={registerMutation.isPending}>
+                        Create account
+                    </Button>
+                    <Button variant="ghost" className="self-center" onClick={handleResendOtp} disabled={!canResend}>
+                        Resend code {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
+                    </Button>
+                </form>
             )}
         </>
     );

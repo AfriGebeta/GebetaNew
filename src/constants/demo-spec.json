@@ -1,0 +1,42 @@
+{
+  "origin": "meskel",
+  "heroAutoplay": [
+    "edna",
+    "airport",
+    "sheraton",
+    "piassa"
+  ],
+  "routeCycle": [
+    "edna",
+    "airport",
+    "piassa",
+    "aau"
+  ],
+  "directionsTile": "edna",
+  "optimizationStops": [
+    "ayat",
+    "kality",
+    "shiromeda",
+    "lebu",
+    "kotebe",
+    "torhailoch",
+    "gerji"
+  ],
+  "onmDestinations": [
+    "edna",
+    "airport",
+    "merkato",
+    "aau",
+    "mexico"
+  ],
+  "matrixOrigins": [
+    "meskel",
+    "piassa",
+    "merkato"
+  ],
+  "matrixDestinations": [
+    "edna",
+    "airport",
+    "aau"
+  ]
+}

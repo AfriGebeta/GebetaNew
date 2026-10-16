@@ -1,5 +1,7 @@
 import type {MetadataRoute} from 'next'
 import {getAllPosts} from '@/lib/mdx'
+import {PRODUCTS, productHref} from '@/constants/products'
+import {SOLUTIONS, solutionHref} from '@/constants/solutions'
 
 const SITE_URL = 'https://gebeta.app'
 
@@ -24,5 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.6,
     }))
 
-    return [...staticRoutes, ...postRoutes]
+    const pageRoutes: MetadataRoute.Sitemap = [
+        ...PRODUCTS.map((p) => productHref(p.slug)),
+        ...SOLUTIONS.map((s) => solutionHref(s.slug)),
+    ].map((path) => ({url: `${SITE_URL}${path}`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8}))
+
+    return [...staticRoutes, ...pageRoutes, ...postRoutes]
 }

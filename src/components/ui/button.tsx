@@ -1,57 +1,118 @@
-import * as React from "react"
-import {Slot} from "@radix-ui/react-slot"
-import {cva, type VariantProps} from "class-variance-authority"
+import * as React from "react";
+import Link from "next/link";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import {cn} from "@/lib/utils"
+const PRIMARY =
+  "bg-primary text-primary-foreground shadow-btn-primary hover:bg-primary/90";
+const SECONDARY =
+  "bg-secondary text-secondary-foreground shadow-btn hover:bg-muted";
+const DANGER = "bg-secondary text-danger shadow-btn hover:bg-danger/10";
+const MD = "px-3 py-2 text-[14px] leading-none";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-medium leading-none outline-none select-none transition-[background-color,color,box-shadow] duration-150 ease-power3-out focus-visible:ring-2 focus-visible:ring-ring/60 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-3.5 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        primary: PRIMARY,
+        secondary: SECONDARY,
+        /** Strong but not a call to action: orange stays reserved for those. */
+        ink: "bg-ink text-ink-foreground shadow-btn-ink hover:bg-ink/85",
+        muted: "bg-muted text-foreground shadow-btn hover:bg-raised-hover",
+        subtle: "bg-raised text-foreground shadow-btn-subtle hover:bg-muted",
+        danger: DANGER,
+        ghost: "text-subtle hover:bg-hover hover:text-foreground",
+        nav: "w-full justify-start rounded-lg font-normal text-sidebar-foreground hover:text-foreground data-[active=true]:bg-sidebar-primary data-[active=true]:text-foreground data-[active=true]:shadow-btn",
+        item: "w-full items-start justify-start gap-3 rounded-lg text-left font-normal whitespace-normal text-foreground hover:bg-hover",
+        link: "rounded-none text-foreground underline decoration-from-font underline-offset-2 hover:text-soft",
+        default: PRIMARY,
+        outline: SECONDARY,
+        destructive: DANGER,
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        sm: "p-[9px] text-[12px] leading-none",
+        md: MD,
+        lg: "px-4 py-2.5 text-[14px] leading-none",
+        xl: "px-5 py-3 text-[15px] leading-none [&_svg]:size-4",
+        icon: "size-[30px] p-0",
+        "icon-sm": "size-6 p-0",
+        none: "p-0",
+        default: MD,
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      variant: "primary",
+      size: "md",
     },
-  }
-)
+  },
+);
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
-}
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+    loading?: boolean;
+    href?: React.ComponentProps<typeof Link>["href"];
+    /** Link-only: used when `href` is set. */
+    target?: React.AnchorHTMLAttributes<HTMLAnchorElement>["target"];
+    rel?: string;
+  };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading = false,
+      href,
+      type = "button",
+      disabled,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    const classes = cn(buttonVariants({ variant, size }), className);
+
+    if (href) {
+      return (
+        <Link
+          href={href}
+          className={classes}
+          {...(props as Omit<React.ComponentProps<typeof Link>, "href" | "className">)}
+        >
+          {children}
+        </Link>
+      );
+    }
+
+    const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        type={asChild ? undefined : type}
+        className={classes}
+        disabled={disabled || loading}
+        aria-busy={loading || undefined}
         {...props}
-      />
-    )
-  }
-)
-Button.displayName = "Button"
+      >
+        {asChild ? (
+          children
+        ) : (
+          <>
+            {loading && <Loader2 aria-hidden className="animate-spin" />}
+            {children}
+          </>
+        )}
+      </Comp>
+    );
+  },
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };
+export default Button;

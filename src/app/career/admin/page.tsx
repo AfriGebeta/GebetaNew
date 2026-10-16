@@ -4,6 +4,9 @@ import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Notice from "@/components/ui/notice";
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -58,30 +61,28 @@ function LoginForm() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 text-sm text-destructive">
+              <Notice>
                 {error}
-              </div>
+              </Notice>
             )}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Username</label>
-              <input
+              <Label className="mb-1.5 block">Username</Label>
+              <Input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 placeholder="admin"
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Password</label>
-              <input
+              <Label className="mb-1.5 block">Password</Label>
+              <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
             <Button type="submit" disabled={loading} className="w-full">

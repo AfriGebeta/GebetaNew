@@ -8,12 +8,15 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Tag } from "@/components/ui/tag";
 import {
   ExternalLink, Trash2, Plus, Settings, LogOut, Copy, Check,
   Mail, Send, X, Minus, Maximize2, Minimize2, ChevronDown, Pencil,
 } from "lucide-react";
 import Image from "next/image";
+import { Input, Textarea } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Notice from "@/components/ui/notice";
 
 // ─── Template helpers ──────────────────────────────────────────────────────────
 
@@ -131,15 +134,10 @@ function ComposeWindow({
 
           {/* Footer */}
           <div className="shrink-0 flex items-center justify-between px-4 py-3 border-t border-border">
-            <button
-              onClick={onSend}
-              disabled={sendDisabled}
-              className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-              style={{ background: "#ffa500" }}
-            >
+            <Button onClick={onSend} disabled={sendDisabled}>
               {sendLabel}
-              <Send className="w-3.5 h-3.5" />
-            </button>
+              <Send aria-hidden />
+            </Button>
             <button
               onClick={onClose}
               className="text-muted-foreground hover:text-destructive transition-colors p-1 rounded"
@@ -182,7 +180,7 @@ function TemplateBar({
             onClick={() => onSelect(t.id === "__custom__" ? null : t)}
             className={`shrink-0 px-4 py-2 text-xs font-medium whitespace-nowrap transition-all border-b-2 ${
               active
-                ? "border-[#ffa500] text-[#1A1A2E]"
+                ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
             }`}
           >
@@ -238,51 +236,47 @@ function EditDialog({ intern, onClose, onSave }: { intern: Intern; onClose: () =
         </div>
         <form onSubmit={handleSave} className="space-y-4">
           {error && (
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 text-sm text-destructive">
+            <Notice>
               {error}
-            </div>
+            </Notice>
           )}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Full Name <span className="text-destructive">*</span></label>
-            <input
+            <Label className="mb-1.5 block">Full Name <span className="text-destructive">*</span></Label>
+            <Input
               type="text" required value={form.name}
               onChange={(e) => update("name", e.target.value)}
-              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Role / Position <span className="text-destructive">*</span></label>
-            <input
+            <Label className="mb-1.5 block">Role / Position <span className="text-destructive">*</span></Label>
+            <Input
               type="text" required value={form.role}
               onChange={(e) => update("role", e.target.value)}
-              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Email Address</label>
-            <input
+            <Label className="mb-1.5 block">Email Address</Label>
+            <Input
               type="email" value={form.email}
               onChange={(e) => update("email", e.target.value)}
-              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Certificate Description</label>
-            <textarea
+            <Label className="mb-1.5 block">Certificate Description</Label>
+            <Textarea
               value={form.description}
               onChange={(e) => update("description", e.target.value)}
               rows={4}
               placeholder="Leave blank to use the default template from config"
-              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              className="resize-none"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Presented On</label>
-            <input
+            <Label className="mb-1.5 block">Presented On</Label>
+            <Input
               type="text" value={form.presentedOn}
               onChange={(e) => update("presentedOn", e.target.value)}
               placeholder="e.g. 01 JAN 2025"
-              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
           <div className="flex gap-3 pt-1">
@@ -509,9 +503,7 @@ export default function DashboardClient({ initialInterns, initialTemplates }: { 
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-green-700 border-green-300 bg-green-50 text-xs">
-                        Active
-                      </Badge>
+                      <Tag tone="green">Active</Tag>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -598,12 +590,12 @@ export default function DashboardClient({ initialInterns, initialTemplates }: { 
                 <span className="text-muted-foreground text-xs italic">All interns with email ({internsWithEmail.length})</span>
               </div>
               <div className="border-b border-border">
-                <input
-                  type="text"
+                <Input
                   value={bulkSubject}
                   onChange={(e) => setBulkSubject(e.target.value)}
                   placeholder="Subject"
-                  className="w-full px-4 py-2 text-sm bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  aria-label="Subject"
+                  className="rounded-none border-0 bg-transparent px-4"
                 />
               </div>
             </>

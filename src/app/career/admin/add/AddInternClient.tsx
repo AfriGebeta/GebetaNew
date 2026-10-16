@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Input, Textarea } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Notice from "@/components/ui/notice";
 
 export default function AddInternClient() {
   const router = useRouter();
@@ -80,22 +83,21 @@ export default function AddInternClient() {
         <div className="bg-card rounded-xl border border-border p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 text-sm text-destructive">
+              <Notice>
                 {error}
-              </div>
+              </Notice>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <Label className="mb-1.5 block">
                 Full Name <span className="text-destructive">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 type="text"
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
                 required
                 placeholder="Selam Tesfaye"
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
               {form.name && (
                 <p className="text-xs text-muted-foreground mt-1">
@@ -108,56 +110,53 @@ export default function AddInternClient() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <Label className="mb-1.5 block">
                 Role / Position <span className="text-destructive">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 type="text"
                 value={form.role}
                 onChange={(e) => update("role", e.target.value)}
                 required
                 placeholder="Software Engineering Intern"
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <Label className="mb-1.5 block">
                 Email Address
-              </label>
-              <input
+              </Label>
+              <Input
                 type="email"
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
                 placeholder="selam@example.com"
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <p className="text-xs text-muted-foreground mt-1">Optional — used to send the certificate by email</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <Label className="mb-1.5 block">
                 Certificate Description
-              </label>
-              <textarea
+              </Label>
+              <Textarea
                 value={form.description}
                 onChange={(e) => update("description", e.target.value)}
                 rows={4}
                 placeholder="This certificate recognizes an outstanding contribution to the GebetaMaps Internship Program as a Software Engineering Intern..."
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                className="resize-none"
               />
               <p className="text-xs text-muted-foreground mt-1">Leave blank to use the default template from config</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <Label className="mb-1.5 block">
                 Presented On
-              </label>
-              <input
+              </Label>
+              <Input
                 type="date"
                 value={form.presentedOn}
                 onChange={(e) => update("presentedOn", e.target.value)}
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <p className="text-xs text-muted-foreground mt-1">Leave blank to use today&apos;s date</p>
             </div>

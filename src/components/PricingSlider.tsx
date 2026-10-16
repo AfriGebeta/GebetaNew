@@ -5,41 +5,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import Container from "@/sections/Container";
-import pricingConfig from "./scratch_3.json";
-
-function calculateGooglePrice(numCalls, config) {
-    const { tieredPricing, freeQuota = 0 } = config;
-    if (!tieredPricing?.length) return 0;
-
-    const firstTierRate = tieredPricing[0]?.unitCost || 0;
-    let remaining = numCalls;
-    let totalCost = 0;
-
-    for (const tier of tieredPricing) {
-        if (remaining <= 0) break;
-        const { unitCost, tierLowerBound = 0, tierUpperBound = Infinity } = tier;
-        if (unitCost === undefined) continue;
-
-        const callsInTier = Math.min(remaining, Math.max(0, tierUpperBound - tierLowerBound));
-        if (callsInTier > 0) {
-            totalCost += (callsInTier / 1000) * unitCost;
-            remaining -= callsInTier;
-        }
-    }
-
-    const freeUsed = Math.min(numCalls, freeQuota);
-    const credit = (freeQuota > 0) ? (freeUsed / 1000) * firstTierRate : 0;
-    return Math.round(Math.max(0, totalCost - credit) * 100) / 100;
-}
+import { calculateGooglePrice, clampPricingInput, formatCompactNumber, formatUsd, getInitialPricingValues, pricingConfig } from "@/lib/pricing";
 
 const PricingSlider = ({ isComponent }: { isComponent?: boolean }) => {
-    const [sliderValues, setSliderValues] = useState(() => {
-        const initial = {};
-        Object.entries(pricingConfig).forEach(([skuId, config]) => {
-            initial[skuId] = config.initialValue || config.minValue || 0;
-        });
-        return initial;
-    });
+    const [sliderValues, setSliderValues] = useState(getInitialPricingValues);
 
 
     const handleSliderChange = (e, skuId) => {
@@ -48,9 +17,7 @@ const PricingSlider = ({ isComponent }: { isComponent?: boolean }) => {
 
 
     const handleInputChange = (e, skuId) => {
-        const config = pricingConfig[skuId];
-        let value = parseInt(e.target.value.replace(/,/g, '')) || 0;
-        value = Math.max(config.minValue || 0, Math.min(config.maxValue || 10_000_000, value));
+        const value = clampPricingInput(e.target.value, pricingConfig[skuId]);
         setSliderValues(prev => ({ ...prev, [skuId]: value }));
     };
 
@@ -66,16 +33,11 @@ const PricingSlider = ({ isComponent }: { isComponent?: boolean }) => {
                 </div>
             );
         }
-        if (price === 0) return "$0";
-        return `$${price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} USD`;
+        return formatUsd(price);
     };
 
 
-    const formatNumber = (num) => {
-        if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
-        if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
-        return num.toLocaleString();
-    };
+    const formatNumber = formatCompactNumber;
 
     const Wrapper = isComponent ? React.Fragment : Container;
 

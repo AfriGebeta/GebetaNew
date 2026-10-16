@@ -3,14 +3,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { getRecentCalls } from "@/service/apis";
 import { useToast } from "@/hooks/use-toast";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Field from "@/components/ui/field";
+import Tag from "@/components/ui/tag";
+import DatePicker from "@/components/ui/date-picker";
+import { EmptyState, Page, PageIntro } from "@/components/dashboard/page";
 import { AuthContext } from "@/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, FilterIcon, XIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, FilterIcon, History, XIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -128,241 +129,177 @@ export default function RecentCalls() {
         }
     };
 
+    const header = (
+        <TableHeader>
+            <TableRow>
+                <TableHead>Type</TableHead>
+                <TableHead>Request URL</TableHead>
+                <TableHead>IP Address</TableHead>
+                <TableHead>Device ID</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Timestamp</TableHead>
+                <TableHead className="text-right">Latency</TableHead>
+            </TableRow>
+        </TableHeader>
+    );
+
     return (
-        <div className="p-4 rounded-lg min-h-[60vh]">
-            <div className="mb-6">
-                <h2 className="text-xl text-white font-semibold mb-2">Recent API Calls</h2>
-                <p className="text-sm text-[#aaa]">
-                    View and filter your recent API calls with detailed information about each request.
-                </p>
-            </div>
+        <Page>
+            <PageIntro
+                title="Recent API Calls"
+                description="View and filter your recent API calls with detailed information about each request."
+            />
 
-            <div className="mb-4 flex flex-wrap gap-4 items-end">
-                <div className="space-y-1">
-                    <Label>Start Date</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                className={cn(
-                                    "w-[200px] justify-start text-left font-normal",
-                                    !startDate && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {startDate ? format(new Date(startDate), "PPP") : <span>Pick a date</span>}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                selected={startDate ? new Date(startDate + "T00:00:00") : undefined}
-                                onSelect={(date) => {
-                                    if (date) {
-                                        setStartDate(format(date, "yyyy-MM-dd"));
-                                        setPage(1);
-                                    }
-                                }}
-                                initialFocus
-                            />
-                        </PopoverContent>
-                    </Popover>
-                </div>
-
-                <div className="space-y-1">
-                    <Label>End Date</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                className={cn(
-                                    "w-[200px] justify-start text-left font-normal",
-                                    !endDate && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {endDate ? format(new Date(endDate), "PPP") : <span>Pick a date</span>}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                selected={endDate ? new Date(endDate + "T00:00:00") : undefined}
-                                onSelect={(date) => {
-                                    if (date) {
-                                        setEndDate(format(date, "yyyy-MM-dd"));
-                                        setPage(1);
-                                    }
-                                }}
-                                initialFocus
-                            />
-                        </PopoverContent>
-                    </Popover>
-                </div>
-
-                <Button
-                    variant="outline"
-                    onClick={() => setShowFilters(!showFilters)}
-                    className="gap-2"
-                >
-                    <FilterIcon className="h-4 w-4" />
-                    {showFilters ? "Hide Filters" : "Show Filters"}
-                </Button>
-            </div>
-
-            {showFilters && (
-                <div className="mb-4 p-4 border rounded-lg space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div className="space-y-1">
-                            <Label htmlFor="type-filter">Call Type</Label>
-                            <Select value={type} onValueChange={(val) => { setType(val); setPage(1); }}>
-                                <SelectTrigger id="type-filter">
-                                    <SelectValue placeholder="All types" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ALL">All types</SelectItem>
-                                    {CALL_TYPES.map((callType) => (
-                                        <SelectItem key={callType.value} value={callType.value}>
-                                            {callType.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-1">
-                            <Label htmlFor="ip-filter">IP Address</Label>
-                            <Input
-                                id="ip-filter"
-                                placeholder="e.g., 192.168.1.1"
-                                value={ipAddress}
-                                onChange={(e) => setIpAddress(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="space-y-1">
-                            <Label htmlFor="device-filter">Device ID</Label>
-                            <Input
-                                id="device-filter"
-                                placeholder="Filter by device"
-                                value={deviceId}
-                                onChange={(e) => setDeviceId(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-end gap-3">
+                    <Field label="Start date" htmlFor="start-date">
+                        <DatePicker
+                            id="start-date"
+                            value={startDate}
+                            onChange={(value) => { setStartDate(value); setPage(1); }}
+                        />
+                    </Field>
+                    <Field label="End date" htmlFor="end-date">
+                        <DatePicker
+                            id="end-date"
+                            value={endDate}
+                            onChange={(value) => { setEndDate(value); setPage(1); }}
+                        />
+                    </Field>
                     <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleClearFilters}
-                        className="gap-2"
+                        variant={showFilters ? "muted" : "secondary"}
+                        onClick={() => setShowFilters(!showFilters)}
+                        aria-expanded={showFilters}
+                        className="mb-[3px]"
                     >
-                        <XIcon className="h-4 w-4" />
-                        Clear Filters
+                        <FilterIcon aria-hidden />
+                        {showFilters ? "Hide filters" : "More filters"}
                     </Button>
                 </div>
-            )}
+
+                {showFilters && (
+                    <div className="flex flex-col gap-4 rounded-lg bg-card p-4 shadow-card">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <Field label="Call type" htmlFor="type-filter">
+                                <Select value={type} onValueChange={(val) => { setType(val); setPage(1); }}>
+                                    <SelectTrigger id="type-filter">
+                                        <SelectValue placeholder="All types" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ALL">All types</SelectItem>
+                                        {CALL_TYPES.map((callType) => (
+                                            <SelectItem key={callType.value} value={callType.value}>
+                                                {callType.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+                            <Field label="IP address" htmlFor="ip-filter">
+                                <Input
+                                    id="ip-filter"
+                                    placeholder="e.g. 192.168.1.1"
+                                    value={ipAddress}
+                                    onChange={(e) => setIpAddress(e.target.value)}
+                                />
+                            </Field>
+                            <Field label="Device ID" htmlFor="device-filter">
+                                <Input
+                                    id="device-filter"
+                                    placeholder="Filter by device"
+                                    value={deviceId}
+                                    onChange={(e) => setDeviceId(e.target.value)}
+                                />
+                            </Field>
+                        </div>
+                        <div>
+                            <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+                                <XIcon aria-hidden />
+                                Clear filters
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {isLoading ? (
-                <div className="border rounded-lg overflow-x-auto">
+                <TableContainer>
                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Request URL</TableHead>
-                                <TableHead>IP Address</TableHead>
-                                <TableHead>Device ID</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Timestamp</TableHead>
-                                <TableHead>Latency</TableHead>
-                            </TableRow>
-                        </TableHeader>
+                        {header}
                         <TableBody>
                             {[...Array(10)].map((_, index) => (
                                 <TableRow key={index}>
-                                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                                    <TableCell><Skeleton className="h-6 w-16" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                                    <TableCell><Skeleton className="h-3 w-20" /></TableCell>
+                                    <TableCell><Skeleton className="h-3 w-48" /></TableCell>
+                                    <TableCell><Skeleton className="h-3 w-28" /></TableCell>
+                                    <TableCell><Skeleton className="h-3 w-24" /></TableCell>
+                                    <TableCell><Skeleton className="h-[22px] w-16 rounded-full" /></TableCell>
+                                    <TableCell><Skeleton className="h-3 w-32" /></TableCell>
+                                    <TableCell><Skeleton className="ml-auto h-3 w-12" /></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                </div>
+                </TableContainer>
             ) : calls.length > 0 ? (
-                <>
-                    <div className="border rounded-lg overflow-x-auto">
+                <div className="flex flex-col gap-4">
+                    <TableContainer>
                         <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Request URL</TableHead>
-                                    <TableHead>IP Address</TableHead>
-                                    <TableHead>Device ID</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Timestamp</TableHead>
-                                    <TableHead>Latency</TableHead>
-                                </TableRow>
-                            </TableHeader>
+                            {header}
                             <TableBody>
-                                {calls.map((call, index) => (
-                                    <TableRow key={call.id || index}>
-                                        <TableCell className="font-medium">{call.call_type || "N/A"}</TableCell>
-                                        <TableCell className="font-mono text-xs max-w-xs truncate" title={call.request_url}>
-                                            {call.request_url || "N/A"}
-                                        </TableCell>
-                                        <TableCell className="font-mono text-xs">{call.ip_address || "N/A"}</TableCell>
-                                        <TableCell className="font-mono text-xs">{call.device_fingerprint || "-"}</TableCell>
-                                        <TableCell>
-                                            <span className={cn(
-                                                "px-2 py-1 rounded text-xs",
-                                                call.status === "success" || call.status === "SUCCESS"
-                                                    ? "bg-green-500/20 text-green-400"
-                                                    : "bg-red-500/20 text-red-400"
-                                            )}>
-                                                {call.status || "N/A"}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell className="text-sm">{formatDateTime(call.created_at)}</TableCell>
-                                        <TableCell className="text-sm">{call.latency ? `${call.latency}ms` : "N/A"}</TableCell>
-                                    </TableRow>
-                                ))}
+                                {calls.map((call, index) => {
+                                    const ok = call.status === "success" || call.status === "SUCCESS";
+                                    return (
+                                        <TableRow key={call.id || index}>
+                                            <TableCell className="font-medium">{call.call_type || "N/A"}</TableCell>
+                                            <TableCell className="max-w-xs truncate font-mono text-[12px] text-soft" title={call.request_url}>
+                                                {call.request_url || "N/A"}
+                                            </TableCell>
+                                            <TableCell className="font-mono text-[12px] text-soft">{call.ip_address || "N/A"}</TableCell>
+                                            <TableCell className="font-mono text-[12px] text-soft">{call.device_fingerprint || "—"}</TableCell>
+                                            <TableCell>
+                                                <Tag size="sm" tone={ok ? "green" : "red"}>{call.status || "N/A"}</Tag>
+                                            </TableCell>
+                                            <TableCell className="tabular-nums text-soft">{formatDateTime(call.created_at)}</TableCell>
+                                            <TableCell className="text-right tabular-nums text-soft">{call.latency ? `${call.latency}ms` : "—"}</TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
-                    </div>
+                    </TableContainer>
 
-                    <div className="mt-6 flex justify-between items-center">
-                        <Button
-                            onClick={() => setPage((p) => Math.max(1, p - 1))}
-                            disabled={page === 1}
-                            className="bg-[#FFA500] px-4 py-2 rounded-md hover:bg-[#FF8C00]"
-                        >
-                            Previous
-                        </Button>
-                        <div className="text-sm text-[#aaa]">
-                            <span>Page {page}</span>
-                            {totalCount > 0 && (
-                                <span className="ml-2">• Total: {totalCount.toLocaleString()} calls</span>
-                            )}
+                    <div className="flex items-center justify-between gap-2">
+                        <span className="caption-style text-subtle">
+                            Page {page}
+                            {totalCount > 0 && ` · ${totalCount.toLocaleString()} calls`}
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="secondary"
+                                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                            >
+                                <ChevronLeft aria-hidden /> Previous
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={() => setPage((p) => p + 1)}
+                                disabled={calls.length < pageSize}
+                            >
+                                Next <ChevronRight aria-hidden />
+                            </Button>
                         </div>
-                        <Button
-                            onClick={() => setPage((p) => p + 1)}
-                            disabled={calls.length < pageSize}
-                            className="bg-[#FFA500] px-4 py-2 rounded-md hover:bg-[#FF8C00]"
-                        >
-                            Next
-                        </Button>
                     </div>
-                </>
-            ) : (
-                <div className="h-[350px] flex flex-col justify-center gap-4 items-center border border-dashed rounded-lg">
-                    <p className="text-[#aaa]">No recent calls found</p>
-                    <p className="text-xs text-[#aaa]">Try adjusting your filters or date range</p>
                 </div>
+            ) : (
+                <EmptyState
+                    icon={<History />}
+                    title="No recent calls found"
+                    description="Try adjusting your filters or date range."
+                    className="min-h-[300px]"
+                />
             )}
-        </div>
+        </Page>
     );
 }

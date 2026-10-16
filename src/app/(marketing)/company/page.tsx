@@ -1,11 +1,15 @@
+import type { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
 import Container from "@/sections/Container";
-import {Globe2, HeartHandshake, Lightbulb, Navigation, Shield} from 'lucide-react';
-import type {Metadata} from "next";
-
+import CallToAction from "@/sections/CallToAction";
+import Button from "@/components/ui/button";
+import { Reveal, RevealItem } from "@/components/marketing/reveal";
+import { COMPANY, initials } from "@/constants/company";
 
 export const metadata: Metadata = {
     title: "About",
-    description: "GebetaMaps builds mapping and location infrastructure for Africa - geocoding, routing and location intelligence designed around local data, from Addis Ababa.",
+    description:
+        "GebetaMaps builds mapping and location infrastructure for Africa - geocoding, routing and location intelligence designed around local data, from Addis Ababa.",
     alternates: { canonical: "/company" },
     openGraph: {
         title: "About GebetaMaps",
@@ -13,100 +17,109 @@ export const metadata: Metadata = {
         url: "/company",
         type: "website",
     },
-}
+};
+
+const SECTION_TITLE = "text-[32px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[40px]";
 
 export default function Company() {
-    const coreValues = [
-        {
-            title: "Innovation",
-            description: "Constantly pushing boundaries in mapping technology",
-            icon: Lightbulb
-        },
-        {
-            title: "Reliability",
-            description: "Delivering consistent and accurate mapping solutions",
-            icon: Shield
-        },
-        {
-            title: "Customer Service",
-            description: "Dedicated support for your mapping needs",
-            icon: HeartHandshake
-        }
-    ];
-
     return (
-        <div className="bg-gradient-to-b from-white to-[#FFF7E8] dark:from-[#05050a] dark:to-[#05050a] mt-[120px]">
-            <Container>
-                <div className="md:pb-[32px]">
-                    <div className="text-center mb-[80px]">
-                        <h2 className="text-[40px] text-[#1B1E2B] dark:text-white leading-[1.2] mb-[20px]">
-                            About <span className="text-[#FFA500]">Gebeta Maps</span>
-                        </h2>
-                        <p className="max-w-[800px] mx-auto text-gray-600 dark:text-gray-400 text-lg">
-                            Mapping Africa's future through innovative location solutions
-                        </p>
-                    </div>
+        <main>
+            <section className="py-16 md:py-24">
+                <Container className="grid gap-16 lg:grid-cols-12 lg:gap-8">
+                    <Reveal className="flex flex-col gap-6 lg:col-span-6">
+                        <RevealItem>
+                            <h1 className="text-[48px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[clamp(56px,6vw,88px)]">
+                                {COMPANY.title}
+                            </h1>
+                        </RevealItem>
+                        <RevealItem>
+                            <p className="max-w-[44ch] text-[18px] leading-[1.5] text-soft">{COMPANY.description}</p>
+                        </RevealItem>
+                        <RevealItem className="flex flex-wrap gap-3">
+                            <Button href="/contact" size="xl">
+                                Talk to us <ArrowRight aria-hidden />
+                            </Button>
+                            <Button href="/#products" variant="secondary" size="xl">
+                                Explore the APIs
+                            </Button>
+                        </RevealItem>
+                    </Reveal>
+                    <Reveal className="grid gap-8 sm:grid-cols-3 lg:col-span-5 lg:col-start-8 lg:grid-cols-1">
+                        {COMPANY.stats.map((stat) => (
+                            <RevealItem key={stat.label} className="flex flex-col gap-2">
+                                <p className="text-[56px] font-medium leading-none tracking-[-0.04em] tabular-nums text-foreground md:text-[64px]">
+                                    {stat.value}
+                                </p>
+                                <p className="text-[17px] leading-[1.45] text-soft">{stat.label}</p>
+                            </RevealItem>
+                        ))}
+                    </Reveal>
+                </Container>
+            </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px] mb-[80px]">
-                        <div className="bg-white dark:bg-[#111116] p-[30px] rounded-[20px] shadow-lg hover:shadow-xl transition-all duration-300">
-                            <div className="flex items-center gap-3 mb-4">
-                                <Navigation className="w-6 h-6 text-[#FFA500]" />
-                                <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white border-b-2 border-[#FFA500] pb-2">
-                                    Serving Africa and Beyond
-                                </h3>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                                With our headquarters in Addis Ababa, Ethiopia, Gebeta Maps is deeply rooted in the African market.
-                                We're proud to be a pan-African player, serving customers in Djibouti and expanding across the continent.
-                            </p>
-                        </div>
+            <section className="py-24 md:py-28">
+                <Container className="grid gap-12 lg:grid-cols-12">
+                    <Reveal className="lg:col-span-4">
+                        <RevealItem>
+                            <h2 className={SECTION_TITLE}>Who we are</h2>
+                        </RevealItem>
+                    </Reveal>
+                    <Reveal className="flex flex-col gap-10 lg:col-span-7 lg:col-start-6">
+                        {COMPANY.story.map((item) => (
+                            <RevealItem key={item.title} className="flex flex-col gap-3">
+                                <h3 className="text-[22px] font-medium leading-[1.25] text-foreground">{item.title}</h3>
+                                <p className="max-w-[60ch] text-[18px] leading-[1.6] text-foreground">{item.body}</p>
+                            </RevealItem>
+                        ))}
+                    </Reveal>
+                </Container>
+            </section>
 
-                        <div className="bg-white dark:bg-[#111116] p-[30px] rounded-[20px] shadow-lg hover:shadow-xl transition-all duration-300">
-                            <div className="flex items-center gap-3 mb-4">
-                                <Globe2 className="w-6 h-6 text-[#FFA500]" />
-                                <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white border-b-2 border-[#FFA500] pb-2">
-                                    Choose Your Path
-                                </h3>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                                Whether you're an individual, a startup, or an enterprise, Gebeta Maps has a plan for you.
-                                Our APIs power navigation, real-time traffic updates, route planning, and location-based advertising.
-                            </p>
-                        </div>
-                    </div>
+            <section className="bg-raised py-24 md:py-28">
+                <Container className="flex flex-col gap-12">
+                    <Reveal>
+                        <RevealItem>
+                            <h2 className={SECTION_TITLE}>The team</h2>
+                        </RevealItem>
+                    </Reveal>
+                    <Reveal className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+                        {COMPANY.team.map((member) => (
+                            <RevealItem key={member.name} className="flex flex-col gap-4">
+                                <span
+                                    aria-hidden
+                                    className="flex size-16 items-center justify-center rounded-full bg-card text-[20px] font-medium tracking-[-0.01em] text-foreground shadow-card"
+                                >
+                                    {initials(member.name)}
+                                </span>
+                                <span className="flex flex-col gap-1">
+                                    <span className="text-[18px] font-medium text-foreground">{member.name}</span>
+                                    <span className="text-[15px] text-soft">{member.role}</span>
+                                </span>
+                            </RevealItem>
+                        ))}
+                    </Reveal>
+                </Container>
+            </section>
 
-                    <div className="bg-[#FFA500]/10 dark:bg-[#FFA500]/5 p-[40px] rounded-[20px] mb-[80px]">
-                        <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white mb-4 text-center">
-                            Our Global Footprint
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-400 text-center max-w-[900px] mx-auto leading-relaxed">
-                            Mapping Tomorrow, Today. As we continue to expand, Gebeta Maps is in talks with companies in Nigeria, Kenya,
-                            and other African countries, further solidifying our commitment to shaping the future of mapping and location services worldwide.
-                        </p>
-                    </div>
+            <section className="py-24 md:py-28">
+                <Container className="flex flex-col gap-12">
+                    <Reveal>
+                        <RevealItem>
+                            <h2 className={SECTION_TITLE}>What we hold to</h2>
+                        </RevealItem>
+                    </Reveal>
+                    <Reveal className="grid gap-10 md:grid-cols-3">
+                        {COMPANY.values.map((value) => (
+                            <RevealItem key={value.title} className="flex flex-col gap-3">
+                                <h3 className="text-[24px] font-medium tracking-[-0.01em] text-foreground">{value.title}</h3>
+                                <p className="text-[17px] leading-[1.55] text-soft">{value.body}</p>
+                            </RevealItem>
+                        ))}
+                    </Reveal>
+                </Container>
+            </section>
 
-                    <div className="mb-[20px]">
-                        <h3 className="text-2xl font-semibold text-[#1B1E2B] dark:text-white mb-8 text-center">
-                            Our Core Values
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-[30px]">
-                            {coreValues.map((value, index) => (
-                                <div key={index} className="bg-white dark:bg-[#111116] p-[30px] rounded-[20px] shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1">
-                                    <div className="w-[60px] h-[60px] bg-[#FFA500]/20 rounded-full flex items-center justify-center mb-4 mx-auto">
-                                        {<value.icon className="w-6 h-6 text-[#FFA500]" />}
-                                    </div>
-                                    <h4 className="text-xl font-semibold text-[#1B1E2B] dark:text-white mb-2 text-center">
-                                        {value.title}
-                                    </h4>
-                                    <p className="text-gray-600 dark:text-gray-400 text-center">
-                                        {value.description}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </Container>
-        </div>
+            <CallToAction />
+        </main>
     );
 }

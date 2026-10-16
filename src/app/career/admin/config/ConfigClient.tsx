@@ -6,6 +6,9 @@ import { CertificateConfig, EmailTemplate } from "@/lib/career/db";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save, Upload, X, Plus, Pencil, Trash2, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { useEdgeStore } from "@/lib/edgestore-client";
+import { Input, Textarea } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Notice from "@/components/ui/notice";
 
 interface Props {
   initialConfig: CertificateConfig;
@@ -35,7 +38,7 @@ function ImageUploadField({ label, hint, value, onChange }: {
 
   return (
     <div>
-      <label className="block text-sm font-medium text-foreground mb-1">{label}</label>
+      <Label className="mb-1.5 block">{label}</Label>
       <p className="text-xs text-muted-foreground mb-2">{hint}</p>
       {value ? (
         <div className="flex items-center gap-3 p-3 border border-border rounded-lg bg-muted/30">
@@ -130,25 +133,24 @@ function TemplateCard({
 
   if (editing) {
     return (
-      <div className="border border-[#ffa500]/40 rounded-xl p-4 space-y-3 bg-card shadow-sm">
-        <input
+      <div className="border border-primary/40 rounded-xl p-4 space-y-3 bg-card shadow-sm">
+        <Input
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           placeholder="Template name"
-          className="w-full border border-input rounded-lg px-3 py-1.5 text-sm font-semibold bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="font-semibold"
         />
-        <input
+        <Input
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder="Subject line"
-          className="w-full border border-input rounded-lg px-3 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
-        <textarea
+        <Textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder="Email body (HTML supported)"
           rows={6}
-          className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none font-mono"
+          className="resize-none font-mono"
         />
         <p className="text-xs text-muted-foreground">{VARIABLE_HINT}</p>
         <div className="flex gap-2">
@@ -226,7 +228,7 @@ function NewTemplateForm({ onAdd }: { onAdd: (tpl: EmailTemplate) => void }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="border-2 border-dashed border-border rounded-xl p-4 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:border-[#ffa500]/50 hover:text-foreground transition-colors w-full"
+        className="border-2 border-dashed border-border rounded-xl p-4 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors w-full"
       >
         <Plus className="w-4 h-4" /> Add template
       </button>
@@ -234,26 +236,24 @@ function NewTemplateForm({ onAdd }: { onAdd: (tpl: EmailTemplate) => void }) {
   }
 
   return (
-    <div className="border border-[#ffa500]/40 rounded-xl p-4 space-y-3 bg-card shadow-sm">
+    <div className="border border-primary/40 rounded-xl p-4 space-y-3 bg-card shadow-sm">
       <p className="text-sm font-semibold text-foreground">New template</p>
-      <input
+      <Input
         value={label}
         onChange={(e) => setLabel(e.target.value)}
         placeholder="Template name (e.g. Certificate)"
-        className="w-full border border-input rounded-lg px-3 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
       />
-      <input
+      <Input
         value={subject}
         onChange={(e) => setSubject(e.target.value)}
         placeholder="Subject line"
-        className="w-full border border-input rounded-lg px-3 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
       />
-      <textarea
+      <Textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
         placeholder="Email body (HTML supported)"
         rows={5}
-        className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none font-mono"
+        className="resize-none font-mono"
       />
       <p className="text-xs text-muted-foreground">{VARIABLE_HINT}</p>
       <div className="flex gap-2">
@@ -331,7 +331,7 @@ export default function ConfigClient({ initialConfig, initialTemplates }: Props)
         {/* ── Certificate settings ── */}
         <form onSubmit={handleSave} className="space-y-6">
           {error && (
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 text-sm text-destructive">{error}</div>
+            <Notice>{error}</Notice>
           )}
 
           <div className="bg-card border border-border rounded-xl p-5 space-y-5">
@@ -346,20 +346,20 @@ export default function ConfigClient({ initialConfig, initialTemplates }: Props)
             <h2 className="font-semibold text-foreground text-sm uppercase tracking-wide">Text & Colors</h2>
             {TEXT_FIELDS.map(({ key, label, hint }) => (
               <div key={key}>
-                <label className="block text-sm font-medium text-foreground mb-1">{label}</label>
+                <Label className="mb-1.5 block">{label}</Label>
                 {key === "descriptionTemplate" ? (
-                  <textarea value={config[key]} onChange={(e) => update(key, e.target.value)} rows={3}
-                    className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none" />
+                  <Textarea value={config[key]} onChange={(e) => update(key, e.target.value)} rows={3}
+                    className="resize-none" />
                 ) : key === "primaryColor" ? (
                   <div className="flex items-center gap-3">
                     <input type="color" value={config[key]} onChange={(e) => update(key, e.target.value)}
-                      className="w-10 h-10 rounded border border-input cursor-pointer p-0.5 bg-background" />
-                    <input type="text" value={config[key]} onChange={(e) => update(key, e.target.value)}
-                      className="flex-1 border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring font-mono" />
+                      className="size-9 shrink-0 cursor-pointer rounded-lg border border-line-strong bg-secondary p-0.5" />
+                    <Input type="text" value={config[key]} onChange={(e) => update(key, e.target.value)}
+                      className="flex-1 font-mono" />
                   </div>
                 ) : (
-                  <input type="text" value={config[key]} onChange={(e) => update(key, e.target.value)}
-                    className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                  <Input type="text" value={config[key]} onChange={(e) => update(key, e.target.value)}
+                     />
                 )}
                 {hint && <p className="text-xs text-muted-foreground mt-1">{hint}</p>}
               </div>

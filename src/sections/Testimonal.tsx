@@ -1,8 +1,10 @@
 "use client";
-import Container from "@/sections/Container";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+
+import { useState } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react";
+import { cn } from "@/lib/utils";
+import { DURATION, EASE, IN_VIEW, rise, stagger } from "@/lib/motion";
 
 const testimonials = [
     {
@@ -46,161 +48,75 @@ const testimonials = [
     }
 ];
 
-const responsive = {
-    desktop: {
-        breakpoint: {max: 3000, min: 1024},
-        items: 1,
-        slidesToSlide: 1
-    },
-    tablet: {
-        breakpoint: {max: 1024, min: 464},
-        items: 1,
-        slidesToSlide: 1
-    },
-    mobile: {
-        breakpoint: {max: 464, min: 0},
-        items: 1,
-        slidesToSlide: 1
-    }
-};
-
-const CustomLeftArrow = ({onClick}: { onClick?: () => void }) => {
-    return (
-        <button
-            onClick={onClick}
-            className="absolute hidden xl:block bottom-0 left-4 md:bottom-auto md:left-0 lg:left-4 xl:left-[400px] md:top-1/2 md:-translate-y-1/2 z-10 bg-white dark:bg-[#0A0A0F] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFA500] border border-gray-100 dark:border-[#15151f]"
-            aria-label="Previous testimonial"
-        >
-            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
-                 viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
-            </svg>
-        </button>
-    );
-};
-
-const CustomRightArrow = ({onClick}: { onClick?: () => void }) => {
-    return (
-        <button
-            onClick={onClick}
-            className="absolute hidden xl:block bottom-0 right-4 md:bottom-auto md:right-0 lg:right-4 xl:right-[400px] md:top-1/2 md:-translate-y-1/2 z-10 bg-white dark:bg-[#0A0A0F] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFA500] border border-gray-100 dark:border-[#15151f]"
-            aria-label="Next testimonial"
-        >
-            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
-                 viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
-            </svg>
-        </button>
-    );
-};
-
-const CustomDot = ({onClick, active}: { onClick?: () => void; active?: boolean }) => {
-    return (
-        <button
-            onClick={onClick}
-            className={`w-3 h-3 rounded-full mx-1 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                active
-                    ? 'bg-[#ffa500] dark:bg-blue-400'
-                    : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
-            }`}
-        />
-    );
-};
-
 export default function Testimonial() {
+    const [active, setActive] = useState(0);
+    const item = testimonials[active];
+    const [opening, ...rest] = item.message.split(/(?<=\.)\s+/);
+
     return (
-        <section className="relative py-12 md:py-20 bg-custom dark:bg-[#05050a] mt-[80px] md:mt-[104px]">
-            <Container>
-                <div className="text-center">
-                    <h2 className="text-[#1B1E2B] dark:text-white text-3xl md:text-[40px]">
-                        Customer Success Stories
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-28 lg:px-8">
+            <motion.div
+                variants={stagger()}
+                initial="hidden"
+                whileInView="show"
+                viewport={IN_VIEW}
+                className="grid gap-10 lg:grid-cols-12"
+            >
+                <motion.div variants={rise} className="flex flex-col gap-6 lg:col-span-4">
+                    <h2 className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
+                        In their words
                     </h2>
-                    <p className="text-[#62677F] text-base md:text-lg max-w-[60ch] mx-auto mt-[42px]">
-                        See how leading businesses transform with Gebeta Maps.
-                    </p>
-                </div>
-            </Container>
+                    <div role="tablist" aria-label="Customers" className="flex flex-wrap gap-2 lg:flex-col lg:items-start">
+                        {testimonials.map((t, i) => (
+                            <button
+                                key={t.company.name}
+                                role="tab"
+                                type="button"
+                                aria-selected={i === active}
+                                onClick={() => setActive(i)}
+                                className={cn(
+                                    "flex cursor-pointer items-center gap-3 rounded-full py-2 pl-2 pr-4 text-[15px] outline-none transition-colors duration-150 ease-power3-out focus-visible:ring-2 focus-visible:ring-ring/60",
+                                    i === active ? "bg-card text-foreground shadow-btn" : "text-soft hover:bg-hover hover:text-foreground",
+                                )}
+                            >
+                                <span className="flex size-8 items-center justify-center rounded-full bg-raised">
+                                    <Image src={t.company.logo} alt="" width={20} height={20} className="h-5 w-auto" />
+                                </span>
+                                {t.company.name}
+                            </button>
+                        ))}
+                    </div>
+                </motion.div>
 
-            <div className="relative pt-10 md:pt-[46px] px-4">
-                <Carousel
-                    responsive={responsive}
-                    infinite={true}
-                    autoPlay={true}
-                    autoPlaySpeed={4000}
-                    keyBoardControl={true}
-                    customTransition="transform 500ms ease-in-out"
-                    transitionDuration={500}
-                    containerClass="carousel-container"
-                    removeArrowOnDeviceType={["mobile"]}
-                    deviceType="desktop"
-                    dotListClass="flex justify-center mt-8 space-x-2"
-                    itemClass="carousel-item-padding-40-px"
-                    customLeftArrow={<CustomLeftArrow/>}
-                    customRightArrow={<CustomRightArrow/>}
-                    showDots={true}
-                    customDot={<CustomDot/>}
-                    pauseOnHover={true}
-                    swipeable={true}
-                    draggable={true}
-                    focusOnSelect={false}
-                    centerMode={false}
-                    shouldResetAutoplay={true}
-                    rewind={false}
-                    rewindWithAnimation={false}
-                    rtl={false}
-                    ssr={true}
-                >
-                    {testimonials.map((item, index) => (
-                        <div key={index} className="px-4 md:px-8">
-                            <div
-                                className="max-w-4xl mx-auto bg-white dark:bg-[#0A0A0F] rounded-xl p-6 md:p-8 md:py-4 mb-6 transition-all duration-300 border border-gray-100/50 dark:border-[#15151f]">
-
-                                <div className="flex items-center justify-between mb-6">
-                                    <div className="w-[80px] h-[30px] rounded-lg flex items-center justify-center">
-                                        <Image src={item.company.logo} alt={item.company.name}
-                                               width={item.company.width} height={item.company.height}/>
-                                    </div>
-                                    <div className="flex gap-0.5">
-                                        {[...Array(5)].map((_, i) => (
-                                            <svg
-                                                key={i}
-                                                className="w-4 h-4 text-yellow-400 dark:text-yellow-300"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                            </svg>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <blockquote
-                                    className="text-gray-700 dark:text-gray-200 text-sm md:text-base leading-relaxed mb-6">
-                                    "{item.message}"
-                                </blockquote>
-
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full flex items-center justify-center">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                            <Image src={item.author.image} alt={item.author.name} width={40} height={40}
-                                                   className="object-cover h-auto aspect-square"/>
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-medium text-gray-900 dark:text-white text-sm">
-                                            {item.author.name}
-                                        </h4>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {item.author.role}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </Carousel>
-            </div>
+                <motion.div variants={rise} className="lg:col-span-7 lg:col-start-6">
+                    <AnimatePresence mode="wait">
+                        <motion.figure
+                            key={active}
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -16 }}
+                            transition={{ duration: DURATION.base, ease: EASE.out }}
+                            className="flex max-w-[38ch] flex-col gap-5 md:max-w-[44ch]"
+                        >
+                            <blockquote className="flex flex-col gap-5">
+                                <p className="text-[24px] font-medium leading-[1.3] tracking-[-0.01em] text-foreground md:text-[30px]">
+                                    {opening}
+                                </p>
+                                {rest.length > 0 && (
+                                    <p className="text-[17px] leading-[1.55] text-foreground md:text-[18px]">{rest.join(" ")}</p>
+                                )}
+                            </blockquote>
+                            <figcaption className="mt-5 flex items-center gap-3">
+                                <Image src={item.author.image} alt="" width={44} height={44} className="size-11 rounded-full object-cover" />
+                                <span className="flex flex-col gap-1">
+                                    <span className="text-[16px] font-medium leading-none text-foreground">{item.author.name}</span>
+                                    <span className="text-[15px] leading-none text-soft">{item.author.role}</span>
+                                </span>
+                            </figcaption>
+                        </motion.figure>
+                    </AnimatePresence>
+                </motion.div>
+            </motion.div>
         </section>
     );
 }

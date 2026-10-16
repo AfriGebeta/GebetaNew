@@ -1,31 +1,29 @@
-import Highlight from "@/sections/Highlight";
-import Features from "@/sections/Features";
+import type { Metadata } from "next";
 import Header from "@/sections/Header";
+import Partners from "@/sections/Partners";
+import Bento from "@/sections/Bento";
+import Performance from "@/sections/Performance";
+import VideoCarousel from "@/sections/VideoCarousel";
 import Pricing from "@/sections/Pricing";
 import Testimonial from "@/sections/Testimonal";
-import Partners from "@/sections/Partners";
 import Showcase from "@/sections/Showcase";
 import CallToAction from "@/sections/CallToAction";
-import VideoCarousel from "@/sections/VideoCarousel";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     alternates: { canonical: "/" },
 };
 
 export default function Home() {
-
     return (
         <main>
             <Header/>
-            <VideoCarousel/>
             <Partners/>
-            <div className="h-[1px] bg-[#FFF5E2] dark:hidden mt-[50px] md:mt-[76px]"></div>
-            <Highlight/>
-            <Features/>
-            <Pricing/>
-            <Testimonial/>
+            <Bento/>
+            <Performance/>
             <Showcase/>
+            <Testimonial/>
+            {/* <VideoCarousel/> */}
+            <Pricing/>
             <CallToAction/>
         </main>
     );

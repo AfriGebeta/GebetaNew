@@ -1,63 +1,56 @@
-import React from 'react'
 import Link from "next/link";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
-// interface PostProps {
-//
-// }
-export default function Post({post, isFeatured}: any) {
+export type PostSummary = {
+    slug: string;
+    title: string;
+    excerpt?: string;
+    date: string;
+    coverImage?: string;
+    readingDuration?: { text?: string };
+};
+
+const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+export default function Post({ post, isFeatured = false }: { post: PostSummary; isFeatured?: boolean }) {
     return (
-        <div className="mb-16">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div>
-                    {isFeatured && <div
-                        className="w-fit whitespace-nowrap px-[30px] py-[15px] bg-[#FFF7E8] dark:bg-zinc-900 rounded-[16px] text-[12px] text-[#FFA500] font-extrabold tracking-20 uppercase">FEATURED
-                        POST
-                    </div>}
-                    <h1 className="text-3xl md:text-2xl font-bold mt-2 mb-3 leading-tight">
-                        <Link href={`/blog/${post.slug}`} className="hover:text-[#ffa500]">
-                            {post.title}
-                        </Link>
-                    </h1>
-                    <p className="text-xl text-gray-600 mb-4">{post.excerpt}</p>
-
-                    <div className="flex items-center">
-                        <div>
-                            <div className="text-gray-500 text-sm flex items-center space-x-1">
-                      <span>
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                        })}
-                      </span>
-                                <span>•</span>
-                                <span>{post.readingDuration.text || '5 min read'}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="order-first md:order-last">
-                    {post.coverImage ? (
-                        <Link href={`/blog/${post.slug}`}>
-                            <div className="aspect-[16/9] overflow-hidden rounded-lg">
-                                <Image
-                                    src={post.coverImage}
-                                    alt={post.title}
-                                    width={600}
-                                    height={337}
-                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                />
-                            </div>
-                        </Link>
-                    ) : (
-                        <div
-                            className="aspect-[16/9] bg-gray-100 rounded-lg flex items-center justify-center">
-                            <span className="text-gray-400">No image</span>
-                        </div>
-                    )}
-                </div>
+        <Link
+            href={`/blog/${post.slug}`}
+            className={cn(
+                "group flex flex-col gap-5 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                isFeatured && "md:grid md:grid-cols-12 md:items-center md:gap-10",
+            )}
+        >
+            <div className={cn("relative aspect-[16/9] overflow-hidden rounded-xl bg-raised", isFeatured && "md:col-span-7")}>
+                {post.coverImage && (
+                    <Image
+                        src={post.coverImage}
+                        alt=""
+                        fill
+                        sizes={isFeatured ? "(min-width: 768px) 60vw, 100vw" : "(min-width: 768px) 33vw, 100vw"}
+                        className="object-cover transition-transform duration-500 ease-power3-out group-hover:scale-[1.03]"
+                    />
+                )}
             </div>
-        </div>
-    )
+            <div className={cn("flex flex-col gap-3", isFeatured && "md:col-span-5")}>
+                <h3
+                    className={cn(
+                        "font-medium leading-[1.2] tracking-[-0.02em] text-foreground transition-colors duration-150 group-hover:text-soft",
+                        isFeatured ? "text-[24px] md:text-[28px]" : "text-[20px]",
+                    )}
+                >
+                    {post.title}
+                </h3>
+                {post.excerpt && (
+                    <p className={cn("leading-[1.55] text-soft", isFeatured ? "text-[18px]" : "line-clamp-3 text-[15px]")}>{post.excerpt}</p>
+                )}
+                <p className="text-[14px] tabular-nums text-soft">
+                    {formatDate(post.date)}
+                    {post.readingDuration?.text && ` · ${post.readingDuration.text}`}
+                </p>
+            </div>
+        </Link>
+    );
 }

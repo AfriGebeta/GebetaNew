@@ -1,109 +1,87 @@
-//@ts-nocheck
-import Container from "@/sections/Container";
 import Link from "next/link";
-import {Icons} from "@/components/icons";
-import {ExternalLink} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import Container from "@/sections/Container";
+import { Icons } from "@/components/icons";
+import { PRODUCTS, productHref } from "@/constants/products";
+
+const COLUMNS = [
+    {
+        title: "Products",
+        links: PRODUCTS.map((p) => ({ label: p.name, href: productHref(p.slug) })),
+    },
+    {
+        title: "Resources",
+        links: [
+            { label: "Documentation", href: "https://docs.gebeta.app/" },
+            { label: "Blog", href: "/blog" },
+            { label: "Pricing", href: "/pricing" },
+            { label: "Status", href: "/uptime" },
+        ],
+    },
+    {
+        title: "Company",
+        links: [
+            { label: "About", href: "/company" },
+            { label: "Contact", href: "/contact" },
+            { label: "Terms of Service", href: "/terms" },
+            { label: "Privacy Policy", href: "/privacy" },
+        ],
+    },
+    {
+        title: "Social",
+        links: [
+            { label: "Instagram", href: "https://www.instagram.com/gebetamaps", external: true },
+            { label: "X (Twitter)", href: "https://twitter.com/GebetaMaps", external: true },
+            { label: "LinkedIn", href: "https://et.linkedin.com/company/gebetamaps", external: true },
+        ],
+    },
+];
 
 export default function Footer() {
-    const Icon = Icons.gebeta
+    const Logo = Icons.gebeta;
 
     return (
-        <footer
-            className="w-full mt-[80px] bg-[#FFF7E8] dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-900 text-zinc-700 dark:text-white text-[14px] relative h-[800px] md:h-[560px]"
-            style={{clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)"}}
-        >
-            <div className="fixed bottom-0 w-full">
-                <Container className="flex flex-col justify-between">
-                    <div className="flex flex-col md:flex-row justify-between gap-y-[32px] py-[64px]">
-                        <div>
-                            <p className="mt-[24px] text-[12px] font-medium">© {new Date().getFullYear()} GebetaMaps,
-                                Inc. All rights
-                                reserved.</p>
-
-                                <Link className={"mt-[24px] text-[12px] font-medium"} href="https://gebeta.app/status"
-                                      className="hover:underline">Status</Link>
-
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-[32px]">
-                            <div>
-                                <h6 className="text-[16px] font-bold">Products</h6>
-                                <ul className="mt-[16px] space-y-2">
-                                    <li>
-                                        <Link href="https://docs.gebeta.app/docs/geocoding/geocoding"
-                                              className="hover:underline">Geocoding</Link>
-                                    </li>
-                                    <li><Link href="https://docs.gebeta.app/docs/direction"
-                                              className="hover:underline">Direction</Link></li>
-                                    <li><Link href="https://docs.gebeta.app/docs/matrix"
-                                              className="hover:underline">Matrix</Link></li>
-                                    <li><Link href="https://docs.gebeta.app/docs/route-optimization"
-                                              className="hover:underline">Route
-                                        optimization</Link></li>
-                                    <li><Link href="https://docs.gebeta.app/docs/onm"
-                                              className="hover:underline">ONM</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h6 className="text-[16px] font-bold">Resources</h6>
-                                <ul className="mt-[16px] space-y-2">
-                                    <li><Link href="https://gebeta.app/blog"
-                                              className="hover:underline">Blog</Link></li>
-                                    <li><Link href="https://docs.gebeta.app/"
-                                              className="hover:underline">Documentation</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h6 className="text-[16px] font-bold">Legal</h6>
-                                <ul className="mt-[16px] space-y-2">
-                                    <li><Link href="/terms"
-                                              className="hover:underline">Terms of Service</Link></li>
-                                    <li><Link href="/privacy"
-                                              className="hover:underline">Privacy Policy</Link></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h6 className="text-[16px] font-bold">Social Media</h6>
-                                <ul className="mt-[16px] space-y-2">
-                                    <li>
-                                        <Link href="https://www.instagram.com/gebetamaps"
-                                              className="flex items-center gap-3 hover:underline">
-                                            Instagram
-                                            <ExternalLink className="text-[#ffa500] w-5 h-5"/>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="https://twitter.com/GebetaMaps"
-                                              className="flex items-center gap-3 hover:underline">
-                                            Twitter
-                                            <ExternalLink className="text-[#ffa500] w-5 h-5"/>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="https://et.linkedin.com/company/gebetamaps"
-                                              className="flex items-center gap-3 hover:underline">
-                                            Linkedin
-                                            <ExternalLink className="text-[#ffa500] w-5 h-5"/>
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h6 className="text-[16px] font-bold">Contact</h6>
-                                <p className="mt-[16px]">
-                                    Bloom Tower<br/>
-                                    Addis Ababa,<br/>
-                                    Ethiopia<br/><br/>
-                                    info@gebeta.app</p>
-                            </div>
-                        </div>
+        <footer className="bg-raised text-[15px] text-soft">
+            <Container className="flex flex-col gap-16 py-16 md:py-24">
+                <div className="grid gap-10 md:grid-cols-12">
+                    <div className="flex flex-col gap-3 md:col-span-4">
+                        <p className="text-[20px] leading-[1.35] text-foreground">Location APIs for Africa.</p>
+                        <address className="not-italic leading-[1.5]">
+                            Bloom Tower, Addis Ababa, Ethiopia
+                            <br />
+                            <a href="mailto:info@gebeta.app" className="text-foreground hover:text-soft">info@gebeta.app</a>
+                        </address>
                     </div>
-                    <div className="w-full flex gap-[16px] items-center justify-center">
-                        <Icon className="hidden md:block md:w-[120px] md:h-[120px]"/>
-                        <h3 className="text-[40px] md:text-[120px] lg:text-[160pxs] spacing tracking-wide">GebetaMaps</h3>
-                    </div>
-                </Container>
-            </div>
+                    <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-8">
+                        {COLUMNS.map((col) => (
+                            <div key={col.title} className="flex flex-col gap-3">
+                                <h2 className="text-[15px] font-medium text-foreground">{col.title}</h2>
+                                <ul className="flex flex-col gap-2">
+                                    {col.links.map((link) => (
+                                        <li key={link.label}>
+                                            <Link
+                                                href={link.href}
+                                                {...("external" in link ? { target: "_blank", rel: "noreferrer" } : {})}
+                                                className="inline-flex items-center gap-1 transition-colors duration-150 hover:text-foreground"
+                                            >
+                                                {link.label}
+                                                {"external" in link && <ArrowUpRight aria-hidden className="size-3.5" />}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </nav>
+                </div>
+                <div className="flex flex-col gap-6">
+                    <p aria-hidden className="flex items-center gap-4 text-[15vw] font-medium leading-[0.8] tracking-[-0.05em] text-foreground lg:text-[176px]">
+                        <Logo className="hidden size-[0.7em] shrink-0 md:block" />
+                        GebetaMaps
+                    </p>
+                    <p className="text-[14px]">© {new Date().getFullYear()} GebetaMaps, Inc. All rights reserved.</p>
+                </div>
+            </Container>
         </footer>
-    )
+    );
 }

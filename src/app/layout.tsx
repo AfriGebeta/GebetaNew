@@ -1,7 +1,6 @@
 //@ts-nocheck
 import type { Metadata } from "next";
 import "./globals.css";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import QueryProvider from "@/providers/QueryProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -11,10 +10,6 @@ import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { GeistPixelSquare } from 'geist/font/pixel';
 
-
-const plusJakarta = Plus_Jakarta_Sans({
-    subsets: ["latin"],
-});
 
 const SITE_URL = "https://gebeta.app";
 
@@ -196,7 +191,7 @@ export default function RootLayout({
                 />
             </head>
             <body
-                className={`${plusJakarta.className} ${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable}`}
+                className={`font-sans antialiased ${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable}`}
             >
                 <script
                     type="application/ld+json"

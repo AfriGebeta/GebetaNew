@@ -1,0 +1,238 @@
+[
+  {
+    "id": "edna",
+    "name": "Edna Mall",
+    "query": "Edna Mall",
+    "area": "Bole",
+    "lngLat": [
+      38.786727,
+      8.997704
+    ],
+    "geocode": {
+      "query": "Edna Mall",
+      "match": "edna mall",
+      "type": "mall"
+    }
+  },
+  {
+    "id": "meskel",
+    "name": "Meskel Square",
+    "query": "Meskel Square",
+    "area": "Kirkos",
+    "lngLat": [
+      38.761338,
+      9.010986
+    ],
+    "geocode": {
+      "query": "Meskel Square",
+      "match": "meskel square",
+      "type": "neighborhood"
+    }
+  },
+  {
+    "id": "piassa",
+    "name": "Piassa",
+    "query": "Piassa",
+    "area": "Arada",
+    "lngLat": [
+      38.754755,
+      9.031094
+    ],
+    "geocode": {
+      "query": "piazza police department",
+      "match": "piazza police department"
+    }
+  },
+  {
+    "id": "merkato",
+    "name": "Merkato",
+    "query": "Merkato",
+    "area": "Addis Ketema",
+    "lngLat": [
+      38.736121,
+      9.031664
+    ],
+    "geocode": {
+      "query": "Merkato",
+      "match": "shera tera/merkato addis ababa"
+    }
+  },
+  {
+    "id": "airport",
+    "name": "Bole International Airport",
+    "query": "Bole International Airport",
+    "area": "Bole",
+    "lngLat": [
+      38.802433,
+      8.984216
+    ],
+    "geocode": {
+      "query": "Bole International Airport",
+      "match": "bole international airport new vip terminal"
+    },
+    "short": "Bole Airport"
+  },
+  {
+    "id": "sheraton",
+    "name": "Sheraton Addis",
+    "query": "Sheraton Addis",
+    "area": "Kirkos",
+    "lngLat": [
+      38.760003,
+      9.020304
+    ],
+    "geocode": {
+      "query": "Sheraton Addis",
+      "match": "sheraton addis  a luxury collection hotel  addis ababa"
+    }
+  },
+  {
+    "id": "aau",
+    "name": "Addis Ababa University",
+    "query": "Addis Ababa University",
+    "area": "Sidist Kilo",
+    "lngLat": [
+      38.757767,
+      9.046644
+    ],
+    "geocode": {
+      "query": "addis ababa university museum",
+      "match": "addis ababa university museum",
+      "type": "Museum"
+    },
+    "short": "AAU"
+  },
+  {
+    "id": "unity",
+    "name": "Unity Park",
+    "query": "Unity Park",
+    "area": "Arada",
+    "lngLat": [
+      38.763957,
+      9.023132
+    ],
+    "geocode": {
+      "query": "Unity Park",
+      "match": "unity park",
+      "type": "Entertainment centers"
+    }
+  },
+  {
+    "id": "mexico",
+    "name": "Mexico Square",
+    "query": "Mexico Square",
+    "area": "Kirkos",
+    "lngLat": [
+      38.742476,
+      9.010486
+    ],
+    "geocode": {
+      "query": "Mexico Square",
+      "match": "mexico square",
+      "type": "rail station"
+    }
+  },
+  {
+    "id": "ayat",
+    "name": "Ayat",
+    "query": "Ayat",
+    "area": "Yeka",
+    "lngLat": [
+      38.879713,
+      9.029927
+    ],
+    "geocode": {
+      "query": "Ayat",
+      "match": "ayat area",
+      "type": "neighborhood"
+    }
+  },
+  {
+    "id": "kality",
+    "name": "Kality",
+    "query": "Kality",
+    "area": "Akaki Kality",
+    "lngLat": [
+      38.76991,
+      8.895342
+    ],
+    "geocode": {
+      "query": "Kality Menaharia",
+      "match": "kality menaharia",
+      "type": "Bus depot"
+    }
+  },
+  {
+    "id": "torhailoch",
+    "name": "Tor Hailoch",
+    "query": "Tor Hailoch",
+    "area": "Kolfe Keranio",
+    "lngLat": [
+      38.722825,
+      9.01143
+    ],
+    "geocode": {
+      "query": "Tor Hailoch",
+      "match": "tor hailoch"
+    }
+  },
+  {
+    "id": "shiromeda",
+    "name": "Shiro Meda",
+    "query": "Shiro Meda",
+    "area": "Gulele",
+    "lngLat": [
+      38.761169,
+      9.063618
+    ],
+    "geocode": {
+      "query": "Shiro Meda",
+      "match": "shiro meda",
+      "type": "neighborhood"
+    }
+  },
+  {
+    "id": "lebu",
+    "name": "Lebu",
+    "query": "Lebu",
+    "area": "Furi-Lebu station",
+    "lngLat": [
+      38.687863,
+      8.932206
+    ],
+    "geocode": {
+      "query": "Furi-Lebu Ethio-Djibouti Railway Station",
+      "match": "Furi-Lebu Ethio-Djibouti Railway Station"
+    }
+  },
+  {
+    "id": "gerji",
+    "name": "Gerji",
+    "query": "Gerji",
+    "area": "Bole",
+    "lngLat": [
+      38.80658,
+      8.997428
+    ],
+    "geocode": {
+      "query": "Gerji",
+      "match": "Gerji area",
+      "type": "neighborhood"
+    }
+  },
+  {
+    "id": "kotebe",
+    "name": "Kotebe",
+    "query": "Kotebe",
+    "area": "Yeka",
+    "lngLat": [
+      38.829633,
+      9.030735
+    ],
+    "geocode": {
+      "query": "Kotebe Health Center",
+      "match": "Kotebe Health Center",
+      "type": "Health Center"
+    }
+  }
+]

@@ -1,231 +1,361 @@
-//@ts-nocheck
 "use client";
+
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Container from "@/sections/Container";
-import { menuItems } from "@/constants";
-import { trackPageView } from "@/lib/track";
-import { useNavbarLogic } from "@/utils/useNavbarLogic";
-import { User2Icon } from "lucide-react";
-import { useRouter } from 'nextjs-toploader/app';
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import Announcement from "../_component/Announcement";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { ArrowRight, ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { DURATION, EASE, SPRING } from "@/lib/motion";
+import { trackPageView } from "@/lib/track";
+import Button from "@/components/ui/button";
+import { ANNOUNCEMENT, NAV_CTA, NAV_LINKS, NAV_MENUS, type NavLink, type NavMenuId } from "@/constants/navigation";
 
-export default function Navbar() {
-    const {
-        activeMenu,
-        isScrolled,
-        isMobileMenuOpen,
-        activeMobileSubmenu,
-        handleMouseEnter,
-        handleMouseLeave,
-        toggleMobileMenu,
-        toggleMobileSubmenu,
-        closeMobileMenu,
-    } = useNavbarLogic();
+const CLOSE_DELAY_MS = 120;
+const SCROLLED_PX = 8;
 
-    const pathname = usePathname();
+type Platform = keyof typeof ANNOUNCEMENT.stores;
 
-    const [showAnnouncement, setShowAnnouncement] = useState(true)
+function detectPlatform(): Platform {
+    const ua = navigator.userAgent || "";
+    if (/android/i.test(ua)) return "android";
+    if (/iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return "ios";
+    return "other";
+}
 
-    const router = useRouter()
-
-    useEffect(() => {
-        trackPageView(pathname)
-    }, [pathname])
+function Announcement({ onDismiss }: { onDismiss: () => void }) {
+    const [platform, setPlatform] = useState<Platform>("other");
+    useEffect(() => setPlatform(detectPlatform()), []);
+    const store = ANNOUNCEMENT.stores[platform];
 
     return (
-        <>
-            <Announcement showAnnouncement={showAnnouncement} setShowAnnouncement={setShowAnnouncement} />
-            <header
-                className={`${showAnnouncement ? 'top-12' : 'top-0'} w-full h-15 flex items-center transition-shadow z-50 fixed bg-white/80 dark:bg-[#05050a]/80 backdrop-blur-lg ${isScrolled ? 'shadow-[0_1px_0_rgba(0,0,0,0.06)]' : ''}`}
-            >
-                <Container>
-                    <nav className="flex justify-between items-center py-4">
-                        <div className="flex items-center">
-                            <Image src="/assets/logo.svg" width={30} height={30} alt="logo" className="mr-2" />
-                            <Link href="/" onClick={closeMobileMenu}
-                                className="text-[16px] text-[#2E384E] dark:text-white font-semibold tracking-wider">
-                                GebetaMaps
-                            </Link>
-                        </div>
+        <motion.div
+            initial={false}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: DURATION.base, ease: EASE.out }}
+            className="overflow-hidden bg-foreground text-background"
+        >
+            <div className="mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 py-2 text-[14px] sm:px-6 lg:px-8">
+                <p className="truncate">
+                    {ANNOUNCEMENT.text} {store.name}.
+                </p>
+                <a href={store.link} className="inline-flex shrink-0 items-center gap-1 font-medium text-primary hover:underline">
+                    {ANNOUNCEMENT.cta} <ArrowRight aria-hidden className="size-3.5" />
+                </a>
+                <button
+                    type="button"
+                    onClick={onDismiss}
+                    aria-label="Dismiss announcement"
+                    className="ml-auto flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full opacity-70 outline-none transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring/60 sm:absolute sm:right-4"
+                >
+                    <X aria-hidden className="size-4" />
+                </button>
+            </div>
+        </motion.div>
+    );
+}
 
-                        <div className="md:hidden">
-                            <button
-                                className="text-gray-600 dark:text-white focus:outline-none"
-                                onClick={toggleMobileMenu}
-                            >
-                                {isMobileMenuOpen ? (
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                ) : (
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                            d="M4 6h16M4 12h16m-7 6h7" />
-                                    </svg>
-                                )}
-                            </button>
-                        </div>
+function NavItemLink({ link, active, onHover }: { link: NavLink; active: boolean; onHover: () => void }) {
+    return (
+        <Link
+            href={link.href}
+            {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
+            onMouseEnter={onHover}
+            onFocus={onHover}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+                "relative z-10 inline-flex items-center gap-1 rounded-full px-3 py-2 text-[14px] outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring/60",
+                active ? "text-foreground" : "text-soft hover:text-foreground",
+            )}
+        >
+            {link.label}
+            {link.external && <ArrowUpRight aria-hidden className="size-3.5" />}
+        </Link>
+    );
+}
 
-                        <div className="hidden md:flex flex-grow justify-center">
-                            <ul className="flex text-[#2E384E] dark:text-white text-[14px] font-medium">
-                                {menuItems.map((item, index) => (
-                                    <li
-                                        key={index}
-                                        className={`relative px-4 py-2 cursor-pointer hover:text-[#FFA500] ${pathname?.substring(1) === item.title.toLowerCase() ? "text-[#FFA500]" : ""} transition-colors duration-200`}
-                                        onMouseEnter={() => item.submenu && handleMouseEnter(item.title)}
-                                        onMouseLeave={item.submenu && handleMouseLeave}
-                                    >
-                                        <a
-                                            className="flex items-center gap-1 cursor-pointer"
-                                            onClick={() => router.push(item.link)}
-                                        >
-                                            {item.title}
-                                            {item.submenu && (
-                                                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                        d="M19 9l-7 7-7-7" />
-                                                </svg>
-                                            )}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="auth-signed-in hidden md:flex">
-                                <Link
-                                    href="/dashboard"
-                                    className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Go
-                                    to Dashboard</Link>
-                        </div>
-                        <div className="auth-signed-out hidden md:flex gap-8">
-                                <div className="flex items-center gap-[4px] cursor-pointer"
-                                    onClick={() => router.push("/auth/signin")}>
-                                    <Image
-                                        className="dark:fill-whitesmoke"
-                                        src="/assets/user.svg"
-                                        alt="user icon"
-                                        width={24}
-                                        height={24} />
-                                    <a
-                                        className="font-medium text-[#222] dark:text-white hover:text-[#FFA500] transition-all duration-400"
-                                    >Sign In</a>
-                                </div>
-                                <Link
-                                    href="/auth/register"
-                                    className="transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 border border-[#FFA500] px-[30px] py-[15px] rounded-[8px] text-white text-[14px] font-bold whitespace-nowrap">Get
-                                    Started</Link>
-                        </div>
-                    </nav>
+/** Sliding hover pill shared by the desktop links. */
+function HoverPill() {
+    return <motion.span layoutId="nav-hover-pill" transition={SPRING.snappy} className="absolute inset-0 -z-0 rounded-full bg-hover" />;
+}
 
-                    {isMobileMenuOpen && (
-                        <div className="xs:hidden bg-white dark:bg-[#05050a] pb-4">
-                            <ul className="text-[#2E384E] dark:text-white text-[14px] font-medium">
-                                {menuItems.map((item, index) => (
-                                    <li key={index} className="px-4 py-2">
-                                        <div className="flex justify-between items-center"
-                                            onClick={() => item?.submenu && toggleMobileSubmenu(item.title)}>
-                                            <a onClick={() => {
-                                                router.push(item.link)
-                                                closeMobileMenu()
-                                            }}>
-                                                {item.title}
-                                            </a>
-                                            {item?.submenu && (
-                                                <svg
-                                                    className={`w-4 h-4 dark:stroke-white transform ${activeMobileSubmenu === item.title ? 'rotate-180' : ''}`}
-                                                    viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                        d="M19 9l-7 7-7-7" />
-                                                </svg>
-                                            )}
-                                        </div>
-                                        {item.submenu && activeMobileSubmenu === item.title && (
-                                            <ul className="flex flex-col pl-4 mt-2 space-y-2">
-                                                {item.submenu.map((subItem, subIndex) => (
-                                                    <a
-                                                        onClick={() => {
-                                                            router.push(subItem.link)
-                                                            closeMobileMenu()
-                                                        }}
-                                                        key={subIndex}
-                                                        className="text-sm p-2 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md"
-                                                    >
-                                                        {subItem.title}
-                                                    </a>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="auth-signed-in mt-4 px-4">
-                                    <Link
-                                        href="/dashboard"
-                                        onClick={closeMobileMenu}
-                                        className="block w-fit px-[30px] py-[15px] transition-all bg-[#FFA500] hover:bg-[#FFA500]/80 text-white text-[14px] font-bold rounded-[8px]"
-                                    >Go to Dashboard</Link>
-                            </div>
-                            <div className="auth-signed-out mt-4 space-y-4 px-4">
-                                    <div className="flex items-center gap-[4px]">
-                                        <User2Icon className="w-[16px] h-[16px]" />
-                                        <a
-                                            className="font-medium"
-                                            onClick={() => {
-                                                router.push("/auth/signin")
-                                                closeMobileMenu()
-                                            }}
-                                        >Sign In</a>
-                                    </div>
-                                    <div
-                                        className="w-fit px-[30px] py-[15px] transition-all border border-[#D2C09D] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 text-[14px] rounded-[8px]">
-                                        <a
-                                            className="font-bold"
-                                            onClick={() => {
-                                                router.push("/auth/register")
-                                                closeMobileMenu()
-                                            }}
-                                        >Get Started</a>
-                                    </div>
-                            </div>
-                        </div>
-                    )}
-                </Container>
+export default function Navbar() {
+    const pathname = usePathname();
+    const reduceMotion = useReducedMotion();
+    const [scrolled, setScrolled] = useState(false);
+    const [openMenu, setOpenMenu] = useState<NavMenuId | null>(null);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    /** The mobile menu's expanded section; one at a time keeps the list short. */
+    const [mobileSection, setMobileSection] = useState<NavMenuId | null>(null);
+    const [hovered, setHovered] = useState<string | null>(null);
+    const [showAnnouncement, setShowAnnouncement] = useState(true);
+    const closeTimer = useRef<number>();
 
-                {activeMenu && menuItems.find((item) => item.title === activeMenu)?.submenu && (
-                    <div
-                        className="absolute left-0 top-20 w-full bg-white dark:bg-gray-800 border-t border-b dark:border-b-0 border-gray-200 dark:border-gray-700"
-                        onMouseEnter={() => handleMouseEnter(activeMenu)}
-                        onMouseLeave={handleMouseLeave}
-                    >
-                        <Container>
-                            <div className="py-8 grid grid-cols-4 gap-8">
-                                {(menuItems?.find((item) => item.title === activeMenu)?.submenu || []).map((subItem, index) => (
-                                    <a
-                                        href={subItem.link}
-                                        onClick={() => {
-                                            router.push(subItem.link)
-                                            handleMouseLeave()
-                                        }}
-                                        key={index}
-                                        className="block space-y-2 p-3 hover:bg-[#FFF7E8] dark:hover:bg-gray-700 rounded-md"
-                                    >
-                                        {subItem.icon && (
-                                            <subItem.icon className="w-6 h-6 text-[#ffa500] mb-4" />
-                                        )}
-                                        <h3 className="text-[14px] font-semibold">{subItem.title}</h3>
-                                        <p className="text-[12px] text-gray-600 dark:text-gray-400">{subItem.description}</p>
-                                    </a>
-                                ))}
-                            </div>
-                        </Container>
-                    </div>
+    useEffect(() => trackPageView(pathname), [pathname]);
+
+    useEffect(() => {
+        setOpenMenu(null);
+        setMobileOpen(false);
+    }, [pathname]);
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > SCROLLED_PX);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setOpenMenu(null);
+                setMobileOpen(false);
+            }
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, []);
+
+    useEffect(() => {
+        if (!mobileOpen) setMobileSection(null);
+        document.documentElement.style.overflow = mobileOpen ? "hidden" : "";
+        return () => {
+            document.documentElement.style.overflow = "";
+        };
+    }, [mobileOpen]);
+
+    const openMenuNow = (id: NavMenuId) => {
+        window.clearTimeout(closeTimer.current);
+        setOpenMenu(id);
+    };
+    const keepMenu = () => window.clearTimeout(closeTimer.current);
+    const closeMenu = () => {
+        closeTimer.current = window.setTimeout(() => setOpenMenu(null), CLOSE_DELAY_MS);
+    };
+
+    const isActive = (href: string) => pathname === href || (href !== "/" && pathname?.startsWith(href));
+    const menu = NAV_MENUS.find((m) => m.id === openMenu);
+    const panel = { duration: reduceMotion ? 0 : DURATION.base, ease: EASE.out };
+
+    return (
+        <header className="sticky top-0 z-50">
+            <AnimatePresence initial={false}>
+                {showAnnouncement && <Announcement key="announcement" onDismiss={() => setShowAnnouncement(false)} />}
+            </AnimatePresence>
+
+            <div
+                className={cn(
+                    "relative bg-background transition-shadow duration-200",
+                    (scrolled || openMenu) && "shadow-[0_1px_0_hsl(var(--border))]",
                 )}
-            </header>
-        </>
+                onMouseLeave={closeMenu}
+            >
+                <nav aria-label="Main" className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
+                    <Link href="/" className="flex shrink-0 items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/60">
+                        <Image src="/assets/logo.svg" width={28} height={28} alt="" priority />
+                        <span className="text-[16px] font-semibold tracking-[-0.01em] text-foreground">GebetaMaps</span>
+                    </Link>
+
+                    <ul className="hidden flex-1 items-center justify-center md:flex" onMouseLeave={() => setHovered(null)}>
+                        {NAV_MENUS.map((m) => {
+                            const open = openMenu === m.id;
+                            return (
+                                <li key={m.id} className="relative">
+                                    {hovered === m.id && <HoverPill />}
+                                    <button
+                                        type="button"
+                                        aria-expanded={open}
+                                        aria-controls="nav-menu"
+                                        onMouseEnter={() => {
+                                            setHovered(m.id);
+                                            openMenuNow(m.id);
+                                        }}
+                                        onFocus={() => setHovered(m.id)}
+                                        onClick={() => setOpenMenu(open ? null : m.id)}
+                                        className={cn(
+                                            "relative z-10 inline-flex cursor-pointer items-center gap-1 rounded-full px-3 py-2 text-[14px] outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring/60",
+                                            open || pathname?.startsWith(m.basePath) ? "text-foreground" : "text-soft hover:text-foreground",
+                                        )}
+                                    >
+                                        {m.label}
+                                        <ChevronDown aria-hidden className={cn("size-3.5 transition-transform duration-200 ease-power3-out", open && "rotate-180")} />
+                                    </button>
+                                </li>
+                            );
+                        })}
+                        {NAV_LINKS.map((link) => (
+                            <li key={link.href} className="relative" onMouseEnter={closeMenu}>
+                                {hovered === link.href && <HoverPill />}
+                                <NavItemLink link={link} active={!!isActive(link.href)} onHover={() => setHovered(link.href)} />
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className="ml-auto hidden items-center gap-2 md:flex">
+                        <div className="auth-signed-out flex items-center gap-2">
+                            <Button href={NAV_CTA.signIn.href} variant="ghost" className="text-soft">{NAV_CTA.signIn.label}</Button>
+                            <Button href={NAV_CTA.signUp.href} variant="ink">{NAV_CTA.signUp.label}</Button>
+                        </div>
+                        <div className="auth-signed-in">
+                            <Button href={NAV_CTA.dashboard.href} variant="ink">
+                                {NAV_CTA.dashboard.label} <ArrowRight aria-hidden />
+                            </Button>
+                        </div>
+                    </div>
+
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="ml-auto md:hidden"
+                        aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                        aria-expanded={mobileOpen}
+                        onClick={() => setMobileOpen((o) => !o)}
+                    >
+                        {mobileOpen ? <X aria-hidden /> : <Menu aria-hidden />}
+                    </Button>
+                </nav>
+
+                {/* Desktop drop-down panel: switching menus swaps the content in place, without re-opening the panel. */}
+                <AnimatePresence>
+                    {menu && (
+                        <motion.div
+                            id="nav-menu"
+                            key="menu"
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            transition={panel}
+                            onMouseEnter={keepMenu}
+                            className="absolute inset-x-0 top-full hidden bg-background shadow-[0_1px_0_hsl(var(--border)),0_24px_48px_-24px_hsl(var(--foreground)/0.18)] md:block"
+                        >
+                            <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-12 lg:px-8">
+                                <ul className="grid gap-1 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
+                                    {menu.items.map((item) => (
+                                        <li key={item.href}>
+                                            <Link
+                                                href={item.href}
+                                                className={cn(
+                                                    "group flex h-full flex-col gap-1.5 rounded-lg p-3 outline-none transition-colors duration-150 hover:bg-hover focus-visible:bg-hover",
+                                                    isActive(item.href) && "bg-hover",
+                                                )}
+                                            >
+                                                <span className="flex items-center gap-1 text-[15px] font-medium text-foreground">
+                                                    {item.label}
+                                                    <ArrowRight aria-hidden className="size-3.5 -translate-x-1 opacity-0 transition-[opacity,transform] duration-150 ease-power3-out group-hover:translate-x-0 group-hover:opacity-100" />
+                                                </span>
+                                                <span className="text-[14px] leading-[1.45] text-soft">{item.summary}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <div className="flex flex-col gap-4 rounded-lg bg-raised p-5 lg:col-span-4">
+                                    <p className="text-[16px] font-medium text-foreground">{menu.feature.title}</p>
+                                    <p className="text-[14px] leading-[1.5] text-soft">{menu.feature.body}</p>
+                                    {menu.feature.links.length > 0 && (
+                                        <ul className="flex flex-col gap-2">
+                                            {menu.feature.links.map((link) => (
+                                                <li key={link.href}>
+                                                    <Link
+                                                        href={link.href}
+                                                        {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                                                        className="inline-flex items-center gap-1 text-[14px] font-medium text-foreground hover:text-soft"
+                                                    >
+                                                        {link.label}
+                                                        {link.external ? <ArrowUpRight aria-hidden className="size-3.5" /> : <ArrowRight aria-hidden className="size-3.5" />}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    <Button href={NAV_CTA.contact.href} variant="secondary" className="mt-auto w-fit">
+                                        {NAV_CTA.contact.label}
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Mobile menu */}
+            <AnimatePresence>
+                {mobileOpen && (
+                    <motion.div
+                        key="mobile"
+                        initial={{ opacity: 0, y: -12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -12 }}
+                        transition={panel}
+                        className="absolute inset-x-0 top-full h-[100dvh] overflow-y-auto bg-background md:hidden"
+                    >
+                        <div className="flex flex-col gap-8 px-4 pb-40 pt-4 sm:px-6">
+                            <section className="flex flex-col gap-1">
+                                {/* Each menu collapses behind one row, so every top-level link fits on the first screen. */}
+                                {NAV_MENUS.map((m) => {
+                                    const expanded = mobileSection === m.id;
+                                    return (
+                                        <div key={m.id} className="flex flex-col">
+                                            <button
+                                                type="button"
+                                                aria-expanded={expanded}
+                                                aria-controls={`mobile-${m.id}`}
+                                                onClick={() => setMobileSection(expanded ? null : m.id)}
+                                                className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-left text-[17px] font-medium text-foreground outline-none hover:bg-hover focus-visible:bg-hover"
+                                            >
+                                                {m.label}
+                                                <ChevronDown
+                                                    aria-hidden
+                                                    className={cn("size-5 text-soft transition-transform duration-200 ease-power3-out", expanded && "rotate-180")}
+                                                />
+                                            </button>
+                                            <AnimatePresence initial={false}>
+                                                {expanded && (
+                                                    <motion.div
+                                                        id={`mobile-${m.id}`}
+                                                        initial={{ height: 0, opacity: 0 }}
+                                                        animate={{ height: "auto", opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        transition={panel}
+                                                        className="overflow-hidden"
+                                                    >
+                                                        <div className="flex flex-col gap-1 pb-2 pl-3">
+                                                            {m.items.map((item) => (
+                                                                <Link key={item.href} href={item.href} className="flex flex-col gap-1 rounded-lg px-3 py-2.5 hover:bg-hover">
+                                                                    <span className="text-[16px] font-medium text-foreground">{item.label}</span>
+                                                                    <span className="text-[14px] text-soft">{item.summary}</span>
+                                                                </Link>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    );
+                                })}
+                                {[...NAV_LINKS, { label: "Contact", href: "/contact" }].map((link: NavLink) => (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                                        className="flex items-center gap-1 rounded-lg px-3 py-2.5 text-[17px] font-medium text-foreground hover:bg-hover"
+                                    >
+                                        {link.label}
+                                        {link.external && <ArrowUpRight aria-hidden className="size-4" />}
+                                    </Link>
+                                ))}
+                            </section>
+                            <div className="auth-signed-out grid grid-cols-2 gap-2">
+                                <Button href={NAV_CTA.signIn.href} variant="secondary" size="lg">{NAV_CTA.signIn.label}</Button>
+                                <Button href={NAV_CTA.signUp.href} variant="ink" size="lg">{NAV_CTA.signUp.label}</Button>
+                            </div>
+                            <div className="auth-signed-in">
+                                <Button href={NAV_CTA.dashboard.href} variant="ink" size="lg" className="w-full">{NAV_CTA.dashboard.label}</Button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </header>
     );
 }

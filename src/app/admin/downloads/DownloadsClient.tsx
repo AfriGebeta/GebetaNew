@@ -7,7 +7,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Tag } from "@/components/ui/tag";
 import { BarChart3, RefreshCw, LogOut } from "lucide-react";
 
 const RANGES = [
@@ -167,7 +167,7 @@ export default function DownloadsClient({ initialStats }: { initialStats: Downlo
                         {new Date(click.createdAt).toLocaleString()}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{click.source}</Badge>
+                        <Tag>{click.source}</Tag>
                       </TableCell>
                       <TableCell className="text-sm">{click.campaign || "—"}</TableCell>
                       <TableCell className="text-sm">{click.platform}</TableCell>
