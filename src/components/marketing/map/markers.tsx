@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { ComponentType, SVGProps } from "react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -53,16 +53,35 @@ export function StopGlyph({ className, ...props }: SVGProps<SVGSVGElement>) {
     );
 }
 
-/** Stop with its position in the visiting order, for tours whose order matters. */
-export function NumberedStop({ label, className }: { label: string; className?: string }) {
+const RING_TONE = {
+    /** Orange ring, dark number: orange text this small would be hard to read. */
+    primary: "border-primary text-foreground",
+    muted: "border-ink text-ink",
+};
+
+/** Stop with its position in the visiting order: a white disc ringed in the route's colour. */
+export function NumberedStop({ label, tone = "muted", className }: { label: string; tone?: keyof typeof RING_TONE; className?: string }) {
     return (
         <span
             className={cn(
-                "flex size-[22px] items-center justify-center rounded-full bg-ink text-[12px] font-semibold leading-none tabular-nums text-ink-foreground shadow-[0_0_0_2px_hsl(var(--card))]",
+                "flex size-7 items-center justify-center rounded-full border-[2.5px] bg-card text-[12px] font-semibold leading-none tabular-nums shadow-overlay transition-colors duration-300",
+                RING_TONE[tone],
                 className,
             )}
         >
             {label}
+        </span>
+    );
+}
+
+/** A pin with an icon in its head, e.g. the depot a delivery round starts from. Anchored at its tip. */
+export function IconPin({ icon: Icon, className }: { icon: ComponentType<{ className?: string }>; className?: string }) {
+    return (
+        <span className={cn("relative block h-[42px] w-8", className)}>
+            <PinGlyph tone="ink" className="absolute inset-0 h-full w-full" />
+            <span className="absolute left-1/2 top-[15px] flex size-[22px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-ink">
+                <Icon className="size-3.5 text-ink-foreground" />
+            </span>
         </span>
     );
 }

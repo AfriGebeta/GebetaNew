@@ -27,6 +27,8 @@ const TOUR = {
     enteredKm: Math.round(DEMO_OPTIMIZATION.enteredKm),
     bestKm: Math.round(DEMO_OPTIMIZATION.bestKm),
 };
+/** Every order the stops could be driven in: stops! */
+const TOUR_ORDERS = Array.from({ length: TOUR.stops }, (_, i) => i + 1).reduce((n, k) => n * k, 1);
 
 export const SOLUTIONS: Solution[] = [
     {
@@ -69,7 +71,7 @@ export const SOLUTIONS: Solution[] = [
             {
                 title: "The order of the stops is the cost",
                 paragraphs: [
-                    `A driver with ${TOUR.stops} drops can visit them in thousands of different orders, and the order they were entered in is rarely the best one. Every extra kilometre is fuel, time and one fewer delivery before the end of the shift.`,
+                    `A driver with ${TOUR.stops} drops can visit them in ${TOUR_ORDERS.toLocaleString("en-US")} different orders, and the order they were entered in is rarely the best one. Every extra kilometre is fuel, time and one fewer delivery before the end of the shift.`,
                     `Take a ${TOUR.stops}-stop round across Addis Ababa, starting and ending at Meskel Square. Driven in the order it was entered, it takes ${TOUR.entered} minutes and ${TOUR.enteredKm} km. Route optimization finds an order that takes ${TOUR.best} minutes and ${TOUR.bestKm} km: ${TOUR.entered - TOUR.best} minutes saved on one round, for one driver.`,
                 ],
             },

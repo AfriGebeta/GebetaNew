@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
 import { createPortal } from "react-dom";
 import {
     AnimatePresence,
@@ -21,8 +21,9 @@ import { SPRING, STAGGER } from "@/lib/motion";
 import { ADDIS_CENTER, FALLBACK_STREETS, MAP_STYLES, PLACES, type LngLat, type Place } from "@/constants/landing";
 import { ALL_DEMO_ROUTES } from "@/constants/demo-routes";
 import { proxiedTileUrl } from "./demo-api";
+import { applySoftPalette } from "./soft-palette";
 import { boundsOf, projector, sliceRoute } from "./geo";
-import { NumberedStop, OriginGlyph, PinGlyph, PuckGlyph, StopGlyph } from "./markers";
+import { IconPin, NumberedStop, OriginGlyph, PinGlyph, PuckGlyph, StopGlyph } from "./markers";
 
 export type MapMode = "loading" | "live" | "fallback";
 
@@ -41,6 +42,8 @@ export type MapScene = {
     routes?: LngLat[][] | null;
     /** Extra pins (stops, destinations). A label (e.g. the visiting order) turns the dot into a numbered stop. */
     stops?: MapStop[] | null;
+    /** An icon for the origin pin, e.g. a package for a depot; a plain ink pin otherwise. */
+    originIcon?: ComponentType<{ className?: string }>;
 };
 
 type RouteTone = "primary" | "muted";
@@ -58,6 +61,8 @@ type LiveMapProps = {
     tone?: RouteTone;
     /** Show the +/- zoom buttons. */
     controls?: boolean;
+    /** Repaint the standard style in the soft demo palette. Off for the tiles demo, which shows styles as shipped. */
+    soft?: boolean;
     /** Extra camera padding (px) for UI laid over the map, e.g. a strip along the top. */
     overlayInset?: Partial<Record<"top" | "right" | "bottom" | "left", number>>;
     onModeChange?: (mode: MapMode) => void;
@@ -131,6 +136,7 @@ export default function LiveMap({
     showLabels = true,
     tone = "primary",
     controls = true,
+    soft = true,
     overlayInset,
     onModeChange,
     className,
@@ -227,6 +233,7 @@ export default function LiveMap({
                 styleArrived = true;
                 window.clearTimeout(timeout);
                 if (cancelled) return;
+                if (soft) applySoftPalette(map!);
                 addRouteLayers(map!);
                 setMode((m) => (m === "live" ? m : "live"));
                 map!.fire("demo:style");
@@ -405,7 +412,7 @@ export default function LiveMap({
             {mode === "loading" && <div aria-hidden className="absolute inset-0 animate-pulse bg-raised" />}
             {markerEls && (
                 <>
-                    {createPortal(<OriginGlyph />, markerEls.origin)}
+                    {createPortal(scene.originIcon ? <IconPin icon={scene.originIcon} /> : <OriginGlyph />, markerEls.origin)}
                     {createPortal(<DroppingPin key={target?.id} />, markerEls.pin)}
                     {createPortal(<PuckGlyph />, markerEls.puck)}
                 </>
@@ -415,7 +422,7 @@ export default function LiveMap({
                 const delay = index * STAGGER;
                 if (stop?.title) return createPortal(<TitledPin key={id} delay={delay} title={stop.title} />, el, id);
                 // Keyed by label too, so a renumbered stop pops in again and the change is noticed.
-                return createPortal(<StopDot key={`${id}-${stop?.label ?? ""}`} delay={delay} label={stop?.label} />, el, id);
+                return createPortal(<StopDot key={`${id}-${stop?.label ?? ""}`} delay={delay} label={stop?.label} tone={tone} />, el, id);
             })}
         </div>
     );
@@ -441,18 +448,20 @@ function TitledPin({ delay = 0, title }: { delay?: number; title: string }) {
             transition={{ ...SPRING.drop, delay }}
         >
             <PinGlyph className="h-[34px] w-[26px]" />
-            <span className="absolute bottom-full left-1/2 mb-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-card px-2 py-0.5 text-[12px] font-medium leading-[1.4] text-foreground shadow-overlay">
+            {/* A speech bubble pointing at its pin. */}
+            <span className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-card px-2.5 py-1 text-[12px] font-medium leading-[1.4] text-foreground [filter:drop-shadow(0_1px_1px_hsl(var(--foreground)/0.16))_drop-shadow(0_3px_8px_hsl(var(--foreground)/0.12))]">
                 {title}
+                <span aria-hidden className="absolute left-1/2 top-full size-2.5 -translate-x-1/2 -translate-y-[5px] rotate-45 bg-card" />
             </span>
         </motion.div>
     );
 }
 
-function StopDot({ delay = 0, label }: { delay?: number; label?: string }) {
+function StopDot({ delay = 0, label, tone }: { delay?: number; label?: string; tone: RouteTone }) {
     const reduceMotion = useReducedMotion();
     return (
         <motion.div initial={reduceMotion ? false : { scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING.drop, delay }}>
-            {label ? <NumberedStop label={label} /> : <StopGlyph />}
+            {label ? <NumberedStop label={label} tone={tone} /> : <StopGlyph />}
         </motion.div>
     );
 }

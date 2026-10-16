@@ -11,7 +11,7 @@ import {
     useReducedMotion,
     useTransform,
 } from "motion/react";
-import { ArrowUp, Check, Copy, CornerUpLeft, CornerUpRight, Flag, MapPin, RotateCw, Search, Undo2 } from "lucide-react";
+import { ArrowUp, Check, Copy, CornerUpLeft, CornerUpRight, Flag, MapPin, Package, RotateCw, Search, Undo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEMO_TIMING, DURATION, EASE, IN_VIEW, STAGGER } from "@/lib/motion";
 import {
@@ -63,7 +63,7 @@ export function TilesDemo({ zoom = 14, className }: { zoom?: number; className?:
 
     return (
         <div className={cn("absolute inset-0", className)}>
-            <LiveMap className="absolute inset-0" scene={scene} progress={progress} styleUrl={url} zoom={zoom} drift />
+            <LiveMap className="absolute inset-0" scene={scene} progress={progress} styleUrl={url} zoom={zoom} drift soft={false} />
             <SegmentedControl
                 aria-label="Map style"
                 value={style}
@@ -392,7 +392,7 @@ export function OptimizationDemo({ className }: { className?: string }) {
     });
     const tour = optimized ? TOURS.best : TOURS.entered;
     const stops = optimized ? STOPS_BY_TOUR.best : STOPS_BY_TOUR.entered;
-    const scene = useMemo(() => ({ origin: DEPOT, route: tour.line, stops }), [tour, stops]);
+    const scene = useMemo(() => ({ origin: DEPOT, originIcon: Package, route: tour.line, stops }), [tour, stops]);
     const rows = [
         { key: "entered", label: OPTIMIZATION_COPY.entered, minutes: TOURS.entered.minutes, active: !optimized, bar: "bg-soft" },
         { key: "best", label: OPTIMIZATION_COPY.best, minutes: TOURS.best.minutes, active: optimized, bar: "bg-primary" },
