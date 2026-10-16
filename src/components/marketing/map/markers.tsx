@@ -1,4 +1,4 @@
-import type { ComponentType, SVGProps } from "react";
+import type { SVGProps } from "react";
 import { cn } from "@/lib/utils";
 
 const PIN_TONE = {
@@ -20,15 +20,6 @@ export function PinGlyph({ className, tone = "primary", ...props }: SVGProps<SVG
     );
 }
 
-export function PuckGlyph({ className, ...props }: SVGProps<SVGSVGElement>) {
-    return (
-        <svg viewBox="0 0 36 36" aria-hidden className={cn("size-9 overflow-visible", className)} {...props}>
-            <circle cx="18" cy="18" r="12" className="fill-card stroke-foreground/15" strokeWidth="1" />
-            <path d="M18 9.5 24.5 25 18 21.4 11.5 25Z" className="fill-primary" strokeLinejoin="round" />
-        </svg>
-    );
-}
-
 export function OriginGlyph({ className, ...props }: SVGProps<SVGSVGElement>) {
     return <PinGlyph tone="ink" className={cn("h-[34px] w-[26px]", className)} {...props} />;
 }
@@ -42,33 +33,17 @@ export function StopGlyph({ className, ...props }: SVGProps<SVGSVGElement>) {
     );
 }
 
-const RING_TONE = {
-    /** Orange ring, dark number: orange text this small would be hard to read. */
-    primary: "border-primary text-foreground",
-    muted: "border-ink text-ink",
+const asset = (file: string) => `/assets/markers/${encodeURIComponent(file)}`;
+
+/** The marker images in public/assets/markers, shown below their native size so they stay sharp on dense screens. */
+export const MARKER_ASSETS = {
+    navigation: { src: asset("Map pin (5).png"), width: 36, height: 36 },
+    stop: { src: asset("Map pin (2).png"), width: 35, height: 40 },
+    depot: { src: asset("Map pin.png"), width: 32, height: 42 },
 };
 
-export function NumberedStop({ label, tone = "muted", className }: { label: string; tone?: keyof typeof RING_TONE; className?: string }) {
-    return (
-        <span
-            className={cn(
-                "flex size-7 items-center justify-center rounded-full border-[2.5px] bg-card text-[12px] font-semibold leading-none tabular-nums shadow-overlay transition-colors duration-300",
-                RING_TONE[tone],
-                className,
-            )}
-        >
-            {label}
-        </span>
-    );
-}
-
-export function IconPin({ icon: Icon, className }: { icon: ComponentType<{ className?: string }>; className?: string }) {
-    return (
-        <span className={cn("relative block h-[42px] w-8", className)}>
-            <PinGlyph tone="ink" className="absolute inset-0 h-full w-full" />
-            <span className="absolute left-1/2 top-[15px] flex size-[22px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-ink">
-                <Icon className="size-3.5 text-ink-foreground" />
-            </span>
-        </span>
-    );
+export function AssetMarker({ kind, className }: { kind: keyof typeof MARKER_ASSETS; className?: string }) {
+    const { src, width, height } = MARKER_ASSETS[kind];
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt="" width={width} height={height} draggable={false} className={cn("block select-none", className)} />;
 }

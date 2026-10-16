@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
     AnimatePresence,
@@ -23,11 +23,11 @@ import { ALL_DEMO_ROUTES } from "@/constants/demo-routes";
 import { proxiedTileUrl } from "./demo-api";
 import { applySoftPalette } from "./soft-palette";
 import { boundsOf, projector, sliceRoute } from "./geo";
-import { IconPin, NumberedStop, OriginGlyph, PinGlyph, PuckGlyph, StopGlyph } from "./markers";
+import { AssetMarker, MARKER_ASSETS, OriginGlyph, PinGlyph, StopGlyph } from "./markers";
 
 export type MapMode = "loading" | "live" | "fallback";
 
-export type MapStop = Place & { label?: string; title?: string };
+export type MapStop = Place & { title?: string; pin?: boolean };
 
 export type MapScene = {
     origin?: Place | null;
@@ -35,7 +35,7 @@ export type MapScene = {
     route?: LngLat[] | null;
     routes?: LngLat[][] | null;
     stops?: MapStop[] | null;
-    originIcon?: ComponentType<{ className?: string }>;
+    depot?: boolean;
 };
 
 type RouteTone = "primary" | "muted";
@@ -52,6 +52,8 @@ type LiveMapProps = {
     soft?: boolean;
     overlayInset?: Partial<Record<"top" | "right" | "bottom" | "left", number>>;
     onModeChange?: (mode: MapMode) => void;
+    /** Called once the first view is drawn, so a demo can start animating on a loaded map. */
+    onReady?: () => void;
     className?: string;
 };
 
@@ -59,6 +61,13 @@ const ROUTE_SOURCE = "demo-route";
 const CASING_LAYER = `${ROUTE_SOURCE}-casing`;
 const LINE_LAYER = `${ROUTE_SOURCE}-line`;
 const LOAD_TIMEOUT_MS = 10_000;
+
+// The map code (SDK + MapLibre) is the slowest step and doesn't depend on React, so its download starts as soon
+// as this module runs on the client, in parallel with hydration, instead of after the map component mounts.
+let mapModules: Promise<[typeof import("@gebeta/js"), typeof import("maplibre-gl")]> | undefined;
+const loadMapModules = () => (mapModules ??= Promise.all([import("@gebeta/js"), import("maplibre-gl")]));
+if (typeof window !== "undefined") void loadMapModules();
+const READY_CAP_MS = 4000;
 const FIT_PADDING_RATIO = 0.08;
 const FIT_PADDING_MIN = 16;
 const FIT_PADDING_MAX = 56;
@@ -121,6 +130,7 @@ export default function LiveMap({
     soft = true,
     overlayInset,
     onModeChange,
+    onReady,
     className,
 }: LiveMapProps) {
     const rootRef = useRef<HTMLDivElement>(null);
@@ -132,9 +142,19 @@ export default function LiveMap({
     const [markerEls, setMarkerEls] = useState<{ origin: HTMLElement; pin: HTMLElement; puck: HTMLElement } | null>(null);
     const [stopEls, setStopEls] = useState<{ id: string; el: HTMLElement; index: number }[]>([]);
     const [mode, setMode] = useState<MapMode>("loading");
+    const [ready, setReady] = useState(false);
+    const onReadyRef = useRef(onReady);
+    onReadyRef.current = onReady;
+    useEffect(() => {
+        if (ready) onReadyRef.current?.();
+    }, [ready]);
+    useEffect(() => {
+        if (mode === "fallback") setReady(true);
+    }, [mode]);
     const reduceMotion = useReducedMotion();
     const userMoved = useRef(false);
     const framedTarget = useRef<string | undefined>(undefined);
+    const framedOnce = useRef(false);
     const nearView = useInView(rootRef, { once: true, margin: "200px" });
     const onModeChangeRef = useRef(onModeChange);
     onModeChangeRef.current = onModeChange;
@@ -157,7 +177,7 @@ export default function LiveMap({
         };
 
         (async () => {
-            const [{ GebetaMaps }, maplibre] = await Promise.all([import("@gebeta/js"), import("maplibre-gl")]);
+            const [{ GebetaMaps }, maplibre] = await loadMapModules();
             if (cancelled || !containerRef.current) return;
 
             // The key lives on our server: the SDK renders the map, and every tile request is rewritten
@@ -214,6 +234,13 @@ export default function LiveMap({
                 addRouteLayers(map!);
                 setMode((m) => (m === "live" ? m : "live"));
                 map!.fire("demo:style");
+            });
+            // "idle" fires once the camera has settled and the visible tiles are drawn; a tile that never
+            // arrives would hold it back, hence the cap.
+            const readyCap = window.setTimeout(() => setReady(true), READY_CAP_MS);
+            map.once("idle", () => {
+                window.clearTimeout(readyCap);
+                if (!cancelled) setReady(true);
             });
         })().catch(fallback);
 
@@ -275,7 +302,7 @@ export default function LiveMap({
             if (stopMarkers.current.has(id)) return;
             const el = document.createElement("div");
             el.style.pointerEvents = "none";
-            const marker = new MarkerClass({ element: el, anchor: stop.title ? "bottom" : "center" }).setLngLat(stop.lngLat).addTo(map);
+            const marker = new MarkerClass({ element: el, anchor: stop.title || stop.pin ? "bottom" : "center" }).setLngLat(stop.lngLat).addTo(map);
             stopMarkers.current.set(id, { marker, el });
         });
         setStopEls((stops ?? []).map((s, index) => ({ id: s.id, el: stopMarkers.current.get(s.id)!.el, index })));
@@ -284,7 +311,9 @@ export default function LiveMap({
             ...allRoutes.flat(),
             ...[origin, target, ...(stops ?? [])].filter((p): p is Place => !!p).map((p) => p.lngLat),
         ];
-        const duration = reduceMotion ? 0 : 1000;
+        // The first framing is instant: flying in from a default view fetches tiles for every zoom on the way.
+        const duration = reduceMotion || !framedOnce.current ? 0 : 1000;
+        framedOnce.current = true;
         // A new destination is a new question, so it's framed even if the visitor panned before.
         if (target?.id !== framedTarget.current) userMoved.current = false;
         framedTarget.current = target?.id;
@@ -296,7 +325,7 @@ export default function LiveMap({
                 Math.min(FIT_PADDING_MAX, Math.max(FIT_PADDING_MIN, Math.min(clientWidth, clientHeight) * FIT_PADDING_RATIO)),
             );
             const labelled = stops?.some((stop) => stop.title);
-            const pinned = !!(origin || target);
+            const pinned = !!(origin || target || stops?.some((stop) => stop.pin));
             const room = labelled
                 ? { top: TITLE_ROOM.top, side: TITLE_ROOM.side }
                 : { top: pinned ? PIN_ROOM_TOP : 0, side: 0 };
@@ -375,21 +404,29 @@ export default function LiveMap({
             </div>
             {mode === "fallback" && <DrawnMap scene={scene} allRoutes={allRoutes} progress={progress} showLabels={showLabels} tone={tone} />}
             {mode === "loading" && <div aria-hidden className="absolute inset-0 animate-pulse bg-raised" />}
-            {markerEls && (
+            {markerEls && ready && (
                 <>
-                    {createPortal(scene.originIcon ? <IconPin icon={scene.originIcon} /> : <OriginGlyph />, markerEls.origin)}
+                    {createPortal(<Pop>{scene.depot ? <AssetMarker kind="depot" /> : <OriginGlyph />}</Pop>, markerEls.origin)}
                     {createPortal(<DroppingPin key={target?.id} />, markerEls.pin)}
-                    {createPortal(<PuckGlyph />, markerEls.puck)}
+                    {createPortal(<AssetMarker kind="navigation" />, markerEls.puck)}
                 </>
             )}
-            {stopEls.map(({ id, el, index }) => {
+            {ready && stopEls.map(({ id, el, index }) => {
                 const stop = stops?.find((s) => s.id === id);
                 const delay = index * STAGGER;
                 if (stop?.title) return createPortal(<TitledPin key={id} delay={delay} title={stop.title} />, el, id);
-                // Keyed by label too, so a renumbered stop pops in again and the change is noticed.
-                return createPortal(<StopDot key={`${id}-${stop?.label ?? ""}`} delay={delay} label={stop?.label} tone={tone} />, el, id);
+                return createPortal(<StopDot key={id} delay={delay} pin={stop?.pin} />, el, id);
             })}
         </div>
+    );
+}
+
+function Pop({ children }: { children: ReactNode }) {
+    const reduceMotion = useReducedMotion();
+    return (
+        <motion.div initial={reduceMotion ? false : { scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING.drop} style={{ transformOrigin: "bottom center" }}>
+            {children}
+        </motion.div>
     );
 }
 
@@ -420,11 +457,11 @@ function TitledPin({ delay = 0, title }: { delay?: number; title: string }) {
     );
 }
 
-function StopDot({ delay = 0, label, tone }: { delay?: number; label?: string; tone: RouteTone }) {
+function StopDot({ delay = 0, pin }: { delay?: number; pin?: boolean }) {
     const reduceMotion = useReducedMotion();
     return (
         <motion.div initial={reduceMotion ? false : { scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING.drop, delay }}>
-            {label ? <NumberedStop label={label} tone={tone} /> : <StopGlyph />}
+            {pin ? <AssetMarker kind="stop" /> : <StopGlyph />}
         </motion.div>
     );
 }
@@ -493,11 +530,16 @@ function DrawnMap({
             {route?.length ? (
                 <motion.g style={{ x: headX, y: headY, opacity: puckOpacity }}>
                     <motion.g style={{ rotate: headRotate }}>
-                        <PuckGlyph x={-27} y={-27} width={54} height={54} style={{ width: 54, height: 54 }} />
+                        <image href={MARKER_ASSETS.navigation.src} x={-27} y={-27} width={54} height={54} />
                     </motion.g>
                 </motion.g>
             ) : null}
-            {start && <OriginGlyph x={start[0] - 19} y={start[1] - 50} width={38} height={50} style={{ width: 38, height: 50 }} />}
+            {start &&
+                (scene.depot ? (
+                    <image href={MARKER_ASSETS.depot.src} x={start[0] - 19} y={start[1] - 50} width={38} height={50} />
+                ) : (
+                    <OriginGlyph x={start[0] - 19} y={start[1] - 50} width={38} height={50} style={{ width: 38, height: 50 }} />
+                ))}
             <AnimatePresence>
                 {pins.map((pin, i) => {
                     const [x, y] = project(pin.lngLat);
@@ -520,11 +562,10 @@ function DrawnMap({
                                 </>
                             ) : (
                                 <g>
-                                    <StopGlyph x={x - 14} y={y - 14} width={28} height={28} style={{ width: 28, height: 28 }} />
-                                    {pin.label && (
-                                        <text x={x} y={y + 5} textAnchor="middle" className="fill-primary-foreground text-[14px] font-semibold">
-                                            {pin.label}
-                                        </text>
+                                    {pin.pin ? (
+                                        <image href={MARKER_ASSETS.stop.src} x={x - 18} y={y - 42} width={36} height={42} />
+                                    ) : (
+                                        <StopGlyph x={x - 14} y={y - 14} width={28} height={28} style={{ width: 28, height: 28 }} />
                                     )}
                                 </g>
                             )}

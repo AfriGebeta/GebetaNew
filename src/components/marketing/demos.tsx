@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     AnimatePresence,
     animate,
@@ -11,7 +11,7 @@ import {
     useReducedMotion,
     useTransform,
 } from "motion/react";
-import { ArrowUp, Check, Copy, CornerUpLeft, CornerUpRight, Flag, MapPin, Package, RotateCw, Search, Undo2 } from "lucide-react";
+import { ArrowUp, Check, Copy, CornerUpLeft, CornerUpRight, Flag, MapPin, RotateCw, Search, Undo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEMO_TIMING, DURATION, EASE, IN_VIEW, STAGGER } from "@/lib/motion";
 import {
@@ -151,8 +151,11 @@ const stepAt = (maneuvers: Maneuver[], t: number) => {
     return index;
 };
 
+/** Drives a route over `durationMs`, once the map reports it's ready; pass `onReady` to the LiveMap. */
 function useDrive(ref: React.RefObject<Element>, durationMs: number, onLap?: () => void) {
     const progress = useMotionValue(0);
+    const [ready, setReady] = useState(false);
+    const onReady = useCallback(() => setReady(true), []);
     const { reduceMotion } = useLoop(ref, async (signal) => {
         onLap?.();
         progress.set(0);
@@ -160,11 +163,11 @@ function useDrive(ref: React.RefObject<Element>, durationMs: number, onLap?: () 
         // Linear, like a car at cruising speed; easing makes the start and end crawl.
         await animate(progress, 1, { duration: durationMs / 1000, ease: "linear" });
         await sleep(DEMO_TIMING.restMs, signal);
-    });
+    }, [], ready);
     useEffect(() => {
         if (reduceMotion) progress.set(1);
     }, [reduceMotion, progress]);
-    return progress;
+    return { progress, onReady };
 }
 
 const DIRECTIONS_TARGET = place(DIRECTIONS_TILE_TARGET);
@@ -175,7 +178,7 @@ const INSTRUCTION_INSET = { bottom: 52 };
 export function DirectionsDemo({ className }: { className?: string }) {
     const ref = useRef<HTMLDivElement>(null);
     const [step, setStep] = useState(0);
-    const progress = useDrive(ref, DEMO_TIMING.driveMs);
+    const { progress, onReady } = useDrive(ref, DEMO_TIMING.driveMs);
     const scene = useMemo(() => ({ origin: ORIGIN, target: DIRECTIONS_TARGET, route: DIRECTIONS_ROUTE.coords }), []);
     useMotionValueEvent(progress, "change", (t) => setStep(stepAt(DIRECTIONS_ROUTE.maneuvers, t)));
 
@@ -188,6 +191,7 @@ export function DirectionsDemo({ className }: { className?: string }) {
                 className="absolute inset-0"
                 scene={scene}
                 progress={progress}
+                onReady={onReady}
                 showLabels={false}
                 controls={false}
                 overlayInset={INSTRUCTION_INSET}
@@ -220,7 +224,7 @@ export function RouteDemo({ className }: { className?: string }) {
     const ref = useRef<HTMLDivElement>(null);
     const [index, setIndex] = useState(0);
     const lap = useRef(-1);
-    const progress = useDrive(ref, DEMO_TIMING.driveMs, () => {
+    const { progress, onReady } = useDrive(ref, DEMO_TIMING.driveMs, () => {
         lap.current += 1;
         setIndex(lap.current % CYCLE.length);
     });
@@ -229,7 +233,7 @@ export function RouteDemo({ className }: { className?: string }) {
 
     return (
         <div ref={ref} className={cn("absolute inset-0 flex flex-col", className)}>
-            <LiveMap className="flex-1" scene={scene} progress={progress} />
+            <LiveMap className="flex-1" scene={scene} progress={progress} onReady={onReady} />
             <div className="flex min-h-14 items-center justify-between gap-3 bg-card px-4 py-3" aria-live="polite">
                 <span className="flex min-w-0 flex-col gap-1">
                     <span className="truncate text-[14px] font-medium leading-none text-foreground">
@@ -352,9 +356,7 @@ const TOURS = {
     best: { line: DEMO_OPTIMIZATION.bestLine, minutes: DEMO_OPTIMIZATION.bestMinutes },
 };
 
-const numbered = (tourIds: string[]) =>
-    STOPS.map((stop) => ({ ...stop, label: String(tourIds.indexOf(stop.id)) }));
-const STOPS_BY_TOUR = { entered: numbered(DEMO_OPTIMIZATION.entered), best: numbered(DEMO_OPTIMIZATION.best) };
+const STOP_PINS = STOPS.map((stop) => ({ ...stop, pin: true }));
 const SAVED_MINUTES = TOURS.entered.minutes - TOURS.best.minutes;
 const STRIP_INSET = { top: 36 };
 
@@ -362,13 +364,12 @@ export function OptimizationDemo({ className }: { className?: string }) {
     const ref = useRef<HTMLDivElement>(null);
     const [optimized, setOptimized] = useState(false);
     const lap = useRef(0);
-    const progress = useDrive(ref, DEMO_TIMING.tourDriveMs, () => {
+    const { progress, onReady } = useDrive(ref, DEMO_TIMING.tourDriveMs, () => {
         setOptimized(lap.current % 2 === 1);
         lap.current += 1;
     });
     const tour = optimized ? TOURS.best : TOURS.entered;
-    const stops = optimized ? STOPS_BY_TOUR.best : STOPS_BY_TOUR.entered;
-    const scene = useMemo(() => ({ origin: DEPOT, originIcon: Package, route: tour.line, stops }), [tour, stops]);
+    const scene = useMemo(() => ({ origin: DEPOT, depot: true, route: tour.line, stops: STOP_PINS }), [tour]);
     const rows = [
         { key: "entered", label: OPTIMIZATION_COPY.entered, minutes: TOURS.entered.minutes, active: !optimized, bar: "bg-soft" },
         { key: "best", label: OPTIMIZATION_COPY.best, minutes: TOURS.best.minutes, active: optimized, bar: "bg-primary" },
@@ -380,6 +381,7 @@ export function OptimizationDemo({ className }: { className?: string }) {
                 className="absolute inset-0"
                 scene={scene}
                 progress={progress}
+                onReady={onReady}
                 showLabels={false}
                 tone={optimized ? "primary" : "muted"}
                 controls={false}
@@ -427,11 +429,11 @@ const ONM_RANKED = [...ONM].sort((a, b) => DEMO_ONM[a.place.id].minutes - DEMO_O
 
 export function OneToManyDemo({ className }: { className?: string }) {
     const ref = useRef<HTMLDivElement>(null);
-    const progress = useDrive(ref, DEMO_TIMING.fanDriveMs);
+    const { progress, onReady } = useDrive(ref, DEMO_TIMING.fanDriveMs);
 
     return (
         <div ref={ref} className={cn("absolute inset-0 flex flex-col", className)}>
-            <LiveMap className="min-h-[260px] flex-1" scene={ONM_SCENE} progress={progress} showLabels={false} />
+            <LiveMap className="min-h-[260px] flex-1" scene={ONM_SCENE} progress={progress} showLabels={false} onReady={onReady} />
             <ol className="flex gap-1 overflow-x-auto bg-card p-2" aria-label="Destinations, fastest first">
                 {ONM_RANKED.map((d, i) => (
                     <li

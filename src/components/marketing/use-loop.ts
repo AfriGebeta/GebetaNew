@@ -12,17 +12,17 @@ export const sleep = (ms: number, signal: AbortSignal) =>
         });
     });
 
-export function useLoop(ref: RefObject<Element>, step: (signal: AbortSignal) => Promise<void>, deps: unknown[] = []) {
+export function useLoop(ref: RefObject<Element>, step: (signal: AbortSignal) => Promise<void>, deps: unknown[] = [], enabled = true) {
     const inView = useInView(ref, { amount: 0.4 });
     const reduceMotion = useReducedMotion();
     useEffect(() => {
-        if (!inView || reduceMotion) return;
+        if (!inView || reduceMotion || !enabled) return;
         const controller = new AbortController();
         (async () => {
             while (!controller.signal.aborted) await step(controller.signal);
         })().catch(() => undefined);
         return () => controller.abort();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inView, reduceMotion, ...deps]);
+    }, [inView, reduceMotion, enabled, ...deps]);
     return { inView, reduceMotion };
 }
