@@ -4,7 +4,6 @@ import type { ProductDemo as DemoKey } from "@/constants/products";
 import GeocodeSearchDemo from "./geocode-search-demo";
 import { MatrixDemo, OneToManyDemo, OptimizationDemo, RouteDemo, TilesDemo } from "./demos";
 
-/** The working fragment shown in a product page's hero. */
 export default function ProductDemo({ demo }: { demo: DemoKey }) {
     switch (demo) {
         case "tiles":

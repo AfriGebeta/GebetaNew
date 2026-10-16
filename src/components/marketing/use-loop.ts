@@ -12,7 +12,6 @@ export const sleep = (ms: number, signal: AbortSignal) =>
         });
     });
 
-/** Runs `step` over and over while the element is on screen; pauses off screen and under reduced motion. */
 export function useLoop(ref: RefObject<Element>, step: (signal: AbortSignal) => Promise<void>, deps: unknown[] = []) {
     const inView = useInView(ref, { amount: 0.4 });
     const reduceMotion = useReducedMotion();

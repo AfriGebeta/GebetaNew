@@ -43,17 +43,8 @@ import { geocode } from "./map/demo-api";
 import { formatDistance, formatDuration } from "./map/geo";
 import { sleep, useLoop } from "./use-loop";
 
-/**
- * Working fragments of each product. Every demo fills its (relatively positioned) parent, so the same
- * component serves a bento tile and a product page hero. Routes, travel times and the optimized tour are
- * saved from the live APIs (src/constants/demo-routes.json), so the drawn line and the moving marker always
- * share one polyline; only the geocoding search calls the API live.
- */
-
 const place = (id: string) => PLACES.find((p) => p.id === id)!;
 const ORIGIN = place(ORIGIN_ID);
-
-/* ─── Map tiles ─────────────────────────────────────────────────────────────── */
 
 export function TilesDemo({ zoom = 14, className }: { zoom?: number; className?: string }) {
     const [style, setStyle] = useState<string>(MAP_STYLES[0].id);
@@ -74,8 +65,6 @@ export function TilesDemo({ zoom = 14, className }: { zoom?: number; className?:
         </div>
     );
 }
-
-/* ─── Geocoding (typing search) ─────────────────────────────────────────────── */
 
 export function GeocodingDemo({ className }: { className?: string }) {
     const ref = useRef<HTMLDivElement>(null);
@@ -145,8 +134,6 @@ export function GeocodingDemo({ className }: { className?: string }) {
     );
 }
 
-/* ─── Directions (live map with the route's real turn-by-turn steps) ────────── */
-
 const MANEUVER_ICON: Record<ManeuverKind, typeof ArrowUp> = {
     straight: ArrowUp,
     right: CornerUpRight,
@@ -156,7 +143,6 @@ const MANEUVER_ICON: Record<ManeuverKind, typeof ArrowUp> = {
     arrive: Flag,
 };
 
-/** Index of the maneuver the driver is on at route progress `t`. */
 const stepAt = (maneuvers: Maneuver[], t: number) => {
     let index = 0;
     maneuvers.forEach((m, i) => {
@@ -165,7 +151,6 @@ const stepAt = (maneuvers: Maneuver[], t: number) => {
     return index;
 };
 
-/** Drives `progress` from 0 to 1 over a saved route, then rests, while on screen. */
 function useDrive(ref: React.RefObject<Element>, durationMs: number, onLap?: () => void) {
     const progress = useMotionValue(0);
     const { reduceMotion } = useLoop(ref, async (signal) => {
@@ -185,7 +170,6 @@ function useDrive(ref: React.RefObject<Element>, durationMs: number, onLap?: () 
 const DIRECTIONS_TARGET = place(DIRECTIONS_TILE_TARGET);
 const DIRECTIONS_ROUTE = demoRoute(ORIGIN_ID, DIRECTIONS_TILE_TARGET)!;
 
-/** Keeps the route clear of the turn-by-turn bar laid over the bottom of the map. */
 const INSTRUCTION_INSET = { bottom: 52 };
 
 export function DirectionsDemo({ className }: { className?: string }) {
@@ -230,8 +214,6 @@ export function DirectionsDemo({ className }: { className?: string }) {
     );
 }
 
-/* ─── Directions (live map, cycling destinations) ───────────────────────────── */
-
 const CYCLE = ROUTE_CYCLE.map((id) => ({ place: place(id), route: demoRoute(ORIGIN_ID, id)! }));
 
 export function RouteDemo({ className }: { className?: string }) {
@@ -261,8 +243,6 @@ export function RouteDemo({ className }: { className?: string }) {
         </div>
     );
 }
-
-/* ─── Matrix ────────────────────────────────────────────────────────────────── */
 
 function CountUp({ value, start, delay, decimals = 0 }: { value: number; start: boolean; delay: number; decimals?: number }) {
     const mv = useMotionValue(0);
@@ -365,8 +345,6 @@ export function MatrixDemo({ className }: { className?: string }) {
     );
 }
 
-/* ─── Route optimization (live map, entered order vs optimized tour) ────────── */
-
 const DEPOT = place(ORIGIN_ID);
 const STOPS = OPTIMIZATION_STOPS.map(place);
 const TOURS = {
@@ -374,12 +352,10 @@ const TOURS = {
     best: { line: DEMO_OPTIMIZATION.bestLine, minutes: DEMO_OPTIMIZATION.bestMinutes },
 };
 
-/** Each stop labelled with its position in a tour (the depot is the start and end, so it's not counted). */
 const numbered = (tourIds: string[]) =>
     STOPS.map((stop) => ({ ...stop, label: String(tourIds.indexOf(stop.id)) }));
 const STOPS_BY_TOUR = { entered: numbered(DEMO_OPTIMIZATION.entered), best: numbered(DEMO_OPTIMIZATION.best) };
 const SAVED_MINUTES = TOURS.entered.minutes - TOURS.best.minutes;
-/** Keeps the stops clear of the comparison strip laid over the top of the map. */
 const STRIP_INSET = { top: 36 };
 
 export function OptimizationDemo({ className }: { className?: string }) {
@@ -409,7 +385,6 @@ export function OptimizationDemo({ className }: { className?: string }) {
                 controls={false}
                 overlayInset={STRIP_INSET}
             />
-            {/* One slim strip, so the map underneath stays visible even in a small tile. */}
             <div data-ui className="absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] items-center gap-1 rounded-full bg-card p-1 text-[12px] shadow-overlay">
                 {rows.map((row) => (
                     <span
@@ -442,16 +417,12 @@ export function OptimizationDemo({ className }: { className?: string }) {
     );
 }
 
-/* ─── One-to-many ───────────────────────────────────────────────────────────── */
-
 const ONM = ONM_DESTINATIONS.map((id) => ({ place: place(id), route: demoRoute(ORIGIN_ID, id)! }));
-/** Each destination is a named pin with its ONM travel time, so the fan of routes reads at a glance. */
 const ONM_SCENE = {
     origin: ORIGIN,
     routes: ONM.map((d) => d.route.coords),
     stops: ONM.map((d) => ({ ...d.place, title: `${d.place.short ?? d.place.name} · ${DEMO_ONM[d.place.id].minutes} min` })),
 };
-/** Ranked by the ONM API's travel times; the lines on the map come from the saved directions. */
 const ONM_RANKED = [...ONM].sort((a, b) => DEMO_ONM[a.place.id].minutes - DEMO_ONM[b.place.id].minutes);
 
 export function OneToManyDemo({ className }: { className?: string }) {
@@ -461,7 +432,6 @@ export function OneToManyDemo({ className }: { className?: string }) {
     return (
         <div ref={ref} className={cn("absolute inset-0 flex flex-col", className)}>
             <LiveMap className="min-h-[260px] flex-1" scene={ONM_SCENE} progress={progress} showLabels={false} />
-            {/* The ranking, slim and below the map, so the map keeps the full width. */}
             <ol className="flex gap-1 overflow-x-auto bg-card p-2" aria-label="Destinations, fastest first">
                 {ONM_RANKED.map((d, i) => (
                     <li
@@ -479,8 +449,6 @@ export function OneToManyDemo({ className }: { className?: string }) {
         </div>
     );
 }
-
-/* ─── SDKs ──────────────────────────────────────────────────────────────────── */
 
 export function SdkDemo({ className }: { className?: string }) {
     const [tab, setTab] = useState<string>(SDK_SNIPPETS[0].id);

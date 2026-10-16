@@ -27,31 +27,24 @@ export const SPRING = {
   drop: { type: "spring", stiffness: 520, damping: 18, mass: 0.8 },
 } as const satisfies Record<string, Transition>;
 
-/** Viewport options for scroll-triggered entrances: fire once, slightly before fully in view. */
 export const IN_VIEW = { once: true, amount: 0.3 } as const;
 
-/** Parent: staggers its children's entrance. */
 export const stagger = (delayChildren = 0): Variants => ({
   hidden: {},
   show: { transition: { staggerChildren: STAGGER, delayChildren } },
 });
 
-/** Child: rises into place. */
 export const rise: Variants = {
   hidden: { opacity: 0, y: RISE },
   show: { opacity: 1, y: 0, transition: { duration: DURATION.entrance, ease: EASE.out } },
 };
 
-/** Demo timings (ms) for the scripted map animations. */
 export const DEMO_TIMING = {
   typeCharMs: 55,
   holdResultsMs: 900,
   routeDrawMs: 1800,
-  /** A car driving one cross-town route (hero, directions). */
   driveMs: 9000,
-  /** A full multi-stop delivery tour (route optimization). */
   tourDriveMs: 16000,
-  /** Several routes revealed at once from one origin (one-to-many). */
   fanDriveMs: 6000,
   restMs: 2600,
 } as const;

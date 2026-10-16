@@ -22,7 +22,6 @@ export default function CallToAction() {
                 <motion.p variants={rise} className="max-w-[44ch] text-[18px] leading-[1.5] text-ink-foreground/70">
                     {CTA.description}
                 </motion.p>
-                {/* Buttons are for using, not watching: they appear at once. */}
                 <div className="flex flex-wrap gap-3">
                     <Button href={CTA.primary.href} size="xl">
                         {CTA.primary.label} <ArrowRight aria-hidden />

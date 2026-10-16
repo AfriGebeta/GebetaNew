@@ -1,19 +1,11 @@
 import type { ComponentType, SVGProps } from "react";
 import { cn } from "@/lib/utils";
 
-/**
- * Map markers shared by the live (MapLibre) map and the drawn fallback map.
- * Live markers are rendered to static markup and handed to MapLibre as DOM elements.
- */
-
 const PIN_TONE = {
-    /** The destination: the answer, so it carries the brand colour. */
     primary: "fill-primary stroke-primary-foreground/25",
-    /** The origin: where the trip starts. */
     ink: "fill-ink stroke-card",
 };
 
-/** Teardrop drop-pin, anchored at its tip. */
 export function PinGlyph({ className, tone = "primary", ...props }: SVGProps<SVGSVGElement> & { tone?: keyof typeof PIN_TONE }) {
     return (
         <svg viewBox="0 0 32 42" aria-hidden className={cn("h-[42px] w-8 overflow-visible", className)} {...props}>
@@ -28,7 +20,6 @@ export function PinGlyph({ className, tone = "primary", ...props }: SVGProps<SVG
     );
 }
 
-/** Navigation puck: a disc with a heading arrow, rotated to the direction of travel. */
 export function PuckGlyph({ className, ...props }: SVGProps<SVGSVGElement>) {
     return (
         <svg viewBox="0 0 36 36" aria-hidden className={cn("size-9 overflow-visible", className)} {...props}>
@@ -38,12 +29,10 @@ export function PuckGlyph({ className, ...props }: SVGProps<SVGSVGElement>) {
     );
 }
 
-/** Route origin: an ink pin, a size smaller than the destination's, anchored at its tip. */
 export function OriginGlyph({ className, ...props }: SVGProps<SVGSVGElement>) {
     return <PinGlyph tone="ink" className={cn("h-[34px] w-[26px]", className)} {...props} />;
 }
 
-/** Stop on a multi-stop route: a small ringed dot, so many of them stay readable. */
 export function StopGlyph({ className, ...props }: SVGProps<SVGSVGElement>) {
     return (
         <svg viewBox="0 0 16 16" aria-hidden className={cn("size-4", className)} {...props}>
@@ -59,7 +48,6 @@ const RING_TONE = {
     muted: "border-ink text-ink",
 };
 
-/** Stop with its position in the visiting order: a white disc ringed in the route's colour. */
 export function NumberedStop({ label, tone = "muted", className }: { label: string; tone?: keyof typeof RING_TONE; className?: string }) {
     return (
         <span
@@ -74,7 +62,6 @@ export function NumberedStop({ label, tone = "muted", className }: { label: stri
     );
 }
 
-/** A pin with an icon in its head, e.g. the depot a delivery round starts from. Anchored at its tip. */
 export function IconPin({ icon: Icon, className }: { icon: ComponentType<{ className?: string }>; className?: string }) {
     return (
         <span className={cn("relative block h-[42px] w-8", className)}>

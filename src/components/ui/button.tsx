@@ -19,7 +19,6 @@ const buttonVariants = cva(
       variant: {
         primary: PRIMARY,
         secondary: SECONDARY,
-        /** Strong but not a call to action: orange stays reserved for those. */
         ink: "bg-ink text-ink-foreground shadow-btn-ink hover:bg-ink/85",
         muted: "bg-muted text-foreground shadow-btn hover:bg-raised-hover",
         subtle: "bg-raised text-foreground shadow-btn-subtle hover:bg-muted",

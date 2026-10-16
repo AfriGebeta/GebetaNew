@@ -40,7 +40,6 @@ export const NAV_SOLUTIONS_FEATURE: NavFeature = {
     links: [],
 };
 
-/** The navbar's drop-down menus, in order. */
 export const NAV_MENUS = [
     { id: "products", label: "Products", basePath: "/products", items: NAV_PRODUCTS, feature: NAV_FEATURE },
     { id: "solutions", label: "Solutions", basePath: "/solutions", items: NAV_SOLUTIONS, feature: NAV_SOLUTIONS_FEATURE },

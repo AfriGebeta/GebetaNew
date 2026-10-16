@@ -4,10 +4,6 @@ import Container from "@/sections/Container";
 import { cn } from "@/lib/utils";
 import { LEGAL_PAGES } from "@/constants/legal";
 
-/**
- * Shared frame for the privacy policy and terms: the site's page header, a switch between the two documents,
- * and a reading column. The body uses the blog's MDX styles, so long text reads the same everywhere.
- */
 export default function LegalPage({
     current,
     title,

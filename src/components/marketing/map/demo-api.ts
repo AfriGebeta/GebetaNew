@@ -8,12 +8,6 @@ import {
 } from "@/constants/landing";
 import { pathLength } from "./geo";
 
-/**
- * Client side of the map demos. Requests go to our /api/map proxy, which holds the Gebeta key;
- * when it's unreachable the demos fall back to the drawn map and the bundled landmarks.
- */
-
-/** Rewrites Gebeta tile-host URLs to the same-origin proxy. */
 export const TILE_HOST = "https://tiles.gebeta.app/";
 export const proxiedTileUrl = (url: string) =>
     url.startsWith(TILE_HOST) ? `${window.location.origin}/api/map/tiles/${url.slice(TILE_HOST.length).split("?")[0]}` : url;
@@ -27,7 +21,6 @@ const latLng = ([lng, lat]: LngLat) => `${lat},${lng}`;
 
 const normalise = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 
-/** Local landmark match, used when the geocoder is unavailable. */
 export function matchPlaces(query: string): Place[] {
     const words = normalise(query).split(" ").filter((w) => w.length > 1);
     if (!words.length) return [];
@@ -63,17 +56,12 @@ export async function geocode(query: string): Promise<Timed<{ hits: Place[]; liv
     return { hits: matchPlaces(query), live: false, ms: LATENCY.geocoding };
 }
 
-/** Straight line with an estimated time: only used when neither a saved nor a live route exists. */
 function fallbackRoute(from: LngLat, to: LngLat): RouteResult {
     const coords = [from, to];
     const distanceM = pathLength(coords);
     return { coords, distanceM, durationS: (distanceM / 1000 / FALLBACK_SPEED_KMH) * 3600 };
 }
 
-/**
- * Routes from one origin to one or more destinations. Saved demo routes (scripts/generate-demo-routes.mjs)
- * answer instantly; only places a visitor searched for themselves go to the live API.
- */
 export async function routes(from: Place, to: Place[]): Promise<Timed<{ routes: RouteResult[]; live: boolean }>> {
     const saved = to.map((p) => demoRoute(from.id, p.id));
     if (saved.every(Boolean)) return { routes: saved as RouteResult[], live: true, ms: LATENCY.routing };

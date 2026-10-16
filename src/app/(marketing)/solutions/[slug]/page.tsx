@@ -38,7 +38,6 @@ export default function SolutionPage({ params }: Params) {
 
     return (
         <main>
-            {/* Hero: the industry's problem in one line */}
             <section className="pb-12 pt-16 md:pb-16 md:pt-24">
                 <Container>
                     <Reveal className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
@@ -53,7 +52,6 @@ export default function SolutionPage({ params }: Params) {
                         <RevealItem>
                             <p className="max-w-[48ch] text-balance text-[20px] leading-[1.5] text-soft">{solution.description}</p>
                         </RevealItem>
-                        {/* Buttons are for using, not watching: they appear at once. */}
                         <div className="flex flex-wrap items-center justify-center gap-3">
                             <Button href="/auth/register" size="xl" className="auth-signed-out">
                                 Get an API key <ArrowRight aria-hidden />
@@ -69,7 +67,6 @@ export default function SolutionPage({ params }: Params) {
                 </Container>
             </section>
 
-            {/* The article: the problem and how the APIs solve it, set like a blog post */}
             <section className="pb-24 md:pb-28">
                 <Container>
                     <article className="mx-auto max-w-[720px] border-t border-border pt-4">
@@ -85,7 +82,6 @@ export default function SolutionPage({ params }: Params) {
                 </Container>
             </section>
 
-            {/* The APIs behind it */}
             <section className="bg-raised py-24 md:py-28">
                 <Container className="flex flex-col gap-10">
                     <Reveal>
@@ -112,7 +108,6 @@ export default function SolutionPage({ params }: Params) {
                 </Container>
             </section>
 
-            {/* Other industries */}
             <section className="py-24 md:py-28">
                 <Container className="flex flex-col gap-10">
                     <Reveal>

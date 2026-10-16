@@ -1,5 +1,3 @@
-/** API status page: copy, and how each daily status is coloured. */
-
 export const STATUS_PAGE = {
     title: "System status",
     description: "Availability of the GebetaMaps APIs, day by day.",
@@ -14,7 +12,6 @@ export const STATUS_PAGE = {
 
 export type StatusLevel = "operational" | "maintenance" | "degraded" | "minor" | "major";
 
-/** Bar and dot colours per level, from the design tokens. */
 export const STATUS_LEVELS: Record<StatusLevel, { label: string; bar: string; text: string }> = {
     operational: { label: "Operational", bar: "bg-success", text: "text-success" },
     maintenance: { label: "Maintenance", bar: "bg-[var(--ds-tag-blue-text)]", text: "text-[var(--ds-tag-blue-text)]" },
@@ -23,7 +20,6 @@ export const STATUS_LEVELS: Record<StatusLevel, { label: string; bar: string; te
     major: { label: "Major outage", bar: "bg-danger", text: "text-danger" },
 };
 
-/** Statuses that mean planned work rather than an incident. */
 export const MAINTENANCE_STATUSES = ["Scheduled Maintenance", "Server Upgrade"];
 
 export function statusLevel(status: string, uptime: number): StatusLevel {

@@ -1,20 +1,13 @@
 import { LATENCY } from "@/constants/landing";
 import { DEMO_OPTIMIZATION } from "@/constants/demo-routes";
 
-/**
- * Product catalogue for the marketing site: the navigation menu, the bento, the footer and the
- * /products/[slug] pages all read from here.
- */
-
 export type ProductDemo = "tiles" | "geocoding" | "directions" | "matrix" | "optimization" | "onm";
 
 export type Product = {
     slug: string;
     demo: ProductDemo;
     name: string;
-    /** One line for menus and cards. */
     summary: string;
-    /** Page headline: two lines at most. */
     title: string;
     description: string;
     latency: { bound: "≈" | "<"; ms: number };
@@ -22,7 +15,6 @@ export type Product = {
     limits: string[];
     features: { title: string; body: string }[];
     useCases: { title: string; body: string }[];
-    /** A short explainer shown on the product page; the API reference lives in the docs. */
     article: { title: string; paragraphs: string[] };
 };
 

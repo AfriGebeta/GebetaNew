@@ -1,8 +1,3 @@
-/**
- * Content for the marketing landing page. Components read copy, numbers and coordinates from here
- * so nothing on the page is hard-coded in markup.
- */
-
 import placesJson from "./demo-places.json";
 import demoSpec from "./demo-spec.json";
 
@@ -11,18 +6,13 @@ export type LngLat = [lng: number, lat: number];
 export type Place = {
     id: string;
     name: string;
-    /** Shorter name for tight spots such as map labels. */
     short?: string;
-    /** The query the demo types (names the live geocoder resolves). */
     query: string;
     area: string;
-    /** From the geocoding API, resolved by scripts/generate-demo-routes.mjs. */
     lngLat: LngLat;
-    /** Which geocoding result the coordinates come from. */
     geocode?: { query: string; match: string; type?: string };
 };
 
-/** Published latency targets per API, in milliseconds. */
 export const LATENCY = {
     geocoding: 20,
     routing: 400,
@@ -42,14 +32,10 @@ export const ADDIS_CENTER: LngLat = [38.7613, 9.0105];
 /** Real Addis Ababa landmarks, shared with scripts/generate-demo-routes.mjs. Coordinates are approximate to the building. */
 export const PLACES = placesJson as unknown as Place[];
 
-/** Average city driving speed used to estimate durations on the drawn fallback map. */
 export const FALLBACK_SPEED_KMH = 24;
 
-/** Where routes in the demos start. */
 export const ORIGIN_ID = demoSpec.origin;
 
-
-/** Context streets for the drawn map (approximate traces of the Ring Road and main avenues). */
 export const FALLBACK_STREETS: LngLat[][] = [
     // Ring Road
     [[38.802, 9.0205], [38.795, 9.004], [38.789, 8.9958], [38.772, 8.988], [38.757, 8.985], [38.738, 8.9875], [38.72, 8.995], [38.716, 9.013], [38.722, 9.035], [38.732, 9.052], [38.755, 9.06], [38.78, 9.055], [38.797, 9.04], [38.802, 9.0205]],
@@ -73,7 +59,6 @@ export const HERO = {
     secondary: { label: "Talk to sales", href: "/contact" },
 } as const;
 
-/** What the geocoding product demo searches on its own, until the visitor types. */
 export const GEOCODING_DEMO = {
     autoplay: ["Edna Mall", "Unity Park", "Sheraton Addis", "Shiro Meda", "Kotebe Health Center"],
     placeholder: "Search a place, e.g. Unity Park",
@@ -124,13 +109,10 @@ export const BENTO = {
     },
 } as const;
 
-
-/** Matrix demo: place ids for rows and columns, with short labels for the table. */
 export const MATRIX = {
     origins: demoSpec.matrixOrigins,
     destinations: demoSpec.matrixDestinations,
     labels: { meskel: "Meskel Sq", piassa: "Piassa", merkato: "Merkato", edna: "Edna Mall", airport: "Airport", aau: "AAU" } as Record<string, string>,
-    /** The cell selected until the visitor picks one: [origin row, destination column]. */
     initial: [1, 1] as [number, number],
     metrics: [
         { value: "time", label: "Time" },
@@ -139,15 +121,12 @@ export const MATRIX = {
     from: "From",
     to: "To",
     hint: "Hover or tap a cell",
-    /** "3 origins × 3 destinations = 9 routes · 1 request": why a matrix beats one Directions call per pair. */
     summary: (origins: number, destinations: number) =>
         `${origins} origins × ${destinations} destinations = ${origins * destinations} routes · 1 request`,
 } as const;
 
-/** Route optimization demo: the depot is ORIGIN_ID, these are the stops in the order they were entered. */
 export const OPTIMIZATION_STOPS = demoSpec.optimizationStops;
 
-/** Labels for the route optimization demo's comparison strip. */
 export const OPTIMIZATION_COPY = {
     entered: "As entered",
     best: "Optimized",
@@ -157,7 +136,6 @@ export const OPTIMIZATION_COPY = {
 /** One-to-many demo destinations (the ONM API takes up to five). */
 export const ONM_DESTINATIONS = demoSpec.onmDestinations;
 
-/** Destinations the directions demos cycle through, from ORIGIN_ID. */
 export const ROUTE_CYCLE = demoSpec.routeCycle;
 export const DIRECTIONS_TILE_TARGET = demoSpec.directionsTile;
 

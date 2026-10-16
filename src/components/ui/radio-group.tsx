@@ -40,7 +40,6 @@ type RadioCardProps = React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.
   description?: React.ReactNode;
 };
 
-/** A full-width selectable card; use inside RadioGroup when options need a description. */
 const RadioCard = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   RadioCardProps

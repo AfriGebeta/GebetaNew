@@ -19,7 +19,6 @@ const places = JSON.parse(readFileSync(placesFile, "utf8"));
 const spec = JSON.parse(readFileSync(join(constants, "demo-spec.json"), "utf8"));
 
 const API = "https://mapapi.gebeta.app";
-/** Douglas–Peucker tolerance in metres: removes redundant vertices without visibly moving the line. */
 const SIMPLIFY_M = 2;
 const DECIMALS = 6;
 const CONCURRENCY = 2;
@@ -36,8 +35,6 @@ function readKey() {
 }
 const KEY = readKey();
 const latLng = (id) => `${byId[id].lngLat[1]},${byId[id].lngLat[0]}`;
-
-/* ─── geometry ──────────────────────────────────────────────────────────────── */
 
 /** Decodes a Valhalla polyline (precision 6) into [lng, lat] pairs. */
 function decode(str, precision = 6) {
@@ -70,7 +67,6 @@ function metres(a, b) {
     return 2 * R * Math.asin(Math.sqrt(h));
 }
 
-/** Perpendicular distance from p to segment ab, in metres (local equirectangular projection). */
 function offset(p, a, b) {
     const k = Math.cos(rad(a[1]));
     const [px, py] = [(p[0] - a[0]) * k, p[1] - a[1]];
@@ -102,8 +98,6 @@ function simplify(points, tolerance, keep) {
 }
 
 const round = (n) => Number(n.toFixed(DECIMALS));
-
-/* ─── API ───────────────────────────────────────────────────────────────────── */
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -170,7 +164,6 @@ async function matrix(ids) {
     return { ids, minutes, km };
 }
 
-/** Brace-delimited point list the routing APIs take: [{lat,lng},{lat,lng}]. */
 const points = (ids) => `[${ids.map((id) => `{${latLng(id)}}`).join(",")}]`;
 
 /**
@@ -193,7 +186,6 @@ async function tss(ids) {
     };
 }
 
-/** A whole tour in a given order, as one directions request with the stops as waypoints. */
 async function directionTour(ids) {
     const [start, ...rest] = ids;
     const end = rest.pop();
@@ -261,24 +253,19 @@ async function resolvePlaces() {
     writeFileSync(placesFile, JSON.stringify(places, null, 2) + "\n");
 }
 
-/* ─── build ─────────────────────────────────────────────────────────────────── */
-
 await resolvePlaces();
 const byId = Object.fromEntries(places.map((p) => [p.id, p]));
 
 const origin = spec.origin;
 
-// Optimization: the order as entered, and the order the TSS API returns.
 const entered = [origin, ...spec.optimizationStops, origin];
 const [solved, asEntered] = await Promise.all([tss([origin, ...spec.optimizationStops]), directionTour(entered)]);
 
-// One-to-many: travel times from the origin to each destination, ranked on the page.
 const onmTimes = await onm(origin, spec.onmDestinations);
 
 // Matrix demo: every pair among its origins and destinations (the API allows up to 10 points).
 const placesMatrix = await matrix([...new Set([...spec.matrixOrigins, ...spec.matrixDestinations])]);
 
-// Every leg any demo draws.
 const pairs = new Set();
 [...spec.heroAutoplay, ...spec.routeCycle, spec.directionsTile, ...spec.onmDestinations].forEach((id) => pairs.add(`${origin}>${id}`));
 
@@ -293,7 +280,6 @@ const results = await pool(
 );
 const routes = Object.fromEntries(keys.map((k, i) => [k, results[i]]));
 
-// Both tours are single API answers: Directions with the stops as waypoints in entered order, and TSS.
 const optimization = {
     entered,
     best: solved.order,

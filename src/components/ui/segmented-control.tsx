@@ -16,7 +16,6 @@ type SegmentedControlProps = {
   className?: string;
 };
 
-/** Single-choice pill switch with a sliding thumb. */
 export default function SegmentedControl({
   value,
   onValueChange,

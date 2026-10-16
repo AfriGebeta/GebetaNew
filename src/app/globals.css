@@ -62,7 +62,6 @@ html:not([data-auth]) .auth-signed-in {
         --popover-foreground: 0 0.0% 8.6%;
         --primary: 39 100.0% 50.0%;
         --primary-foreground: 36 62.5% 6.3%;
-        /* Ink: the brand's accent. A warm near-black for strong, non-CTA emphasis, so orange stays for calls to action. */
         --ink: 30 10.0% 9.0%;
         --ink-foreground: 40 20.0% 98.0%;
         --secondary: 0 0.0% 100.0%;
@@ -147,7 +146,6 @@ html:not([data-auth]) .auth-signed-in {
         --popover-foreground: 220 100.0% 98.8%;
         --primary: 39 100.0% 50.0%;
         --primary-foreground: 36 62.5% 6.3%;
-        /* On dark pages ink flips to a warm off-white, keeping it the strongest neutral. */
         --ink: 40 20.0% 96.0%;
         --ink-foreground: 30 10.0% 9.0%;
         --secondary: 0 0.0% 11.8%;
@@ -407,7 +405,6 @@ html[data-sidebar-resizing] * {
 .ds-phone.react-tel-input .flag-dropdown.invalid-number { background: hsl(var(--secondary)); border-color: hsl(var(--ds-line-strong)); }
 .ds-phone.react-tel-input .form-control.invalid-number:focus { border-color: hsl(var(--ring)); background: hsl(var(--secondary)); }
 
-/* MapLibre zoom buttons, in the design tokens */
 .maplibregl-ctrl-group:not(:empty) {
   background: hsl(var(--card));
   border-radius: 0.5rem;
@@ -418,7 +415,6 @@ html[data-sidebar-resizing] * {
 .maplibregl-ctrl-group button:hover { background-color: var(--ds-hover); }
 .dark .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1); }
 
-/* Landing hero backdrop: the map shows around the edges and clears behind the copy, then fades into the page. */
 .hero-map {
   -webkit-mask-image: radial-gradient(ellipse 38% 34% at 50% 44%, rgb(0 0 0 / 0.12) 0%, rgb(0 0 0 / 0.45) 55%, #000 100%),
     linear-gradient(to bottom, #000 55%, transparent 100%);

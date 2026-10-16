@@ -15,10 +15,6 @@ const DEBOUNCE_MS = 200;
 
 const formatCoords = ([lng, lat]: [number, number]) => `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
-/**
- * The geocoding product demo: search, see the list of matches, pick one and the map flies to it and
- * drops a pin. No routing. Autoplays a few searches until the visitor types.
- */
 export default function GeocodeSearchDemo({ className }: { className?: string }) {
     const rootRef = useRef<HTMLDivElement>(null);
     const inView = useInView(rootRef, { amount: 0.3 });
@@ -46,7 +42,6 @@ export default function GeocodeSearchDemo({ className }: { className?: string })
         return hits;
     };
 
-    // Autoplay: type a place, show the matches, pick the first, then the next search.
     useEffect(() => {
         if (userControlled || !inView) return;
         const controller = new AbortController();
@@ -72,7 +67,6 @@ export default function GeocodeSearchDemo({ className }: { className?: string })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userControlled, inView, reduceMotion]);
 
-    // Visitor search, debounced.
     useEffect(() => {
         if (!userControlled) return;
         if (!query.trim()) {

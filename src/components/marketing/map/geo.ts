@@ -2,7 +2,6 @@ import type { LngLat } from "@/constants/landing";
 
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 
-/** Great-circle distance in metres. */
 export function distance([lng1, lat1]: LngLat, [lng2, lat2]: LngLat) {
     const R = 6_371_000;
     const dLat = toRad(lat2 - lat1);
@@ -17,7 +16,6 @@ export function pathLength(coords: LngLat[]) {
     return total;
 }
 
-/** Compass bearing from a to b, in degrees. */
 export function bearing([lng1, lat1]: LngLat, [lng2, lat2]: LngLat) {
     const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
     const x =
@@ -26,7 +24,6 @@ export function bearing([lng1, lat1]: LngLat, [lng2, lat2]: LngLat) {
     return (Math.atan2(y, x) * 180) / Math.PI;
 }
 
-/** The leading part of a route at `t` (0–1) of its length, plus the head position and heading. */
 export function sliceRoute(coords: LngLat[], t: number) {
     if (coords.length < 2) return { line: coords, head: coords[0], heading: 0 };
     const target = pathLength(coords) * Math.min(1, Math.max(0, t));

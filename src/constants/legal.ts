@@ -1,11 +1,8 @@
-/** Legal pages: navigation between them, and the privacy policy's text. Terms come from the API as markdown. */
-
 export const LEGAL_PAGES = [
     { href: "/privacy", label: "Privacy policy" },
     { href: "/terms", label: "Terms of service" },
 ] as const;
 
-/** Where the terms markdown is served; the environment can point it at another gateway. */
 export const TERMS_URL = `${process.env.NEXT_PUBLIC_GATEWAY_URL ?? "https://mapapi.gebeta.app"}/terms`;
 
 export const TERMS = {

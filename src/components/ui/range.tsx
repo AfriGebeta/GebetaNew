@@ -10,7 +10,6 @@ type RangeProps = Omit<React.ComponentProps<"input">, "type" | "value" | "min" |
   max: number;
 };
 
-/** Native range input with a primary fill up to the current value. */
 const Range = React.forwardRef<HTMLInputElement, RangeProps>(
   ({ className, style, value, min, max, ...props }, ref) => {
     const fill = max > min ? Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100)) : 0;

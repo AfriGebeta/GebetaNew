@@ -36,7 +36,6 @@ export default function ProductPage({ params }: Params) {
 
     return (
         <main>
-            {/* Hero: the claim, then the product doing it */}
             <section className="py-16 md:py-24">
                 <Container className="grid gap-12 lg:grid-cols-12 lg:gap-8">
                     <Reveal className="flex flex-col gap-6 lg:col-span-5 lg:pt-8">
@@ -72,7 +71,6 @@ export default function ProductPage({ params }: Params) {
                 </Container>
             </section>
 
-            {/* What it does */}
             <section className="bg-raised py-24 md:py-28">
                 <Container className="grid gap-12 lg:grid-cols-12">
                     <Reveal className="lg:col-span-4">
@@ -91,7 +89,6 @@ export default function ProductPage({ params }: Params) {
                 </Container>
             </section>
 
-            {/* How it works: a short explainer; the API reference lives in the docs */}
             <section className="py-24 md:py-28">
                 <Container className="grid gap-10 lg:grid-cols-12">
                     <Reveal className="lg:col-span-4">
@@ -119,7 +116,6 @@ export default function ProductPage({ params }: Params) {
                 </Container>
             </section>
 
-            {/* Who uses it */}
             <section className="pb-24 md:pb-28">
                 <Container className="flex flex-col gap-10">
                     <Reveal>
@@ -138,7 +134,6 @@ export default function ProductPage({ params }: Params) {
                 </Container>
             </section>
 
-            {/* The rest of the platform */}
             <section className="bg-raised py-24 md:py-28">
                 <Container className="flex flex-col gap-10">
                     <Reveal>

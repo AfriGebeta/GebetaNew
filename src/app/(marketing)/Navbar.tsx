@@ -75,7 +75,6 @@ function NavItemLink({ link, active, onHover }: { link: NavLink; active: boolean
     );
 }
 
-/** Sliding hover pill shared by the desktop links. */
 function HoverPill() {
     return <motion.span layoutId="nav-hover-pill" transition={SPRING.snappy} className="absolute inset-0 -z-0 rounded-full bg-hover" />;
 }
@@ -86,7 +85,6 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [openMenu, setOpenMenu] = useState<NavMenuId | null>(null);
     const [mobileOpen, setMobileOpen] = useState(false);
-    /** The mobile menu's expanded section; one at a time keeps the list short. */
     const [mobileSection, setMobileSection] = useState<NavMenuId | null>(null);
     const [hovered, setHovered] = useState<string | null>(null);
     const [showAnnouncement, setShowAnnouncement] = useState(true);
@@ -216,7 +214,6 @@ export default function Navbar() {
                     </Button>
                 </nav>
 
-                {/* Desktop drop-down panel: switching menus swaps the content in place, without re-opening the panel. */}
                 <AnimatePresence>
                     {menu && (
                         <motion.div
@@ -278,7 +275,6 @@ export default function Navbar() {
                 </AnimatePresence>
             </div>
 
-            {/* Mobile menu */}
             <AnimatePresence>
                 {mobileOpen && (
                     <motion.div
@@ -291,7 +287,6 @@ export default function Navbar() {
                     >
                         <div className="flex flex-col gap-8 px-4 pb-40 pt-4 sm:px-6">
                             <section className="flex flex-col gap-1">
-                                {/* Each menu collapses behind one row, so every top-level link fits on the first screen. */}
                                 {NAV_MENUS.map((m) => {
                                     const expanded = mobileSection === m.id;
                                     return (

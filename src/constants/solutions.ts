@@ -1,22 +1,12 @@
 import { DEMO_OPTIMIZATION } from "@/constants/demo-routes";
 
-/**
- * Solutions by industry: the navigation menu and the /solutions/[slug] pages read from here. Each page is a
- * short article: the industry's location problem, and how the products listed in `products` solve it.
- */
-
 export type Solution = {
     slug: string;
-    /** Menu label. */
     name: string;
-    /** One line for menus and cards. */
     summary: string;
-    /** Page headline. */
     title: string;
     description: string;
-    /** The article: a few short sections, each a heading and its paragraphs. */
     sections: { title: string; paragraphs: string[] }[];
-    /** Product slugs, in the order they matter for this industry. */
     products: string[];
 };
 
@@ -27,7 +17,6 @@ const TOUR = {
     enteredKm: Math.round(DEMO_OPTIMIZATION.enteredKm),
     bestKm: Math.round(DEMO_OPTIMIZATION.bestKm),
 };
-/** Every order the stops could be driven in: stops! */
 const TOUR_ORDERS = Array.from({ length: TOUR.stops }, (_, i) => i + 1).reduce((n, k) => n * k, 1);
 
 export const SOLUTIONS: Solution[] = [

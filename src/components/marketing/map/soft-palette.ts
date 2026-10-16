@@ -20,7 +20,6 @@ export const SOFT_PALETTE = {
 
 type Paint = [property: string, value: unknown];
 
-/** Paint overrides by layer id. Layers not matched keep the standard style. */
 const RULES: { match: RegExp; paint: (p: typeof SOFT_PALETTE) => Paint[] }[] = [
     { match: /^background$/, paint: (p) => [["background-color", p.land]] },
     { match: /^building(-top)?$/, paint: (p) => [["fill-color", p.building], ["fill-outline-color", p.buildingEdge]] },
@@ -33,7 +32,6 @@ const RULES: { match: RegExp; paint: (p: typeof SOFT_PALETTE) => Paint[] }[] = [
     { match: /^highway-(primary|secondary|tertiary|minor)(-bridge)?$/, paint: (p) => [["line-color", p.road]] },
 ];
 
-/** Restyles the standard style's base layers; a no-op on other styles (satellite, terrain). */
 export function applySoftPalette(map: MapLibreMap) {
     if (!map.getLayer("highway-primary")) return;
     for (const layer of map.getStyle().layers ?? []) {

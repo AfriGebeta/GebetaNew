@@ -27,22 +27,14 @@ import { IconPin, NumberedStop, OriginGlyph, PinGlyph, PuckGlyph, StopGlyph } fr
 
 export type MapMode = "loading" | "live" | "fallback";
 
-/**
- * A stop on the map. `label` (e.g. the visiting order) makes a numbered dot; `title` makes a pin with a
- * name chip, e.g. "Edna Mall · 8 min", for destinations people need to tell apart.
- */
 export type MapStop = Place & { label?: string; title?: string };
 
 export type MapScene = {
     origin?: Place | null;
-    /** The main destination: a dropping pin, and the puck drives `route` to it. */
     target?: Place | null;
     route?: LngLat[] | null;
-    /** Further routes drawn alongside `route` (one-to-many), all following the same progress. */
     routes?: LngLat[][] | null;
-    /** Extra pins (stops, destinations). A label (e.g. the visiting order) turns the dot into a numbered stop. */
     stops?: MapStop[] | null;
-    /** An icon for the origin pin, e.g. a package for a depot; a plain ink pin otherwise. */
     originIcon?: ComponentType<{ className?: string }>;
 };
 
@@ -50,20 +42,14 @@ type RouteTone = "primary" | "muted";
 
 type LiveMapProps = {
     scene: MapScene;
-    /** Route draw progress, 0–1. The parent animates it; the map follows. */
     progress: MotionValue<number>;
     styleUrl?: string;
     zoom?: number;
-    /** Slowly orbit the camera while idle (tiles showcase). */
     drift?: boolean;
     showLabels?: boolean;
-    /** Colour of the drawn route. */
     tone?: RouteTone;
-    /** Show the +/- zoom buttons. */
     controls?: boolean;
-    /** Repaint the standard style in the soft demo palette. Off for the tiles demo, which shows styles as shipped. */
     soft?: boolean;
-    /** Extra camera padding (px) for UI laid over the map, e.g. a strip along the top. */
     overlayInset?: Partial<Record<"top" | "right" | "bottom" | "left", number>>;
     onModeChange?: (mode: MapMode) => void;
     className?: string;
@@ -73,7 +59,6 @@ const ROUTE_SOURCE = "demo-route";
 const CASING_LAYER = `${ROUTE_SOURCE}-casing`;
 const LINE_LAYER = `${ROUTE_SOURCE}-line`;
 const LOAD_TIMEOUT_MS = 10_000;
-/** Camera padding around a route, as a share of the map's shorter side, clamped to these bounds. */
 const FIT_PADDING_RATIO = 0.08;
 const FIT_PADDING_MIN = 16;
 const FIT_PADDING_MAX = 56;
@@ -81,12 +66,9 @@ const DRIFT_DEG_PER_SEC = 2;
 const DRIFT_PITCH = 50;
 const FOCUS_ZOOM = 16;
 const FLY_MS = 1800;
-/** Extra camera padding for pins with a name chip above them: pin plus chip height, and half a chip width. */
 const TITLE_ROOM = { top: 56, side: 48 };
-/** Origin and destination pins stand above their point, so framing keeps their height free at the top. */
 const PIN_ROOM_TOP = 40;
 const MAX_FIT_ZOOM = 15;
-/** Width of the hard edge between the drawn and undrawn part of a gradient line. */
 const GRADIENT_EDGE = 0.0005;
 
 const TONE_TOKEN: Record<RouteTone, `--${string}`> = { primary: "--primary", muted: "--ds-soft" };
@@ -153,7 +135,6 @@ export default function LiveMap({
     const reduceMotion = useReducedMotion();
     const userMoved = useRef(false);
     const framedTarget = useRef<string | undefined>(undefined);
-    // WebGL contexts are limited: only boot a map once it's near the viewport.
     const nearView = useInView(rootRef, { once: true, margin: "200px" });
     const onModeChangeRef = useRef(onModeChange);
     onModeChangeRef.current = onModeChange;
@@ -163,7 +144,6 @@ export default function LiveMap({
     const { origin, target, route, routes, stops } = scene;
     const allRoutes = useMemo(() => [route, ...(routes ?? [])].filter((r): r is LngLat[] => !!r?.length), [route, routes]);
 
-    // Boot the live map, or fall back to the drawn one.
     useEffect(() => {
         if (!nearView) return;
         let cancelled = false;
@@ -198,7 +178,6 @@ export default function LiveMap({
                 pitchWithRotate: false,
             } as Parameters<GebetaMaps["init"]>[0]) as unknown as MapLibreMap;
             if (controls) map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-right");
-            // Once a visitor moves the map themselves, the demo stops steering the camera.
             const markInteraction = (e: { originalEvent?: unknown }) => {
                 if (e.originalEvent) userMoved.current = true;
             };
@@ -227,8 +206,6 @@ export default function LiveMap({
             };
             setMarkerEls(els);
 
-            // Live as soon as the style is in; tiles stream in afterwards. Route layers are re-added on
-            // every style switch.
             map.on("style.load", () => {
                 styleArrived = true;
                 window.clearTimeout(timeout);
@@ -252,7 +229,6 @@ export default function LiveMap({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nearView]);
 
-    // Style switch.
     const appliedStyle = useRef(styleUrl ?? MAP_STYLES[0].url);
     useEffect(() => {
         const map = mapRef.current;
@@ -261,7 +237,6 @@ export default function LiveMap({
         map.setStyle(proxiedTileUrl(styleUrl));
     }, [styleUrl, mode]);
 
-    // Route geometry: uploaded once per route change (and after a style switch), then revealed by progress.
     useEffect(() => {
         const map = mapRef.current;
         if (mode !== "live" || !map) return;
@@ -276,14 +251,12 @@ export default function LiveMap({
         };
     }, [allRoutes, mode, tone, progress]);
 
-    // Camera and markers follow the scene.
     useEffect(() => {
         const map = mapRef.current;
         const markers = fixedMarkers.current;
         const MarkerClass = markerClass.current;
         if (mode !== "live" || !map || !markers || !MarkerClass) return;
 
-        // The origin dot sits where the route actually starts, so the line never begins with a jump.
         const start = route?.[0] ?? origin?.lngLat;
         if (start) markers.origin.setLngLat(start).addTo(map);
         else markers.origin.remove();
@@ -291,7 +264,6 @@ export default function LiveMap({
         else markers.pin.remove();
         if (!route?.length) markers.puck.remove();
 
-        // Stop pins: add new, drop stale.
         const wanted = new Map((stops ?? []).map((s) => [s.id, s]));
         stopMarkers.current.forEach((entry, id) => {
             if (!wanted.has(id)) {
@@ -303,7 +275,6 @@ export default function LiveMap({
             if (stopMarkers.current.has(id)) return;
             const el = document.createElement("div");
             el.style.pointerEvents = "none";
-            // Pins point at the place with their tip; dots sit centred on it.
             const marker = new MarkerClass({ element: el, anchor: stop.title ? "bottom" : "center" }).setLngLat(stop.lngLat).addTo(map);
             stopMarkers.current.set(id, { marker, el });
         });
@@ -320,13 +291,10 @@ export default function LiveMap({
         if (userMoved.current) return;
         if (points.length > 1) {
             const b = boundsOf(points, 0);
-            // Small maps (bento tiles) get proportionally less padding, so the stops spread across the tile.
             const { clientWidth, clientHeight } = map.getContainer();
             const padding = Math.round(
                 Math.min(FIT_PADDING_MAX, Math.max(FIT_PADDING_MIN, Math.min(clientWidth, clientHeight) * FIT_PADDING_RATIO)),
             );
-            // Name chips sit above their pins, so labelled stops only need extra room at the top, and a
-            // little at the sides for chips wider than their pin.
             const labelled = stops?.some((stop) => stop.title);
             const pinned = !!(origin || target);
             const room = labelled
@@ -343,7 +311,6 @@ export default function LiveMap({
                 maxZoom: MAX_FIT_ZOOM,
             });
         } else if (points.length === 1) {
-            // A single place (a geocoding result): fly in, like jumping to a search hit.
             map.flyTo({ center: points[0], zoom: FOCUS_ZOOM, duration: reduceMotion ? 0 : FLY_MS, essential: true });
         }
     }, [origin, target, route, stops, allRoutes, mode, reduceMotion, overlayInset]);
@@ -378,7 +345,6 @@ export default function LiveMap({
         };
     }, [mode, route, progress]);
 
-    // Idle camera drift for the tiles showcase.
     useEffect(() => {
         const map = mapRef.current;
         if (mode !== "live" || !map || !drift || reduceMotion) return;
@@ -392,7 +358,6 @@ export default function LiveMap({
         };
         map.easeTo({ pitch: DRIFT_PITCH, duration: 0 });
         frame = requestAnimationFrame(tick);
-        // A visitor grabbing the map takes over from the idle orbit.
         map.on("dragstart", stop);
         map.on("zoomstart", stop);
         return () => {
@@ -437,7 +402,6 @@ function DroppingPin() {
     );
 }
 
-/** Destination pin with a name chip above it; the pin's tip stays on the place. */
 function TitledPin({ delay = 0, title }: { delay?: number; title: string }) {
     const reduceMotion = useReducedMotion();
     return (
@@ -448,7 +412,6 @@ function TitledPin({ delay = 0, title }: { delay?: number; title: string }) {
             transition={{ ...SPRING.drop, delay }}
         >
             <PinGlyph className="h-[34px] w-[26px]" />
-            {/* A speech bubble pointing at its pin. */}
             <span className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-card px-2.5 py-1 text-[12px] font-medium leading-[1.4] text-foreground [filter:drop-shadow(0_1px_1px_hsl(var(--foreground)/0.16))_drop-shadow(0_3px_8px_hsl(var(--foreground)/0.12))]">
                 {title}
                 <span aria-hidden className="absolute left-1/2 top-full size-2.5 -translate-x-1/2 -translate-y-[5px] rotate-45 bg-card" />
@@ -465,8 +428,6 @@ function StopDot({ delay = 0, label, tone }: { delay?: number; label?: string; t
         </motion.div>
     );
 }
-
-/* ─── Drawn fallback: the saved routes and main streets, projected into SVG ──── */
 
 const VIEW_W = 1000;
 const VIEW_H = 720;

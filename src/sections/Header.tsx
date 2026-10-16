@@ -27,7 +27,6 @@ export default function Header() {
                 <motion.p variants={rise} className="max-w-[40ch] text-[18px] leading-[1.5] text-soft">
                     {HERO.description}
                 </motion.p>
-                {/* Buttons are for using, not watching: they appear at once. */}
                 <div className="flex flex-wrap items-center justify-center gap-3">
                     <Button href={HERO.primary.href} size="xl" className="auth-signed-out">
                         {HERO.primary.label} <ArrowRight aria-hidden />

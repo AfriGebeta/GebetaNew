@@ -35,9 +35,6 @@ export function clientIp(req: Request) {
     return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "local";
 }
 
-/* ─── Validation ─────────────────────────────────────────────────────────────────────────────────── */
-
-/** Parses "lat,lng" and checks it's a real coordinate. */
 export function parseLatLng(value: string | null): LngLat | null {
     if (!value) return null;
     const [lat, lng] = value.split(",").map(Number);
@@ -53,8 +50,6 @@ async function call(path: string, params: Record<string, string>) {
     if (!res.ok) throw new Error(`Gebeta ${path} responded ${res.status}`);
     return res.json();
 }
-
-/* ─── Endpoints ──────────────────────────────────────────────────────────────────────────────────── */
 
 export type GeocodeResult = { name: string; city: string; type: string; lngLat: LngLat };
 

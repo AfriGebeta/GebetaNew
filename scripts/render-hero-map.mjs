@@ -20,11 +20,9 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TILES = "https://tiles.gebeta.app";
 const STYLE = `${TILES}/styles/standard/style.json`;
 
-/** The frame, in CSS pixels. The hero scales it with `object-fit: cover`, so the middle is what always shows. */
 const FRAME = { width: 1800, height: 1000, center: [38.8005, 9.0198], zoom: 15.4 };
 const PIXEL_RATIO = 2;
 const WEBP_QUALITY = 55;
-/** Layers left out: administrative boundaries, which only clutter a street-level view. */
 const HIDDEN = (layer) => /boundary|admin/.test(layer.id);
 
 const OUT_IMAGE = join(root, "public/images/hero-map.webp");
@@ -36,8 +34,6 @@ function readKey() {
     return line.slice("GEBETA_TOKEN=".length).trim().replace(/^["']|["']$/g, "");
 }
 const KEY = readKey();
-
-/* ─── local server: the page, maplibre, and a key-adding tile proxy ─────────── */
 
 const page = `<!doctype html><html><head><meta charset="utf-8">
 <style>html,body,#map{margin:0;width:100%;height:100%;background:#fff}</style></head>
@@ -76,8 +72,6 @@ const server = createServer(async (req, res) => {
 });
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const origin = `http://127.0.0.1:${server.address().port}`;
-
-/* ─── headless Chrome over the DevTools protocol ────────────────────────────── */
 
 const chromePath = [process.env.CHROME_PATH, "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser",
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"].find((p) => p && existsSync(p));

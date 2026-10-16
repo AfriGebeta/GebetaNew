@@ -13,7 +13,6 @@ import { DirectionsDemo, GeocodingDemo, MatrixDemo, OptimizationDemo, SdkDemo, T
 
 type TileCopy = { title: string; body: string; href: string; cta?: string };
 
-/** Shared frame: the demo on top, the claim underneath. */
 function Tile({ copy, children, className, demoClassName }: { copy: TileCopy; children: ReactNode; className?: string; demoClassName?: string }) {
     const external = copy.href.startsWith("http");
     return (

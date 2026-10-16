@@ -8,7 +8,6 @@ export function tokenColor(name: `--${string}`, alpha = 1) {
     return `hsla(${h}, ${s}, ${l}, ${alpha})`;
 }
 
-/** Resolves `hsl(var(--token))` / `hsl(var(--token) / a)` strings; other colours pass through. */
 export function resolveColor(color: string) {
     const match = color.match(/var\((--[\w-]+)\)(?:\s*\/\s*([\d.]+))?/);
     return match ? tokenColor(match[1] as `--${string}`, match[2] ? Number(match[2]) : 1) : color;
