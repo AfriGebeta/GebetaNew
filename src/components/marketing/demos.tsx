@@ -275,7 +275,7 @@ export function MatrixDemo({ className }: { className?: string }) {
     const to = MATRIX.destinations[ac];
 
     return (
-        <div ref={ref} data-ui className={cn("absolute inset-0 flex flex-col justify-center gap-3 p-4", className)}>
+        <div ref={ref} data-ui className={cn("relative flex flex-col justify-center gap-3 p-4 sm:absolute sm:inset-0", className)}>
             <div className="flex items-center justify-between gap-3">
                 <SegmentedControl
                     aria-label="Show travel time or distance"
