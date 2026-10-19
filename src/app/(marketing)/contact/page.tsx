@@ -15,7 +15,7 @@ import Notice from "@/components/ui/notice";
 
 const CONTACT_DETAILS = [
     { label: "Email", value: "info@gebeta.app", href: "mailto:info@gebeta.app" },
-    { label: "Office", value: "Bloom Tower, Addis Ababa, Ethiopia" },
+    { label: "Office", value: "Maraki Tower, Megenagha, Addis Ababa, Ethiopia" },
     { label: "Developers", value: "Documentation", href: "https://docs.gebeta.app/" },
     { label: "Customers", value: "Open your dashboard", href: "/dashboard" },
 ];

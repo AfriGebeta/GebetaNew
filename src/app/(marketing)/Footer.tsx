@@ -37,6 +37,11 @@ const COLUMNS = [
     },
 ];
 
+const STORES = [
+    { label: "App Store", caption: "Download on the", href: "https://apps.apple.com/us/app/gebeta-maps/id6793868587", Icon: Icons.apple },
+    { label: "Google Play", caption: "Get it on", href: "https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map&hl=en", Icon: Icons.googlePlay },
+];
+
 export default function Footer() {
     const Logo = Icons.gebeta;
 
@@ -47,10 +52,28 @@ export default function Footer() {
                     <div className="flex flex-col gap-3 md:col-span-4">
                         <p className="text-[20px] leading-[1.35] text-foreground">Location APIs for Africa.</p>
                         <address className="not-italic leading-[1.5]">
-                            Bloom Tower, Addis Ababa, Ethiopia
+                            Maraki Tower, Megenagha, Addis Ababa, Ethiopia
                             <br />
                             <a href="mailto:info@gebeta.app" className="text-foreground hover:text-soft">info@gebeta.app</a>
                         </address>
+                        <div className="mt-3 flex flex-wrap gap-3">
+                            {STORES.map(({ label, caption, href, Icon }) => (
+                                <a
+                                    key={label}
+                                    href={href}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    aria-label={`${caption} ${label}`}
+                                    className="inline-flex h-11 items-center gap-2.5 rounded-lg bg-ink px-3.5 text-ink-foreground transition-opacity duration-150 hover:opacity-85"
+                                >
+                                    <Icon aria-hidden className="size-5 shrink-0" />
+                                    <span className="flex flex-col leading-none">
+                                        <span className="text-[10px] opacity-75">{caption}</span>
+                                        <span className="mt-0.5 text-[15px] font-medium">{label}</span>
+                                    </span>
+                                </a>
+                            ))}
+                        </div>
                     </div>
                     <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-8">
                         {COLUMNS.map((col) => (

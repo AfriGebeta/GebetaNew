@@ -151,8 +151,7 @@ const stepAt = (maneuvers: Maneuver[], t: number) => {
     return index;
 };
 
-/** Drives a route over `durationMs`, once the map reports it's ready; pass `onReady` to the LiveMap. */
-function useDrive(ref: React.RefObject<Element>, durationMs: number, onLap?: () => void) {
+function useDrive(ref: React.RefObject<Element>, durationMs: number, onLap?: () => void, restMs: number = DEMO_TIMING.restMs) {
     const progress = useMotionValue(0);
     const [ready, setReady] = useState(false);
     const onReady = useCallback(() => setReady(true), []);
@@ -160,9 +159,8 @@ function useDrive(ref: React.RefObject<Element>, durationMs: number, onLap?: () 
         onLap?.();
         progress.set(0);
         await sleep(DURATION.slow * 1000, signal);
-        // Linear, like a car at cruising speed; easing makes the start and end crawl.
         await animate(progress, 1, { duration: durationMs / 1000, ease: "linear" });
-        await sleep(DEMO_TIMING.restMs, signal);
+        await sleep(restMs, signal);
     }, [], ready);
     useEffect(() => {
         if (reduceMotion) progress.set(1);
@@ -367,7 +365,7 @@ export function OptimizationDemo({ className }: { className?: string }) {
     const { progress, onReady } = useDrive(ref, DEMO_TIMING.tourDriveMs, () => {
         setOptimized(lap.current % 2 === 1);
         lap.current += 1;
-    });
+    }, DEMO_TIMING.tourRestMs);
     const tour = optimized ? TOURS.best : TOURS.entered;
     const scene = useMemo(() => ({ origin: DEPOT, depot: true, route: tour.line, stops: STOP_PINS }), [tour]);
     const rows = [
@@ -385,6 +383,7 @@ export function OptimizationDemo({ className }: { className?: string }) {
                 showLabels={false}
                 tone={optimized ? "primary" : "muted"}
                 controls={false}
+                puck={false}
                 overlayInset={STRIP_INSET}
             />
             <div data-ui className="absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] items-center gap-1 rounded-full bg-card p-1 text-[12px] shadow-overlay">

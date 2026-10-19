@@ -51,7 +51,6 @@ export async function geocode(query: string): Promise<Timed<{ hits: Place[]; liv
         }));
         if (hits.length) return { hits, live: true, ms: LATENCY.geocoding };
     } catch {
-        // fall through to the bundled landmarks
     }
     return { hits: matchPlaces(query), live: false, ms: LATENCY.geocoding };
 }

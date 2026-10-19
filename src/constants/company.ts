@@ -1,6 +1,6 @@
 import { PRODUCTS } from "@/constants/products";
 
-export type TeamMember = { name: string; role: string };
+export type TeamMember = { name: string; role: string; img?: string; linkedin?: string };
 
 export const COMPANY = {
     title: "Mapping Africa's future",
@@ -26,14 +26,15 @@ export const COMPANY = {
         },
     ],
     team: [
-        { name: "Bemhreth Gezahagh", role: "Chief Executive Officer" },
-        { name: "Abenezer Seifu", role: "Chief Technology Officer" },
-        { name: "Beniyas Tesfa", role: "Chief Technology Officer" },
-        { name: "Rahel", role: "Finance" },
-        { name: "Daniel Berihun", role: "Senior Developer" },
-        { name: "Berekt Terefe", role: "Senior Developer" },
-        { name: "Zubeyr Anwar", role: "Software Engineer" },
-        { name: "Kirubel", role: "Software Engineer" },
+        { name: "Bemhreth Gezahegn", role: "Chief Executive Officer", img: "/assets/bemhret.png", linkedin: "https://et.linkedin.com/in/bemhreth" },
+        { name: "Abenezer Seifu", role: "Chief Technology Officer", img: "/assets/abeni.png", linkedin: "https://et.linkedin.com/in/abenezer-seifu-5493b3290" },
+        { name: "Benayas Teshome", role: "Chief Technology Officer", img: "/assets/beni.png" },
+        { name: "Rahel Tura", role: "Finance", img: "/assets/rahel.png" },
+        { name: "Daniel Tsegaw", role: "Senior Developer", img: "/assets/dani.png" },
+        { name: "Bereket Terefe", role: "Senior Developer", img: "/assets/bereket.png" },
+        { name: "Kirubel Desalegn", role: "Software Engineer", img: "/assets/kirubel.png" },
+        { name: "Zubeyr Anwar", role: "Software Engineer", img: "/assets/zubeyr.jpg" },
+        { name: "Tsegaw Tesfaye", role: "Graphic Designer", img: "/assets/tsegaw.png" },
     ] satisfies TeamMember[],
     values: [
         { title: "Innovation", body: "We keep pushing what a map can do for the people and businesses that depend on it." },

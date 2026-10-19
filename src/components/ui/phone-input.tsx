@@ -10,7 +10,6 @@ type PhoneInputProps = Omit<ReactPhoneInputProps, "inputClass" | "buttonClass" |
   className?: string;
 };
 
-/** react-phone-input-2 restyled with design tokens (see `.ds-phone` in globals.css). */
 export default function PhoneInput({ id, required, className, inputProps, ...props }: PhoneInputProps) {
   return (
     <ReactPhoneInput

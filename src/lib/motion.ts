@@ -43,8 +43,9 @@ export const DEMO_TIMING = {
   typeCharMs: 55,
   holdResultsMs: 900,
   routeDrawMs: 1800,
-  driveMs: 9000,
-  tourDriveMs: 16000,
+  driveMs: 5000,
+  tourDriveMs: 12000,
   fanDriveMs: 6000,
   restMs: 2600,
+  tourRestMs: 900,
 } as const;

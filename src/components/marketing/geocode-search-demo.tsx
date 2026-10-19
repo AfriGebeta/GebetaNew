@@ -30,7 +30,6 @@ export default function GeocodeSearchDemo({ className }: { className?: string })
     };
     const [searching, setSearching] = useState(false);
     const [selected, setSelected] = useState<Place | null>(null);
-    // LiveMap animates routes from this; a geocoding demo has none, so it stays at 0.
     const progress = useMotionValue(0);
 
     const search = async (text: string) => {

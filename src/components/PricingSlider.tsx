@@ -138,7 +138,6 @@ const PricingSlider = ({ isComponent }: { isComponent?: boolean }) => {
                                                 </div>
                                             </div>
 
-                                            {/* Number Input */}
                                             <div className="flex flex-col items-center">
                                                 <div className="relative">
                                                     <input

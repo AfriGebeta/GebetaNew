@@ -54,7 +54,6 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
     asChild?: boolean;
     loading?: boolean;
     href?: React.ComponentProps<typeof Link>["href"];
-    /** Link-only: used when `href` is set. */
     target?: React.AnchorHTMLAttributes<HTMLAnchorElement>["target"];
     rel?: string;
   };

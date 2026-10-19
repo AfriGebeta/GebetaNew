@@ -49,6 +49,7 @@ type LiveMapProps = {
     showLabels?: boolean;
     tone?: RouteTone;
     controls?: boolean;
+    puck?: boolean;
     soft?: boolean;
     overlayInset?: Partial<Record<"top" | "right" | "bottom" | "left", number>>;
     onModeChange?: (mode: MapMode) => void;
@@ -127,6 +128,7 @@ export default function LiveMap({
     showLabels = true,
     tone = "primary",
     controls = true,
+    puck = true,
     soft = true,
     overlayInset,
     onModeChange,
@@ -251,6 +253,7 @@ export default function LiveMap({
             mapRef.current = null;
             fixedMarkers.current = null;
             stopsMap.clear();
+            setMode("loading");
         };
         // The map is created once; style and scene changes are applied by the effects below.
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -357,22 +360,22 @@ export default function LiveMap({
         const map = mapRef.current;
         if (mode !== "live" || !map) return;
         const placePuck = () => {
-            const puck = fixedMarkers.current?.puck;
-            if (!puck) return;
+            const marker = fixedMarkers.current?.puck;
+            if (!marker) return;
             const t = progress.get();
-            if (!route?.length || t <= 0 || t >= 1) {
-                puck.remove();
+            if (!puck || !route?.length || t <= 0 || t >= 1) {
+                marker.remove();
                 return;
             }
             const { head, heading } = sliceRoute(route, t);
-            puck.setLngLat(head).setRotation(heading).addTo(map);
+            marker.setLngLat(head).setRotation(heading).addTo(map);
         };
         map.on("render", placePuck);
         placePuck();
         return () => {
             map.off("render", placePuck);
         };
-    }, [mode, route, progress]);
+    }, [mode, route, progress, puck]);
 
     useEffect(() => {
         const map = mapRef.current;
@@ -402,7 +405,7 @@ export default function LiveMap({
             <div className={cn("absolute inset-0", mode === "fallback" && "hidden")}>
                 <div ref={containerRef} className="size-full" />
             </div>
-            {mode === "fallback" && <DrawnMap scene={scene} allRoutes={allRoutes} progress={progress} showLabels={showLabels} tone={tone} />}
+            {mode === "fallback" && <DrawnMap scene={scene} allRoutes={allRoutes} progress={progress} showLabels={showLabels} tone={tone} puck={puck} />}
             {mode === "loading" && <div aria-hidden className="absolute inset-0 animate-pulse bg-raised" />}
             {markerEls && ready && (
                 <>
@@ -476,12 +479,14 @@ function DrawnMap({
     progress,
     showLabels,
     tone,
+    puck,
 }: {
     scene: MapScene;
     allRoutes: LngLat[][];
     progress: MotionValue<number>;
     showLabels: boolean;
     tone: RouteTone;
+    puck: boolean;
 }) {
     const { origin, target, route, stops } = scene;
     const project = useMemo(() => projector(boundsOf(PLACES.map((p) => p.lngLat), 0.18), VIEW_W, VIEW_H), []);
@@ -527,7 +532,7 @@ function DrawnMap({
                     <motion.path d={toPath(coords)} fill="none" strokeWidth={10} strokeLinecap="round" strokeLinejoin="round" className={TONE_STROKE[tone]} style={{ pathLength }} />
                 </g>
             ))}
-            {route?.length ? (
+            {puck && route?.length ? (
                 <motion.g style={{ x: headX, y: headY, opacity: puckOpacity }}>
                     <motion.g style={{ rotate: headRotate }}>
                         <image href={MARKER_ASSETS.navigation.src} x={-27} y={-27} width={54} height={54} />

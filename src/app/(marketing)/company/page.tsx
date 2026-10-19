@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Linkedin } from "lucide-react";
 import Container from "@/sections/Container";
 import CallToAction from "@/sections/CallToAction";
 import Button from "@/components/ui/button";
@@ -85,14 +86,37 @@ export default function Company() {
                     <Reveal className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
                         {COMPANY.team.map((member) => (
                             <RevealItem key={member.name} className="flex flex-col gap-4">
-                                <span
-                                    aria-hidden
-                                    className="flex size-16 items-center justify-center rounded-full bg-card text-[20px] font-medium tracking-[-0.01em] text-foreground shadow-card"
-                                >
-                                    {initials(member.name)}
-                                </span>
+                                {member.img ? (
+                                    <Image
+                                        src={member.img}
+                                        alt=""
+                                        width={64}
+                                        height={64}
+                                        className="size-16 rounded-full bg-card object-cover shadow-card"
+                                    />
+                                ) : (
+                                    <span
+                                        aria-hidden
+                                        className="flex size-16 items-center justify-center rounded-full bg-card text-[20px] font-medium tracking-[-0.01em] text-foreground shadow-card"
+                                    >
+                                        {initials(member.name)}
+                                    </span>
+                                )}
                                 <span className="flex flex-col gap-1">
-                                    <span className="text-[18px] font-medium text-foreground">{member.name}</span>
+                                    <span className="flex items-center gap-2 text-[18px] font-medium text-foreground">
+                                        {member.name}
+                                        {member.linkedin && (
+                                            <a
+                                                href={member.linkedin}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                aria-label={`${member.name} on LinkedIn`}
+                                                className="text-soft transition-colors hover:text-foreground"
+                                            >
+                                                <Linkedin aria-hidden className="size-4" />
+                                            </a>
+                                        )}
+                                    </span>
                                     <span className="text-[15px] text-soft">{member.role}</span>
                                 </span>
                             </RevealItem>

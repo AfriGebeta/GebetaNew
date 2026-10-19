@@ -16,7 +16,6 @@ interface RichTextEditorProps {
   value: string;
   onChange: (html: string) => void;
   placeholder?: string;
-  /** Class applied to the scrollable content wrapper — use to control height */
   contentClassName?: string;
 }
 
@@ -103,7 +102,6 @@ export default function RichTextEditor({
     },
   });
 
-  // Sync external content changes (e.g. template selection)
   useEffect(() => {
     if (!editor) return;
     const current = editor.getHTML();
@@ -117,7 +115,6 @@ export default function RichTextEditor({
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-background">
-      {/* Scrollable content area — clicking anywhere focuses the editor */}
       <div
         className={cn("flex-1 overflow-y-auto cursor-text px-4 py-3", contentClassName)}
         onClick={() => editor.commands.focus()}
@@ -125,7 +122,6 @@ export default function RichTextEditor({
         <EditorContent editor={editor} className="h-full text-sm text-foreground" />
       </div>
 
-      {/* Toolbar pinned at bottom */}
       <Toolbar editor={editor} />
     </div>
   );

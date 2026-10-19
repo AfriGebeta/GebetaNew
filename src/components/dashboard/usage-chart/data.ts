@@ -101,7 +101,6 @@ export function buildBuckets(start: string, end: string): Bucket[] {
   return Array.from(byMonth.values());
 }
 
-/** Band colours are design tokens (see --chart-* in globals.css); usable in CSS and on canvas. */
 export const BAND_COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
 export const HIGHLIGHT_COLOR = "hsl(var(--chart-highlight))";
 
