@@ -2,6 +2,7 @@
 "use client"
 import { pricing } from "@/constants";
 import { useContext, useEffect, useState } from "react";
+import { RevealBlur, RevealBlurItem } from "@/components/marketing/reveal";
 import { useQuery } from "@tanstack/react-query";
 import { buyCredit, getAllCredits } from "@/service/apis";
 import { useRouter } from 'nextjs-toploader/app';
@@ -76,15 +77,15 @@ export function Plans({ initialData, initialExchangeRate }: { initialData?: any;
                     />
                     <Tag tone="green">Save up to 20% yearly</Tag>
                 </div>
-                <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-                    <Plan data={devPackage?.[0]} index={data?.length || 1} initialExchangeRate={initialExchangeRate} />
+                <RevealBlur className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+                    <RevealBlurItem><Plan data={devPackage?.[0]} index={data?.length || 1} initialExchangeRate={initialExchangeRate} /></RevealBlurItem>
                     {
                         (activeTab === "monthly" ? monthlyPlans : yearlyPlans).map((credit, index) => (
-                            <Plan key={credit.id ?? index} data={credit} index={index} activeTab={activeTab} monthlyPlans={monthlyPlans} initialExchangeRate={initialExchangeRate} />
+                            <RevealBlurItem key={credit.id ?? index}><Plan data={credit} index={index} activeTab={activeTab} monthlyPlans={monthlyPlans} initialExchangeRate={initialExchangeRate} /></RevealBlurItem>
                         ))
                     }
-                    <Plan data={enterprise} index={data?.length || 1} initialExchangeRate={initialExchangeRate} />
-                </div>
+                    <RevealBlurItem><Plan data={enterprise} index={data?.length || 1} initialExchangeRate={initialExchangeRate} /></RevealBlurItem>
+                </RevealBlur>
             </div>
         </Container>
     )
@@ -114,9 +115,9 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
 
         if (isEthiopia) {
             const etbPrice = Math.ceil(displayPrice * exchangeRate);
-            return `${etbPrice} Birr`;
+            return `${etbPrice.toLocaleString("en-ET")} Birr`;
         } else {
-            return `$${Math.round(displayPrice)} USD`;
+            return `$${Math.round(displayPrice).toLocaleString("en-US")} USD`;
         }
     };
 
