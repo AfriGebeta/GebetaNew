@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { BENTO } from "@/constants/landing";
-import { IN_VIEW, blurFadeRise, staggerBlur } from "@/lib/motion";
+import { IN_VIEW, blurFadeRise, stagger, staggerBlur } from "@/lib/motion";
 import {
     DirectionsTile,
     GeocodingTile,
@@ -11,7 +11,6 @@ import {
     SdkTile,
     TilesTile,
 } from "@/components/marketing/bento-tiles";
-import { RevealBlur, RevealBlurItem } from "@/components/marketing/reveal";
 
 export default function Bento() {
     return (
@@ -25,14 +24,20 @@ export default function Bento() {
                 </motion.p>
             </motion.div>
 
-            <RevealBlur className="mt-12 grid auto-rows-[minmax(0,auto)] gap-3 md:grid-cols-2 lg:grid-cols-6">
-                <RevealBlurItem className="md:col-span-2 lg:col-span-4 lg:row-span-2"><TilesTile className="h-full" /></RevealBlurItem>
-                <RevealBlurItem className="lg:col-span-2"><GeocodingTile /></RevealBlurItem>
-                <RevealBlurItem className="lg:col-span-2"><DirectionsTile /></RevealBlurItem>
-                <RevealBlurItem className="lg:col-span-2"><MatrixTile /></RevealBlurItem>
-                <RevealBlurItem className="lg:col-span-2"><OptimizationTile /></RevealBlurItem>
-                <RevealBlurItem className="md:col-span-2 lg:col-span-2"><SdkTile /></RevealBlurItem>
-            </RevealBlur>
+            <motion.div
+                variants={staggerBlur()}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.1 }}
+                className="mt-12 grid auto-rows-[minmax(0,auto)] gap-3 md:grid-cols-2 lg:grid-cols-6"
+            >
+                <TilesTile className="md:col-span-2 lg:col-span-4 lg:row-span-2" />
+                <GeocodingTile className="lg:col-span-2" />
+                <DirectionsTile className="lg:col-span-2" />
+                <MatrixTile className="lg:col-span-2" />
+                <OptimizationTile className="lg:col-span-2" />
+                <SdkTile className="md:col-span-2 lg:col-span-2" />
+            </motion.div>
         </section>
     );
 }
