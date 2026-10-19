@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { BENTO } from "@/constants/landing";
-import { IN_VIEW, rise, stagger } from "@/lib/motion";
+import { IN_VIEW, blurFadeRise, stagger, staggerBlur } from "@/lib/motion";
 import {
     DirectionsTile,
     GeocodingTile,
@@ -15,17 +15,17 @@ import {
 export default function Bento() {
     return (
         <section id="products" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-36 lg:px-8">
-            <motion.div variants={stagger()} initial="hidden" whileInView="show" viewport={IN_VIEW} className="flex max-w-2xl flex-col gap-4">
-                <motion.h2 variants={rise} className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
+            <motion.div variants={staggerBlur()} initial="hidden" whileInView="show" viewport={IN_VIEW} className="flex max-w-2xl flex-col gap-4">
+                <motion.h2 variants={blurFadeRise} className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
                     {BENTO.title}
                 </motion.h2>
-                <motion.p variants={rise} className="text-[18px] leading-[1.5] text-soft">
+                <motion.p variants={blurFadeRise} className="text-[18px] leading-[1.5] text-soft">
                     {BENTO.description}
                 </motion.p>
             </motion.div>
 
             <motion.div
-                variants={stagger()}
+                variants={staggerBlur()}
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true, amount: 0.1 }}

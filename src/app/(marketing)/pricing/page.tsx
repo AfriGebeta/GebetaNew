@@ -2,6 +2,7 @@ import {Plans} from "@/sections/Pricing";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Building2, CircleDollarSign, Scale, Shield} from 'lucide-react';
 import Container from "@/sections/Container";
+import { RevealBlur, RevealBlurItem } from "@/components/marketing/reveal";
 
 export default function PricingPage() {
     const features = [
@@ -69,31 +70,37 @@ export default function PricingPage() {
                         Every plan includes every API. Start free and move up as your traffic grows.
                     </p>
                 </div>
-                <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <RevealBlur className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     {features.map((feature) => (
-                        <div key={feature.title} className="flex flex-col gap-2 rounded-lg bg-raised p-5">
+                        <RevealBlurItem key={feature.title} className="flex flex-col gap-2 rounded-lg bg-raised p-5">
                             <dt className="flex items-center gap-2 text-[16px] font-medium text-foreground">
                                 <feature.icon aria-hidden className="size-4 text-soft"/>
                                 {feature.title}
                             </dt>
                             <dd className="text-[15px] leading-[1.5] text-soft">{feature.description}</dd>
-                        </div>
+                        </RevealBlurItem>
                     ))}
-                </dl>
+                </RevealBlur>
             </Container>
 
             <Plans/>
 
             <Container className="mt-24 flex max-w-3xl flex-col gap-6">
-                <h2 className="text-[28px] font-medium tracking-[-0.02em] text-foreground">Frequently asked questions</h2>
-                <Accordion type="single" collapsible className="w-full">
-                    {faqsList.map((faq, index) => (
-                        <AccordionItem key={index} value={`item-${index}`}>
-                            <AccordionTrigger>{faq.q}</AccordionTrigger>
-                            <AccordionContent>{faq.a}</AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                <RevealBlur className="flex flex-col gap-6">
+                    <RevealBlurItem>
+                        <h2 className="text-[28px] font-medium tracking-[-0.02em] text-foreground">Frequently asked questions</h2>
+                    </RevealBlurItem>
+                    <RevealBlurItem>
+                        <Accordion type="single" collapsible className="w-full">
+                            {faqsList.map((faq, index) => (
+                                <AccordionItem key={index} value={`item-${index}`}>
+                                    <AccordionTrigger>{faq.q}</AccordionTrigger>
+                                    <AccordionContent>{faq.a}</AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </RevealBlurItem>
+                </RevealBlur>
             </Container>
         </div>
     );

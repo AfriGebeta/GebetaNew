@@ -8,7 +8,7 @@ import Button from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Tag from "@/components/ui/tag";
 import ProductDemo from "@/components/marketing/product-demo";
-import { Reveal, RevealItem } from "@/components/marketing/reveal";
+import { RevealBlur, RevealBlurItem } from "@/components/marketing/reveal";
 import { PRODUCTS, productBySlug, productHref } from "@/constants/products";
 
 type Params = { params: { slug: string } };
@@ -38,16 +38,14 @@ export default function ProductPage({ params }: Params) {
         <main>
             <section className="py-16 md:py-24">
                 <Container className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-                    <Reveal className="flex flex-col gap-6 lg:col-span-5 lg:pt-8">
-                        <RevealItem>
-                            <h1 className="text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[clamp(52px,4.6vw,68px)]">
-                                {product.name}
-                            </h1>
-                        </RevealItem>
-                        <RevealItem className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-6 lg:col-span-5 lg:pt-8">
+                        <h1 className="text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[clamp(52px,4.6vw,68px)]">
+                            {product.name}
+                        </h1>
+                        <div className="flex flex-col gap-3">
                             <p className="text-balance text-[24px] font-medium leading-[1.25] tracking-[-0.015em] text-foreground">{product.title}</p>
                             <p className="max-w-[44ch] text-[18px] leading-[1.5] text-soft">{product.description}</p>
-                        </RevealItem>
+                        </div>
                         <div className="flex flex-wrap items-center gap-3">
                             <Button href="/auth/register" size="xl" className="auth-signed-out">
                                 Get an API key <ArrowRight aria-hidden />
@@ -59,50 +57,48 @@ export default function ProductPage({ params }: Params) {
                                 Read the docs <ArrowUpRight aria-hidden />
                             </Button>
                         </div>
-                    </Reveal>
+                    </div>
 
-                    <Reveal className="lg:col-span-7">
-                        <RevealItem>
-                            <Card className="relative h-[460px] overflow-hidden bg-raised md:h-[540px]">
-                                <ProductDemo demo={product.demo} />
-                            </Card>
-                        </RevealItem>
-                    </Reveal>
+                    <div className="lg:col-span-7">
+                        <Card className="relative h-[460px] overflow-hidden bg-raised md:h-[540px]">
+                            <ProductDemo demo={product.demo} />
+                        </Card>
+                    </div>
                 </Container>
             </section>
 
             <section className="bg-raised py-24 md:py-28">
                 <Container className="grid gap-12 lg:grid-cols-12">
-                    <Reveal className="lg:col-span-4">
-                        <RevealItem>
+                    <RevealBlur className="lg:col-span-4">
+                        <RevealBlurItem>
                             <h2 className={SECTION_TITLE}>What you get</h2>
-                        </RevealItem>
-                    </Reveal>
-                    <Reveal className="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:col-span-8">
+                        </RevealBlurItem>
+                    </RevealBlur>
+                    <RevealBlur className="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:col-span-8">
                         {product.features.map((feature) => (
-                            <RevealItem key={feature.title} className="flex flex-col gap-2">
+                            <RevealBlurItem key={feature.title} className="flex flex-col gap-2">
                                 <h3 className="text-[20px] font-medium leading-[1.25] text-foreground">{feature.title}</h3>
                                 <p className="text-[16px] leading-[1.55] text-soft">{feature.body}</p>
-                            </RevealItem>
+                            </RevealBlurItem>
                         ))}
-                    </Reveal>
+                    </RevealBlur>
                 </Container>
             </section>
 
             <section className="py-24 md:py-28">
                 <Container className="grid gap-10 lg:grid-cols-12">
-                    <Reveal className="lg:col-span-4">
-                        <RevealItem>
+                    <RevealBlur className="lg:col-span-4">
+                        <RevealBlurItem>
                             <h2 className={SECTION_TITLE}>{product.article.title}</h2>
-                        </RevealItem>
-                    </Reveal>
-                    <Reveal className="flex max-w-[62ch] flex-col gap-6 lg:col-span-7 lg:col-start-6">
+                        </RevealBlurItem>
+                    </RevealBlur>
+                    <RevealBlur className="flex max-w-[62ch] flex-col gap-6 lg:col-span-7 lg:col-start-6">
                         {product.article.paragraphs.map((paragraph) => (
-                            <RevealItem key={paragraph.slice(0, 32)}>
+                            <RevealBlurItem key={paragraph.slice(0, 32)}>
                                 <p className="text-[18px] leading-[1.65] text-foreground">{paragraph}</p>
-                            </RevealItem>
+                            </RevealBlurItem>
                         ))}
-                        <RevealItem>
+                        <RevealBlurItem>
                             <Link
                                 href={product.docs}
                                 target="_blank"
@@ -111,39 +107,39 @@ export default function ProductPage({ params }: Params) {
                             >
                                 Parameters, limits and examples in the API reference <ArrowUpRight aria-hidden className="size-4" />
                             </Link>
-                        </RevealItem>
-                    </Reveal>
+                        </RevealBlurItem>
+                    </RevealBlur>
                 </Container>
             </section>
 
             <section className="pb-24 md:pb-28">
                 <Container className="flex flex-col gap-10">
-                    <Reveal>
-                        <RevealItem>
+                    <RevealBlur>
+                        <RevealBlurItem>
                             <h2 className={SECTION_TITLE}>Built for</h2>
-                        </RevealItem>
-                    </Reveal>
-                    <Reveal className="grid gap-3 md:grid-cols-3">
+                        </RevealBlurItem>
+                    </RevealBlur>
+                    <RevealBlur className="grid gap-3 md:grid-cols-3">
                         {product.useCases.map((useCase) => (
-                            <RevealItem key={useCase.title} className="flex flex-col gap-2 rounded-lg bg-raised p-6">
+                            <RevealBlurItem key={useCase.title} className="flex flex-col gap-2 rounded-lg bg-raised p-6">
                                 <h3 className="text-[18px] font-medium text-foreground">{useCase.title}</h3>
                                 <p className="text-[15px] leading-[1.55] text-soft">{useCase.body}</p>
-                            </RevealItem>
+                            </RevealBlurItem>
                         ))}
-                    </Reveal>
+                    </RevealBlur>
                 </Container>
             </section>
 
             <section className="bg-raised py-24 md:py-28">
                 <Container className="flex flex-col gap-10">
-                    <Reveal>
-                        <RevealItem>
+                    <RevealBlur>
+                        <RevealBlurItem>
                             <h2 className={SECTION_TITLE}>Works with the rest</h2>
-                        </RevealItem>
-                    </Reveal>
-                    <Reveal className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                        </RevealBlurItem>
+                    </RevealBlur>
+                    <RevealBlur className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                         {others.map((other) => (
-                            <RevealItem key={other.slug}>
+                            <RevealBlurItem key={other.slug}>
                                 <Link
                                     href={productHref(other.slug)}
                                     className="group flex h-full flex-col gap-2 rounded-lg bg-card p-5 shadow-card outline-none transition-colors duration-150 hover:bg-hover focus-visible:ring-2 focus-visible:ring-ring/60"
@@ -154,9 +150,9 @@ export default function ProductPage({ params }: Params) {
                                     </span>
                                     <span className="text-[14px] leading-[1.5] text-soft">{other.summary}</span>
                                 </Link>
-                            </RevealItem>
+                            </RevealBlurItem>
                         ))}
-                    </Reveal>
+                    </RevealBlur>
                 </Container>
             </section>
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { DURATION, EASE, IN_VIEW, rise, stagger } from "@/lib/motion";
+import { DURATION, EASE, IN_VIEW, blurFadeRise, stagger, staggerBlur } from "@/lib/motion";
 
 const testimonials = [
     {
@@ -56,13 +56,13 @@ export default function Testimonial() {
     return (
         <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-28 lg:px-8">
             <motion.div
-                variants={stagger()}
+                variants={staggerBlur()}
                 initial="hidden"
                 whileInView="show"
                 viewport={IN_VIEW}
                 className="grid gap-10 lg:grid-cols-12"
             >
-                <motion.div variants={rise} className="flex flex-col gap-6 lg:col-span-4">
+                <motion.div variants={blurFadeRise} className="flex flex-col gap-6 lg:col-span-4">
                     <h2 className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
                         In their words
                     </h2>
@@ -88,7 +88,7 @@ export default function Testimonial() {
                     </div>
                 </motion.div>
 
-                <motion.div variants={rise} className="lg:col-span-7 lg:col-start-6">
+                <motion.div variants={blurFadeRise} className="lg:col-span-7 lg:col-start-6">
                     <AnimatePresence mode="wait">
                         <motion.figure
                             key={active}

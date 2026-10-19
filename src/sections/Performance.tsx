@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { animate, motion, useInView, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import { cn } from "@/lib/utils";
 import { PERFORMANCE, SERVICES } from "@/constants/landing";
-import { DURATION, EASE, IN_VIEW, STAGGER, rise, stagger } from "@/lib/motion";
+import { DURATION, EASE, IN_VIEW, STAGGER, blurFadeRise, stagger, staggerBlur } from "@/lib/motion";
 
 const BAR_TONE = {
     primary: "bg-primary",
@@ -39,20 +39,20 @@ export default function Performance() {
     return (
         <section className="bg-raised">
             <div className="mx-auto grid max-w-7xl gap-16 px-4 py-24 sm:px-6 md:py-36 lg:grid-cols-12 lg:px-8">
-                <motion.div variants={stagger()} initial="hidden" whileInView="show" viewport={IN_VIEW} className="flex flex-col gap-10 lg:col-span-6">
-                    <motion.div variants={rise} className="flex flex-col gap-4">
+                <motion.div variants={staggerBlur()} initial="hidden" whileInView="show" viewport={IN_VIEW} className="flex flex-col gap-10 lg:col-span-6">
+                    <motion.div variants={blurFadeRise} className="flex flex-col gap-4">
                         <h2 className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
                             {PERFORMANCE.title}
                         </h2>
                         <p className="max-w-[44ch] text-[18px] leading-[1.5] text-soft">{PERFORMANCE.description}</p>
                     </motion.div>
-                    <motion.div variants={rise}>
+                    <motion.div variants={blurFadeRise}>
                         <BigFigure />
                     </motion.div>
                 </motion.div>
 
                 <motion.div
-                    variants={stagger()}
+                    variants={staggerBlur()}
                     initial="hidden"
                     whileInView="show"
                     viewport={IN_VIEW}
@@ -60,7 +60,7 @@ export default function Performance() {
                 >
                     <ul className="flex flex-col gap-5" aria-label="Response time compared">
                         {PERFORMANCE.comparison.map((item, i) => (
-                            <motion.li key={item.label} variants={rise} className="flex flex-col gap-2">
+                            <motion.li key={item.label} variants={blurFadeRise} className="flex flex-col gap-2">
                                 <span className="flex items-baseline justify-between gap-4 text-[15px]">
                                     <span className="text-foreground">{item.label}</span>
                                     <span className="tabular-nums text-soft">{item.ms} ms</span>
@@ -79,7 +79,7 @@ export default function Performance() {
                         ))}
                     </ul>
 
-                    <motion.dl variants={rise} className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    <motion.dl variants={blurFadeRise} className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                         {SERVICES.map((service) => (
                             <div key={service.id} className="flex flex-col gap-2 rounded-lg bg-card p-4">
                                 <dt className="text-[14px] text-soft">{service.name}</dt>
@@ -89,7 +89,7 @@ export default function Performance() {
                             </div>
                         ))}
                     </motion.dl>
-                    <motion.p variants={rise} className="text-[14px] text-soft">
+                    <motion.p variants={blurFadeRise} className="text-[14px] text-soft">
                         {PERFORMANCE.footnote}
                     </motion.p>
                 </motion.div>

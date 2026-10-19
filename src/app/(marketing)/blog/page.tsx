@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/mdx";
 import Container from "@/sections/Container";
 import Post, { type PostSummary } from "@/app/(marketing)/blog/_components/Post";
-import { Reveal, RevealItem } from "@/components/marketing/reveal";
+import { RevealBlur, RevealBlurItem } from "@/components/marketing/reveal";
 
 export const metadata: Metadata = {
     title: "Blog",
@@ -24,35 +24,25 @@ export default async function BlogPage() {
     return (
         <main className="py-16 md:py-24">
             <Container className="flex flex-col gap-16 md:gap-20">
-                <Reveal className="flex max-w-2xl flex-col gap-4">
-                    <RevealItem>
-                        <h1 className="text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[64px]">Blog</h1>
-                    </RevealItem>
-                    <RevealItem>
-                        <p className="text-[18px] leading-[1.5] text-soft">
-                            Guides, engineering notes and product updates on maps, geocoding and routing.
-                        </p>
-                    </RevealItem>
-                </Reveal>
+                <div className="flex max-w-2xl flex-col gap-4">
+                    <h1 className="text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[64px]">Blog</h1>
+                    <p className="text-[18px] leading-[1.5] text-soft">
+                        Guides, engineering notes and product updates on maps, geocoding and routing.
+                    </p>
+                </div>
 
-                {featured && (
-                    <Reveal>
-                        <RevealItem>
-                            <Post post={featured} isFeatured />
-                        </RevealItem>
-                    </Reveal>
-                )}
+                {featured && <Post post={featured} isFeatured />}
 
                 {rest.length > 0 && (
                     <section className="flex flex-col gap-8">
                         <h2 className="text-[28px] font-medium tracking-[-0.02em] text-foreground">More articles</h2>
-                        <Reveal className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                        <RevealBlur className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
                             {rest.map((post) => (
-                                <RevealItem key={post.slug}>
+                                <RevealBlurItem key={post.slug}>
                                     <Post post={post} />
-                                </RevealItem>
+                                </RevealBlurItem>
                             ))}
-                        </Reveal>
+                        </RevealBlur>
                     </section>
                 )}
             </Container>

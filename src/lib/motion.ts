@@ -19,6 +19,7 @@ export const DURATION = {
 } as const;
 
 export const STAGGER = 0.08;
+export const STAGGER_BLUR = 0.05; // resurf.so cadence: first item at 0.05s, +0.05s per item
 export const RISE = 24;
 
 export const SPRING = {
@@ -28,6 +29,7 @@ export const SPRING = {
 } as const satisfies Record<string, Transition>;
 
 export const IN_VIEW = { once: true, amount: 0.3 } as const;
+export const IN_VIEW_EARLY = { once: true, amount: 0.1 } as const;
 
 export const stagger = (delayChildren = 0): Variants => ({
   hidden: {},
@@ -38,6 +40,18 @@ export const rise: Variants = {
   hidden: { opacity: 0, y: RISE },
   show: { opacity: 1, y: 0, transition: { duration: DURATION.entrance, ease: EASE.out } },
 };
+
+// opacity+y only via framer (compositor-safe); blur runs as a CSS animation on the same element
+// so the browser can optimise it independently of the JS animation frame loop.
+export const blurFadeRise: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: DURATION.slow, ease: EASE.out } },
+};
+
+export const staggerBlur = (delayChildren = STAGGER_BLUR): Variants => ({
+  hidden: {},
+  show: { transition: { staggerChildren: STAGGER_BLUR, delayChildren } },
+});
 
 export const DEMO_TIMING = {
   typeCharMs: 55,

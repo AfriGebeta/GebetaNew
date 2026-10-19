@@ -1,32 +1,20 @@
-"use client";
-
-import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import Button from "@/components/ui/button";
 import HeroMap from "@/components/marketing/hero-map";
 import { HERO } from "@/constants/landing";
-import { rise, stagger } from "@/lib/motion";
 
 export default function Header() {
     return (
         <section className="relative isolate flex min-h-[min(860px,92svh)] items-center overflow-hidden">
             <HeroMap />
 
-            <motion.div
-                variants={stagger()}
-                initial="hidden"
-                animate="show"
-                className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-24 pt-16 text-center sm:px-6"
-            >
-                <motion.h1
-                    variants={rise}
-                    className="text-balance text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[clamp(56px,5.6vw,80px)]"
-                >
+            <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 pb-24 pt-16 text-center sm:px-6">
+                <h1 className="text-balance text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[clamp(56px,5.6vw,80px)]">
                     {HERO.title}
-                </motion.h1>
-                <motion.p variants={rise} className="max-w-[40ch] text-[18px] leading-[1.5] text-soft">
+                </h1>
+                <p className="max-w-[40ch] text-[18px] leading-[1.5] text-soft">
                     {HERO.description}
-                </motion.p>
+                </p>
                 <div className="flex flex-wrap items-center justify-center gap-3">
                     <Button href={HERO.primary.href} size="xl" className="auth-signed-out">
                         {HERO.primary.label} <ArrowRight aria-hidden />
@@ -38,7 +26,7 @@ export default function Header() {
                         {HERO.secondary.label}
                     </Button>
                 </div>
-            </motion.div>
+            </div>
         </section>
     );
 }

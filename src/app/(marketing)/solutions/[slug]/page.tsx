@@ -6,7 +6,7 @@ import Container from "@/sections/Container";
 import CallToAction from "@/sections/CallToAction";
 import Button from "@/components/ui/button";
 import { MDXComponents } from "@/app/(marketing)/blog/_components/MDXComponent";
-import { Reveal, RevealItem } from "@/components/marketing/reveal";
+import { RevealBlur, RevealBlurItem } from "@/components/marketing/reveal";
 import { productBySlug, productHref, type Product } from "@/constants/products";
 import { SOLUTIONS, solutionBySlug, solutionHref } from "@/constants/solutions";
 
@@ -38,20 +38,15 @@ export default function SolutionPage({ params }: Params) {
 
     return (
         <main>
+            {/* Hero — no animation */}
             <section className="pb-12 pt-16 md:pb-16 md:pt-24">
                 <Container>
-                    <Reveal className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
-                        <RevealItem>
-                            <p className="text-[15px] font-medium text-soft">{solution.name}</p>
-                        </RevealItem>
-                        <RevealItem>
-                            <h1 className="text-balance text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[clamp(56px,5.6vw,80px)]">
-                                {solution.title}
-                            </h1>
-                        </RevealItem>
-                        <RevealItem>
-                            <p className="max-w-[48ch] text-balance text-[20px] leading-[1.5] text-soft">{solution.description}</p>
-                        </RevealItem>
+                    <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
+                        <p className="text-[15px] font-medium text-soft">{solution.name}</p>
+                        <h1 className="text-balance text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[clamp(56px,5.6vw,80px)]">
+                            {solution.title}
+                        </h1>
+                        <p className="max-w-[48ch] text-balance text-[20px] leading-[1.5] text-soft">{solution.description}</p>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                             <Button href="/auth/register" size="xl" className="auth-signed-out">
                                 Get an API key <ArrowRight aria-hidden />
@@ -63,7 +58,7 @@ export default function SolutionPage({ params }: Params) {
                                 Talk to sales
                             </Button>
                         </div>
-                    </Reveal>
+                    </div>
                 </Container>
             </section>
 
@@ -84,14 +79,14 @@ export default function SolutionPage({ params }: Params) {
 
             <section className="bg-raised py-24 md:py-28">
                 <Container className="flex flex-col gap-10">
-                    <Reveal>
-                        <RevealItem>
+                    <RevealBlur>
+                        <RevealBlurItem>
                             <h2 className={SECTION_TITLE}>The APIs behind it</h2>
-                        </RevealItem>
-                    </Reveal>
-                    <Reveal className="grid gap-3 md:grid-cols-3">
+                        </RevealBlurItem>
+                    </RevealBlur>
+                    <RevealBlur className="grid gap-3 md:grid-cols-3">
                         {products.map((product) => (
-                            <RevealItem key={product.slug}>
+                            <RevealBlurItem key={product.slug}>
                                 <Link
                                     href={productHref(product.slug)}
                                     className="group flex h-full flex-col gap-2 rounded-lg bg-card p-6 shadow-card outline-none transition-colors duration-150 hover:bg-hover focus-visible:ring-2 focus-visible:ring-ring/60"
@@ -102,22 +97,22 @@ export default function SolutionPage({ params }: Params) {
                                     </span>
                                     <span className="text-[15px] leading-[1.55] text-soft">{product.summary}</span>
                                 </Link>
-                            </RevealItem>
+                            </RevealBlurItem>
                         ))}
-                    </Reveal>
+                    </RevealBlur>
                 </Container>
             </section>
 
             <section className="py-24 md:py-28">
                 <Container className="flex flex-col gap-10">
-                    <Reveal>
-                        <RevealItem>
+                    <RevealBlur>
+                        <RevealBlurItem>
                             <h2 className={SECTION_TITLE}>More solutions</h2>
-                        </RevealItem>
-                    </Reveal>
-                    <Reveal className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        </RevealBlurItem>
+                    </RevealBlur>
+                    <RevealBlur className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {others.map((other) => (
-                            <RevealItem key={other.slug}>
+                            <RevealBlurItem key={other.slug}>
                                 <Link
                                     href={solutionHref(other.slug)}
                                     className="group flex h-full flex-col gap-2 rounded-lg bg-card p-5 shadow-card outline-none transition-colors duration-150 hover:bg-hover focus-visible:ring-2 focus-visible:ring-ring/60"
@@ -128,9 +123,9 @@ export default function SolutionPage({ params }: Params) {
                                     </span>
                                     <span className="text-[14px] leading-[1.5] text-soft">{other.summary}</span>
                                 </Link>
-                            </RevealItem>
+                            </RevealBlurItem>
                         ))}
-                    </Reveal>
+                    </RevealBlur>
                 </Container>
             </section>
 

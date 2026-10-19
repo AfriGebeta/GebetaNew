@@ -8,8 +8,10 @@ import { useRouter } from 'nextjs-toploader/app';
 import { queryClient } from "@/providers/QueryProvider";
 import { AuthContext } from "@/providers/AuthProvider";
 import useGeoLocation from "react-ipgeolocation";
+import { motion } from "motion/react";
 import Container from "@/sections/Container";
 import { ArrowRight, Check, Mail } from "lucide-react";
+import { IN_VIEW, blurFadeRise, stagger, staggerBlur } from "@/lib/motion";
 import Button from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Tag from "@/components/ui/tag";
@@ -19,14 +21,16 @@ import { cn } from "@/lib/utils";
 export default function Pricing() {
     return (
         <section id="pricing" className="py-24 md:py-28">
+            <motion.div variants={staggerBlur()} initial="hidden" whileInView="show" viewport={IN_VIEW}>
             <Container className="flex flex-col gap-4">
-                <h2 className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
+                <motion.h2 variants={blurFadeRise} className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
                     Start free, pay as you grow
-                </h2>
-                <p className="max-w-[48ch] text-[18px] leading-[1.5] text-soft">
+                </motion.h2>
+                <motion.p variants={blurFadeRise} className="max-w-[48ch] text-[18px] leading-[1.5] text-soft">
                     Every plan includes all APIs. Pick a monthly bundle, or talk to us about unlimited volume.
-                </p>
+                </motion.p>
             </Container>
+            </motion.div>
             <Plans />
         </section>
     )

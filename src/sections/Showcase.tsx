@@ -5,7 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { showcases } from "@/constants";
 import SegmentedControl from "@/components/ui/segmented-control";
-import { DURATION, EASE, IN_VIEW, rise, stagger } from "@/lib/motion";
+import { DURATION, EASE, IN_VIEW, blurFadeRise, stagger, staggerBlur } from "@/lib/motion";
 
 const items = showcases.filter((s) => s.title);
 
@@ -16,13 +16,13 @@ export default function Showcase() {
     return (
         <section className="bg-raised">
             <motion.div
-                variants={stagger()}
+                variants={staggerBlur()}
                 initial="hidden"
                 whileInView="show"
                 viewport={IN_VIEW}
                 className="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-24 sm:px-6 md:py-36 lg:px-8"
             >
-                <motion.div variants={rise} className="flex flex-col gap-4">
+                <motion.div variants={blurFadeRise} className="flex flex-col gap-4">
                     <h2 className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
                         Built on Gebeta
                     </h2>
@@ -30,7 +30,7 @@ export default function Showcase() {
                         Ride-hailing, national ID registration and delivery, running on our maps today.
                     </p>
                 </motion.div>
-                <motion.div variants={rise}>
+                <motion.div variants={blurFadeRise}>
                     <SegmentedControl
                         aria-label="Customer"
                         value={active}
@@ -38,7 +38,7 @@ export default function Showcase() {
                         options={items.map((s) => ({ value: s.title, label: s.title }))}
                     />
                 </motion.div>
-                <motion.div variants={rise} className="relative flex h-[420px] items-center justify-center overflow-hidden rounded-xl bg-card md:h-[520px]">
+                <motion.div variants={blurFadeRise} className="relative flex h-[420px] items-center justify-center overflow-hidden rounded-xl bg-card md:h-[520px]">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={current.title}

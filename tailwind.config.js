@@ -115,6 +115,10 @@ const config = {
 				noise: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'rgba(0,0,0,0.03)\'/%3E%3C/svg%3E")',
 			},
 			keyframes: {
+				'blur-fade-rise': {
+					'0%': { opacity: '0', filter: 'blur(8px)', transform: 'translateY(12px)' },
+					'100%': { opacity: '1', filter: 'blur(0px)', transform: 'translateY(0px)' },
+				},
 				aurora: {
 					from: {
 						backgroundPosition: "50% 50%, 50% 50%",
@@ -165,6 +169,7 @@ const config = {
 				}
 			},
 			animation: {
+				'blur-fade-rise': 'blur-fade-rise 0.6s ease-out both',
 				'smooth-scroll': 'smooth-scroll 20s linear infinite',
 				'smooth-scroll-2': 'smooth-scroll 40s linear infinite',
 				'accordion-down': 'accordion-down 0.2s ease-out',

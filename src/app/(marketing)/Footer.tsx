@@ -30,9 +30,10 @@ const COLUMNS = [
     {
         title: "Social",
         links: [
-            { label: "Instagram", href: "https://www.instagram.com/gebetamaps", external: true },
-            { label: "X (Twitter)", href: "https://twitter.com/GebetaMaps", external: true },
             { label: "LinkedIn", href: "https://et.linkedin.com/company/gebetamaps", external: true },
+            { label: "Telegram", href: "https://t.me/gebetamaps_chat", external: true },
+            { label: "Instagram", href: "https://www.instagram.com/gebetamaps", external: true },
+            { label: "X (Twitter)", href: "https://x.com/GebetaMaps", external: true },
         ],
     },
 ];
