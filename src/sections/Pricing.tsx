@@ -18,7 +18,7 @@ import Tag from "@/components/ui/tag";
 import SegmentedControl from "@/components/ui/segmented-control";
 import { cn } from "@/lib/utils";
 
-export default function Pricing() {
+export default function Pricing({ initialData, initialExchangeRate }: { initialData?: any; initialExchangeRate?: number }) {
     return (
         <section id="pricing" className="py-24 md:py-28">
             <motion.div variants={staggerBlur()} initial="hidden" whileInView="show" viewport={IN_VIEW}>
@@ -31,13 +31,13 @@ export default function Pricing() {
                 </motion.p>
             </Container>
             </motion.div>
-            <Plans />
+            <Plans initialData={initialData} initialExchangeRate={initialExchangeRate} />
         </section>
     )
 }
 
 
-export function Plans() {
+export function Plans({ initialData, initialExchangeRate }: { initialData?: any; initialExchangeRate?: number }) {
     const enterprise = {
         name: "Custom",
         price: "",
@@ -52,9 +52,10 @@ export function Plans() {
         setActiveTab(tab);
     };
 
-    const { data, isLoading } = useQuery({
+    const { data } = useQuery({
         queryKey: ['plans'],
         queryFn: () => getAllCredits({ page: 1, limit: 10 }),
+        initialData: initialData,
         staleTime: 5 * 60 * 1000,
     });
 
@@ -76,40 +77,24 @@ export function Plans() {
                     <Tag tone="green">Save up to 20% yearly</Tag>
                 </div>
                 <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-                    <Plan data={devPackage?.[0]} index={data?.length || 1} />
+                    <Plan data={devPackage?.[0]} index={data?.length || 1} initialExchangeRate={initialExchangeRate} />
                     {
                         (activeTab === "monthly" ? monthlyPlans : yearlyPlans).map((credit, index) => (
-                            <Plan key={credit.id ?? index} data={credit} index={index} activeTab={activeTab} monthlyPlans={monthlyPlans} />
+                            <Plan key={credit.id ?? index} data={credit} index={index} activeTab={activeTab} monthlyPlans={monthlyPlans} initialExchangeRate={initialExchangeRate} />
                         ))
                     }
-                    <Plan data={enterprise} index={data?.length || 1} />
+                    <Plan data={enterprise} index={data?.length || 1} initialExchangeRate={initialExchangeRate} />
                 </div>
             </div>
         </Container>
     )
 }
 
-export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlans }: { data?: any, label?: string; isCurrentPlan?: boolean; index?: number, activeTab: "monthly" | "yearly", monthlyPlans: any[] }) {
+export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlans, initialExchangeRate }: { data?: any, label?: string; isCurrentPlan?: boolean; index?: number, activeTab: "monthly" | "yearly", monthlyPlans: any[], initialExchangeRate?: number }) {
     const { currentUser } = useContext(AuthContext);
     const [isLogin, setIsLogin] = useState(false)
     const location = useGeoLocation();
-    const [exchangeRate, setExchangeRate] = useState(140);
-
-    useEffect(() => {
-        const fetchExchangeRate = async () => {
-            try {
-                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-                const data = await response.json();
-                if (data.rates.ETB) {
-                    setExchangeRate(Math.ceil(data.rates.ETB));
-                }
-            } catch (error) {
-                console.error("Failed to fetch exchange rate, using default", error);
-            }
-        };
-
-        fetchExchangeRate();
-    }, []);
+    const [exchangeRate, setExchangeRate] = useState(initialExchangeRate ?? 140);
 
     useEffect(() => {
         setIsLogin(JSON.parse(localStorage.getItem('isAuthenticated')))

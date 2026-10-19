@@ -13,7 +13,29 @@ export const metadata: Metadata = {
     alternates: { canonical: "/" },
 };
 
-export default function Home() {
+async function fetchPricingData() {
+    try {
+        const [plansRes, fxRes] = await Promise.all([
+            fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/credit-bundle?page=1&limit=10`, {
+                next: { revalidate: 3600 },
+            }),
+            fetch("https://api.exchangerate-api.com/v4/latest/USD", {
+                next: { revalidate: 3600 },
+            }),
+        ]);
+        const plans = plansRes.ok ? (await plansRes.json()).data : null;
+        const fx = fxRes.ok ? await fxRes.json() : null;
+        return {
+            plans,
+            exchangeRate: fx?.rates?.ETB ? Math.ceil(fx.rates.ETB) : 140,
+        };
+    } catch {
+        return { plans: null, exchangeRate: 140 };
+    }
+}
+
+export default async function Home() {
+    const { plans, exchangeRate } = await fetchPricingData();
     return (
         <main>
             <Header/>
@@ -23,7 +45,7 @@ export default function Home() {
             <Showcase/>
             <Testimonial/>
             {/* <VideoCarousel/> */}
-            <Pricing/>
+            <Pricing initialData={plans} initialExchangeRate={exchangeRate} />
             <CallToAction/>
         </main>
     );
