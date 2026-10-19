@@ -25,7 +25,10 @@ export async function GET(req: NextRequest, { params }: { params: { path: string
     }
 
     const kind = path.startsWith("styles/") ? "styles" : "asset";
+    // force-dynamic sets cache:'no-store' globally, so we opt this fetch back into the data
+    // cache explicitly — tiles and assets are immutable enough to cache for a day or more.
     const upstream = await fetch(`${TILES_ORIGIN}/${path}?apiKey=${encodeURIComponent(key)}`, {
+        cache: "force-cache",
         next: { revalidate: SERVER_CACHE_S[kind] },
     });
     if (!upstream.ok || !upstream.body) return new NextResponse(null, { status: upstream.status });

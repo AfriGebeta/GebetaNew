@@ -127,7 +127,7 @@ export default function LiveMap({
     drift = false,
     showLabels = true,
     tone = "primary",
-    controls = true,
+    controls = false,
     puck = true,
     soft = true,
     overlayInset,
@@ -190,14 +190,15 @@ export default function LiveMap({
                 center: ADDIS_CENTER,
                 zoom,
                 styleUrl: proxiedTileUrl(styleUrl ?? MAP_STYLES[0].url),
-                // Pannable and zoomable by drag, pinch, double-click and the +/- buttons; the scroll
-                // wheel stays with the page so the map never traps scrolling.
-                dragPan: true,
-                touchZoomRotate: true,
-                doubleClickZoom: true,
+                // All interaction disabled — map is decorative, locks prevent accidental tile
+                // requests from user panning/zooming which would consume API quota.
+                dragPan: false,
+                touchZoomRotate: false,
+                doubleClickZoom: false,
                 scrollZoom: false,
                 dragRotate: false,
                 pitchWithRotate: false,
+                keyboard: false,
             } as Parameters<GebetaMaps["init"]>[0]) as unknown as MapLibreMap;
             if (controls) map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-right");
             const markInteraction = (e: { originalEvent?: unknown }) => {
