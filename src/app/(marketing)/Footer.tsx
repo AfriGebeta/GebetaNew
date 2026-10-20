@@ -15,7 +15,7 @@ const COLUMNS = [
             { label: "Documentation", href: "https://docs.gebeta.app/" },
             { label: "Blog", href: "/blog" },
             { label: "Pricing", href: "/pricing" },
-            { label: "Status", href: "/uptime" },
+            // { label: "Status", href: "/uptime" },
         ],
     },
     {
