@@ -72,55 +72,6 @@ export default function Company() {
                 </Container>
             </section>
 
-            <section className="bg-raised py-24 md:py-28">
-                <Container className="flex flex-col gap-12">
-                    <RevealBlur>
-                        <RevealBlurItem>
-                            <h2 className={SECTION_TITLE}>The team</h2>
-                        </RevealBlurItem>
-                    </RevealBlur>
-                    <RevealBlur className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
-                        {COMPANY.team.map((member) => (
-                            <RevealBlurItem key={member.name} className="flex flex-col gap-4">
-                                {member.img ? (
-                                    <Image
-                                        src={member.img}
-                                        alt=""
-                                        width={64}
-                                        height={64}
-                                        className="size-16 rounded-full bg-card object-cover shadow-card"
-                                    />
-                                ) : (
-                                    <span
-                                        aria-hidden
-                                        className="flex size-16 items-center justify-center rounded-full bg-card text-[20px] font-medium tracking-[-0.01em] text-foreground shadow-card"
-                                    >
-                                        {initials(member.name)}
-                                    </span>
-                                )}
-                                <span className="flex flex-col gap-1">
-                                    <span className="flex items-center gap-2 text-[18px] font-medium text-foreground">
-                                        {member.name}
-                                        {member.linkedin && (
-                                            <a
-                                                href={member.linkedin}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                aria-label={`${member.name} on LinkedIn`}
-                                                className="text-soft transition-colors hover:text-foreground"
-                                            >
-                                                <Linkedin aria-hidden className="size-4" />
-                                            </a>
-                                        )}
-                                    </span>
-                                    <span className="text-[15px] text-soft">{member.role}</span>
-                                </span>
-                            </RevealBlurItem>
-                        ))}
-                    </RevealBlur>
-                </Container>
-            </section>
-
             <section className="py-24 md:py-28">
                 <Container className="flex flex-col gap-12">
                     <RevealBlur>
