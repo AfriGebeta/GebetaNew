@@ -2,31 +2,26 @@
 
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {useQuery} from "@tanstack/react-query";
 import {getMatrix} from "@/service/apis";
 import {IconPackage, IconTrendingDown, IconTrendingUp,} from "@tabler/icons-react";
 
 import {StatCard, StatCardSkeleton} from "@/components/dashboard/stat-card";
+import {PLAN_LABEL, getCurrentPlan} from "@/lib/subscription";
 
 interface UsageOverviewProps {
     currentUser: any;
 }
 
 export default function UsageOverview({ currentUser }: UsageOverviewProps) {
-    const [purchasedPlans, setPurchasedPlans] = useState("");
-
     const { data, isLoading } = useQuery({
         queryKey: ["metrics", currentUser.token],
         queryFn: () => getMatrix(currentUser.token),
         staleTime: 5 * 60 * 1000,
     });
 
-    useEffect(() => {
-        if (currentUser?.user?.token) setPurchasedPlans("Credits");
-        if (currentUser?.user?.purchased_date != null)
-            setPurchasedPlans("Pay as you go");
-    }, [currentUser]);
+    const plan = getCurrentPlan(currentUser?.user);
 
     const capitalize = (str: string) =>
         str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
@@ -58,7 +53,7 @@ export default function UsageOverview({ currentUser }: UsageOverviewProps) {
         },
         {
             label: "Subscription",
-            value: purchasedPlans || "Free",
+            value: PLAN_LABEL[plan.kind],
             hint: "Current billing model",
             badge: "Plan",
             icon: <IconPackage />,

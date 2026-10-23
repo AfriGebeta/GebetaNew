@@ -66,7 +66,6 @@ export const NAV_SECTIONS: NavSection[] = [
 
 export const NAV_FOOTER: NavItem[] = [
   { label: "Documentation", href: "https://docs.gebeta.app", icon: BookOpen, external: true },
-  { label: "Account", href: "/dashboard/account", icon: Settings2 },
 ];
 
 export function isNavItemActive(pathname: string, href: string) {
