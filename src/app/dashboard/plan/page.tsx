@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/use-toast"
 import { queryClient } from "@/providers/QueryProvider";
 import { useRouter } from 'nextjs-toploader/app';
 import { Plan } from '@/sections/Pricing';
+import { getCurrentPlan } from '@/lib/subscription';
+import CurrentPlanCard from './CurrentPlanCard';
 
 export default function UserPlan() {
     const enterprise = {
@@ -34,13 +36,8 @@ export default function UserPlan() {
     const monthlyPlans = plans.filter(plan => plan.expiredIn === 30);
     const yearlyPlans = plans.filter(plan => plan.expiredIn === 365);
 
-    // Prefer a real paid credit over the freemium one when the user has both -
-    // otherwise this always shows Freemium as "Current Plan" since it's
-    // typically the first bundle a new account is granted, regardless of
-    // whatever they've actually paid for since.
-    const purchasedCredits = currentUser?.user?.credits || [];
-    const activeCredit = purchasedCredits.find(c => !c.is_freeemium) || purchasedCredits[0];
-    const activePlan = activeCredit ? plans.find(p => p.id === activeCredit.bundle_id) || null : null;
+    const currentPlan = getCurrentPlan(currentUser?.user);
+    const activePlan = currentPlan.credit ? plans.find(p => p.id === currentPlan.credit.bundle_id) || null : null;
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
@@ -52,11 +49,9 @@ export default function UserPlan() {
                 title="My Subscription"
                 description="Your active plan and the bundles you can upgrade to."
             />
-            {activePlan && (
-                <Section title="Current plan">
-                    <Plan data={activePlan} label="Current Plan" isCurrentPlan={true} index={0} activeTab={activeTab} monthlyPlans={monthlyPlans} />
-                </Section>
-            )}
+            <Section title="Current plan">
+                <CurrentPlanCard plan={currentPlan} bundleName={activePlan?.name} />
+            </Section>
             <Section
                 title="Available plans"
                 action={
