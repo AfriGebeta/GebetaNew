@@ -1,30 +1,9 @@
-// import Container from "@/sections/Container";
-// import type { Metadata } from "next";
-// import { MDXRemote } from 'next-mdx-remote/rsc'
-//
-// export const metadata: Metadata = {
-//     title: "Terms"
-// }
-//
-//
-// export default async function Terms() {
-//     const res = await fetch("https://mapapi.gebeta.app/terms");
-//     const { content } = await res.json();
-//
-//     return (
-//         <Container>
-//             <div className="mt-[120px]">
-//                 <MDXRemote source={content} />
-//             </div>
-//         </Container>
-//     );
-// }
-
-import Container from "@/sections/Container";
 import type { Metadata } from "next";
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { MDXRemote } from "next-mdx-remote/rsc";
+import LegalPage from "@/components/marketing/legal-page";
+import { MDXComponents } from "@/app/(marketing)/blog/_components/MDXComponent";
+import { TERMS, TERMS_URL } from "@/constants/legal";
 
-// Define the expected response type
 interface TermsResponse {
     content: string;
     contentType: string;
@@ -32,36 +11,34 @@ interface TermsResponse {
 }
 
 export const metadata: Metadata = {
-    title: "Terms"
+    title: "Terms of Service",
+    description: TERMS.description,
+    alternates: { canonical: "/terms" },
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+
+/** The markdown opens with its own "# Terms…" title and a bold "Last updated" line; the page header shows both. */
+function splitHeader(markdown: string) {
+    const updated = markdown.match(/^\*\*Last updated:\s*(.+?)\*\*\s*$/m)?.[1];
+    const body = markdown
+        .replace(/^\s*#\s[^\n]*\n/, "")
+        .replace(/^\*\*Last updated:[^\n]*\n/m, "")
+        .trimStart();
+    return { updated, body };
+}
 
 export default async function Terms() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/terms`, {
-        next: { revalidate: 3600 }
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch terms');
-    }
-
+    const res = await fetch(TERMS_URL, { next: { revalidate } });
+    if (!res.ok) throw new Error("Failed to fetch terms");
     const data: TermsResponse = await res.json();
+    const { updated, body } = splitHeader(data.content);
 
     return (
-        <Container>
-
-            <article
-                className="mt-[120px] prose prose-lg max-w-none
-             prose-headings:font-bold
-             prose-h1:text-4xl prose-h2:text-3xl
-             prose-h1:mb-4 prose-h2:mb-3
-             prose-p:mt-2
-             prose-p:text-gray-700
-             [&>*:first-child]:mt-0"
-            >
-                <MDXRemote source={data.content} />
-            </article>
-        </Container>
+        <LegalPage current="/terms" title={TERMS.title} description={TERMS.description} updated={updated}>
+            <div className="[&>h2:first-child]:mt-0">
+                <MDXRemote source={body} components={MDXComponents} />
+            </div>
+        </LegalPage>
     );
 }

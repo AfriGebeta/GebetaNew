@@ -1,9 +1,10 @@
 //@ts-nocheck
 "use client"
 import {Button} from "@/components/ui/button";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {
     Dialog,
+    DialogBody,
     DialogClose,
     DialogContent,
     DialogDescription,
@@ -13,7 +14,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
+import Field from "@/components/ui/field";
+import {EmptyState, Page, PageIntro, Section} from "@/components/dashboard/page";
 import React, {useContext, useEffect, useState} from "react";
 import {createAllowedIp, deleteAllowedIp, getAllowedIps, updateAllowedIp, revokeToken, setToken} from "@/service/apis";
 import {useToast} from "@/hooks/use-toast"
@@ -264,156 +266,171 @@ export default function APIToken() {
         setIsUpdatingAllowedIp(false);
     };
 
-    return (
-        <div className="rounded text-[#aaa] p-4 md:p-6 mt-2">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                <h2 className="text-sm font-medium text-white dark:text-white">API Tokens</h2>
-                <ScopeSelectionModal
-                    open={scopeDialogOpen}
-                    onOpenChange={setScopeDialogOpen}
-                    selectedScopes={selectedScopes}
-                    onToggleScope={toggleScope}
-                    onCreateToken={createToken}
-                    isCreating={isCreating}
-                    availableScopes={grantedScopes}
-                    scopesLoading={scopesLoading}
-                    emptyScopesMessage="Your account has no API scopes granted yet. Contact support to enable them."
-                    trigger={
-                        <Button className="bg-[#FFA500] text-white hover:bg-[#FF8C00] text-sm px-4 py-2">
-                            Create Token
-                        </Button>
-                    }
+    const allowedIpFields = (prefix, values, onChange) => (
+        <DialogBody>
+            <Field label="IP Address" htmlFor={`${prefix}-ip-address`} required>
+                <Input
+                    id={`${prefix}-ip-address`}
+                    placeholder="e.g. 203.0.113.42"
+                    value={values.ipAddress}
+                    onChange={(e) => onChange("ipAddress", e.target.value)}
                 />
-            </div>
+            </Field>
+            <Field label="API Key" htmlFor={`${prefix}-apikey`} required>
+                <Input
+                    id={`${prefix}-apikey`}
+                    placeholder="Enter API key"
+                    value={values.apiKey}
+                    onChange={(e) => onChange("apiKey", e.target.value)}
+                />
+            </Field>
+            <Field label="Description" htmlFor={`${prefix}-description`} hint="Optional">
+                <Input
+                    id={`${prefix}-description`}
+                    placeholder="e.g. Production server"
+                    value={values.description}
+                    onChange={(e) => onChange("description", e.target.value)}
+                />
+            </Field>
+        </DialogBody>
+    );
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Token</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {tokenList.map((token, index) => {
-                        return (
-                            <TableRow key={index}>
-                                <TableCell className="font-mono">
-                                    <span className="hidden sm:inline">{(token?.token).replace(/./g, '●').slice(0, 24)}</span>
-                                    <span className="inline sm:hidden">{(token?.token).replace(/./g, '●').slice(0, 12)}</span>
-                                </TableCell>
-                                <TableCell>{token?.tokenIdentifierName || ''}</TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex justify-end space-x-2">
-                                        <Button
-                                            variant="link"
-                                            onClick={() => copyToClipboard(token?.token)}
-                                            className="flex items-center p-2"
-                                        >
-                                            <CopyIcon className="w-4 h-4" />
-                                        </Button>
-                                        <Button
-                                            variant="link"
-                                            onClick={() => handleRevokeToken(token)}
-                                            className="flex items-center p-2"
-                                        >
-                                            <Trash2Icon className="w-4 h-4" />
-                                        </Button>
-                                        <Dialog>
-                                            <DialogTrigger asChild>
+    return (
+        <Page>
+            <PageIntro
+                title="API Keys"
+                description="Create and revoke the tokens your apps use to call Gebeta Maps, and lock them to specific IP addresses."
+                actions={
+                    <ScopeSelectionModal
+                        open={scopeDialogOpen}
+                        onOpenChange={setScopeDialogOpen}
+                        selectedScopes={selectedScopes}
+                        onToggleScope={toggleScope}
+                        onCreateToken={createToken}
+                        isCreating={isCreating}
+                        availableScopes={grantedScopes}
+                        scopesLoading={scopesLoading}
+                        emptyScopesMessage="Your account has no API scopes granted yet. Contact support to enable them."
+                        trigger={
+                            <Button variant="primary">
+                                <PlusIcon aria-hidden /> Create Token
+                            </Button>
+                        }
+                    />
+                }
+            />
+
+            <Section title="API tokens">
+                {tokenList.length === 0 ? (
+                    <EmptyState title="No API tokens yet" description="Create a token to start calling Gebeta Maps APIs." />
+                ) : (
+                    <TableContainer>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Token</TableHead>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {tokenList.map((token, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell className="font-mono text-subtle">
+                                            <span className="hidden sm:inline">{(token?.token).replace(/./g, '●').slice(0, 24)}</span>
+                                            <span className="inline sm:hidden">{(token?.token).replace(/./g, '●').slice(0, 12)}</span>
+                                        </TableCell>
+                                        <TableCell>{token?.tokenIdentifierName || '—'}</TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-1">
                                                 <Button
-                                                    variant="link"
-                                                    onClick={() => handleShowToken(token?.token)}
-                                                    className="p-2"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => copyToClipboard(token?.token)}
+                                                    aria-label="Copy token"
                                                 >
-                                                    <EyeIcon className="w-4 h-4" />
+                                                    <CopyIcon aria-hidden />
                                                 </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-md">
-                                                <DialogHeader>
-                                                    <DialogTitle>API Token</DialogTitle>
-                                                    <DialogDescription
-                                                        className="relative break-words overflow-hidden max-w-sm">
-                                                        <div
-                                                            className="whitespace-normal break-words overflow-wrap break-all">
-                                                            {selectedToken}
-                                                        </div>
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <DialogFooter className="sm:justify-start">
-                                                    <DialogClose asChild>
-                                                        <Button type="button" variant="secondary">
-                                                            Close
+                                                <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleShowToken(token?.token)}
+                                                            aria-label="Show token"
+                                                        >
+                                                            <EyeIcon aria-hidden />
                                                         </Button>
-                                                    </DialogClose>
-                                                </DialogFooter>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
-                </TableBody>
-            </Table>
+                                                    </DialogTrigger>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>API Token</DialogTitle>
+                                                            <DialogDescription>
+                                                                Keep this token secret. Anyone with it can make calls billed to your account.
+                                                            </DialogDescription>
+                                                        </DialogHeader>
+                                                        <DialogBody>
+                                                            <code className="block break-all rounded-lg border border-line-strong bg-secondary p-3 font-mono text-[13px] leading-[1.5] text-foreground">
+                                                                {selectedToken}
+                                                            </code>
+                                                        </DialogBody>
+                                                        <DialogFooter>
+                                                            <DialogClose asChild>
+                                                                <Button variant="secondary">Close</Button>
+                                                            </DialogClose>
+                                                            <Button variant="primary" onClick={() => copyToClipboard(selectedToken)}>
+                                                                <CopyIcon aria-hidden /> Copy
+                                                            </Button>
+                                                        </DialogFooter>
+                                                    </DialogContent>
+                                                </Dialog>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleRevokeToken(token)}
+                                                    aria-label="Revoke token"
+                                                    className="hover:text-danger"
+                                                >
+                                                    <Trash2Icon aria-hidden />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
+            </Section>
 
-            <div className="mt-8">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                    <div>
-                        <h2 className="text-sm font-medium text-white dark:text-white">Allowed IPs</h2>
-                        <p className="text-xs text-[#aaa] mt-1">
-                            Restrict API access to specific IP addresses and API keys
-                            {!allowedIpsLoading && allowedIpsCount > 0 ? ` · ${allowedIpsCount} total` : ""}
-                        </p>
-                    </div>
+            <Section
+                title="Allowed IPs"
+                description={`Restrict API access to specific IP addresses and API keys${!allowedIpsLoading && allowedIpsCount > 0 ? ` · ${allowedIpsCount} total` : ""}`}
+                action={
                     <Dialog open={allowedIpDialogOpen} onOpenChange={setAllowedIpDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="bg-[#FFA500] text-white hover:bg-[#FF8C00] text-sm px-4 py-2">
-                                <PlusIcon className="w-4 h-4 mr-1" /> Add Allowed IP
+                            <Button variant="secondary">
+                                <PlusIcon aria-hidden /> Add Allowed IP
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
+                        <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Add Allowed IP</DialogTitle>
                                 <DialogDescription>
                                     Restrict API access to a specific IP address. Only requests from this IP using the linked API key will be allowed.
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="space-y-4 py-2">
-                                <div className="space-y-1">
-                                    <Label htmlFor="lock-ip-address">IP Address</Label>
-                                    <Input
-                                        id="lock-ip-address"
-                                        placeholder="e.g. 203.0.113.42"
-                                        value={lockIpAddress}
-                                        onChange={(e) => setLockIpAddress(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <Label htmlFor="lock-apikey">API Key</Label>
-                                    <Input
-                                        id="lock-apikey"
-                                        placeholder="Enter API key"
-                                        value={lockApiKey}
-                                        onChange={(e) => setLockApiKey(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <Label htmlFor="lock-description">Description (Optional)</Label>
-                                    <Input
-                                        id="lock-description"
-                                        placeholder="e.g. Production server"
-                                        value={lockDescription}
-                                        onChange={(e) => setLockDescription(e.target.value)}
-                                    />
-                                </div>
-                            </div>
+                            {allowedIpFields(
+                                "lock",
+                                { ipAddress: lockIpAddress, apiKey: lockApiKey, description: lockDescription },
+                                (field, value) => ({ ipAddress: setLockIpAddress, apiKey: setLockApiKey, description: setLockDescription })[field](value)
+                            )}
                             <DialogFooter>
                                 <DialogClose asChild>
-                                    <Button type="button" variant="secondary">Cancel</Button>
+                                    <Button variant="secondary">Cancel</Button>
                                 </DialogClose>
                                 <Button
-                                    className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
+                                    variant="primary"
                                     onClick={handleAddAllowedIp}
                                     disabled={isAddingAllowedIp || !lockIpAddress.trim() || !lockApiKey.trim()}
                                 >
@@ -422,49 +439,25 @@ export default function APIToken() {
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
-                </div>
-
+                }
+            >
                 <Dialog open={editAllowedIpDialogOpen} onOpenChange={setEditAllowedIpDialogOpen}>
-                    <DialogContent className="sm:max-w-md">
+                    <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Edit Allowed IP</DialogTitle>
                             <DialogDescription>Update the IP address, API key, and description.</DialogDescription>
                         </DialogHeader>
-                        <div className="space-y-4 py-2">
-                            <div className="space-y-1">
-                                <Label htmlFor="edit-ip-address">IP Address</Label>
-                                <Input
-                                    id="edit-ip-address"
-                                    placeholder="e.g. 203.0.113.42"
-                                    value={editAllowedIpForm.ipAddress}
-                                    onChange={(e) => setEditAllowedIpForm(f => ({ ...f, ipAddress: e.target.value }))}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="edit-apikey">API Key</Label>
-                                <Input
-                                    id="edit-apikey"
-                                    placeholder="Enter API key"
-                                    value={editAllowedIpForm.apiKey}
-                                    onChange={(e) => setEditAllowedIpForm(f => ({ ...f, apiKey: e.target.value }))}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="edit-description">Description (Optional)</Label>
-                                <Input
-                                    id="edit-description"
-                                    placeholder="e.g. Production server"
-                                    value={editAllowedIpForm.description}
-                                    onChange={(e) => setEditAllowedIpForm(f => ({ ...f, description: e.target.value }))}
-                                />
-                            </div>
-                        </div>
+                        {allowedIpFields(
+                            "edit",
+                            editAllowedIpForm,
+                            (field, value) => setEditAllowedIpForm(f => ({ ...f, [field]: value }))
+                        )}
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="secondary">Cancel</Button>
+                                <Button variant="secondary">Cancel</Button>
                             </DialogClose>
                             <Button
-                                className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
+                                variant="primary"
                                 onClick={handleUpdateAllowedIp}
                                 disabled={isUpdatingAllowedIp || !editAllowedIpForm.ipAddress.trim() || !editAllowedIpForm.apiKey.trim()}
                             >
@@ -475,69 +468,71 @@ export default function APIToken() {
                 </Dialog>
 
                 {allowedIpsLoading ? (
-                    <p className="text-sm text-[#aaa] py-4">Loading...</p>
+                    <p className="caption-style py-4 text-subtle">Loading...</p>
                 ) : allowedIps.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 gap-2 text-[#aaa] border border-dashed rounded-md">
-                        <NetworkIcon className="w-8 h-8 opacity-40" />
-                        <p className="text-sm">No allowed IPs configured</p>
-                    </div>
+                    <EmptyState icon={<NetworkIcon />} title="No allowed IPs configured" />
                 ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>IP Address</TableHead>
-                                <TableHead>API Key</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead>Created</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {allowedIps.map((entry) => (
-                                <TableRow key={entry.id}>
-                                    <TableCell className="font-mono text-sm">{entry.ipAddress || "—"}</TableCell>
-                                    <TableCell className="font-mono text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <span>{maskApiKey(entry.apiKey)}</span>
-                                            {entry.apiKey ? (
-                                                <Button
-                                                    variant="link"
-                                                    onClick={() => copyToClipboard(entry.apiKey)}
-                                                    className="p-0 h-auto"
-                                                    title="Copy API key"
-                                                >
-                                                    <CopyIcon className="w-3.5 h-3.5" />
-                                                </Button>
-                                            ) : null}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-sm">{entry.description || "—"}</TableCell>
-                                    <TableCell className="text-sm text-[#aaa]">{formatAllowedIpDate(entry.createdAt)}</TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end space-x-1">
-                                            <Button
-                                                variant="link"
-                                                onClick={() => openEditAllowedIp(entry)}
-                                                className="p-2"
-                                            >
-                                                <PencilIcon className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                variant="link"
-                                                onClick={() => handleDeleteAllowedIp(entry.id)}
-                                                disabled={isDeletingAllowedIpId === entry.id}
-                                                className="p-2"
-                                            >
-                                                <Trash2Icon className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
+                    <TableContainer>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>IP Address</TableHead>
+                                    <TableHead>API Key</TableHead>
+                                    <TableHead>Description</TableHead>
+                                    <TableHead>Created</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {allowedIps.map((entry) => (
+                                    <TableRow key={entry.id}>
+                                        <TableCell className="font-mono">{entry.ipAddress || "—"}</TableCell>
+                                        <TableCell className="font-mono">
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-subtle">{maskApiKey(entry.apiKey)}</span>
+                                                {entry.apiKey ? (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon-sm"
+                                                        onClick={() => copyToClipboard(entry.apiKey)}
+                                                        aria-label="Copy API key"
+                                                    >
+                                                        <CopyIcon aria-hidden />
+                                                    </Button>
+                                                ) : null}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-soft">{entry.description || "—"}</TableCell>
+                                        <TableCell className="text-subtle">{formatAllowedIpDate(entry.createdAt)}</TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => openEditAllowedIp(entry)}
+                                                    aria-label="Edit allowed IP"
+                                                >
+                                                    <PencilIcon aria-hidden />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleDeleteAllowedIp(entry.id)}
+                                                    disabled={isDeletingAllowedIpId === entry.id}
+                                                    aria-label="Remove allowed IP"
+                                                    className="hover:text-danger"
+                                                >
+                                                    <Trash2Icon aria-hidden />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 )}
-            </div>
-        </div>
+            </Section>
+        </Page>
     );
 }

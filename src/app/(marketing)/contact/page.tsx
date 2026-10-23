@@ -3,9 +3,22 @@
 
 import { useState } from 'react';
 import Container from "@/sections/Container";
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import Button from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import Field from "@/components/ui/field";
+import { Input, Textarea } from "@/components/ui/input";
+import PhoneInput from "@/components/ui/phone-input";
+import Notice from "@/components/ui/notice";
 
+
+const CONTACT_DETAILS = [
+    { label: "Email", value: "info@gebeta.app", href: "mailto:info@gebeta.app" },
+    { label: "Office", value: "Maraki Tower, Megenagha, Addis Ababa, Ethiopia" },
+    { label: "Developers", value: "Documentation", href: "https://docs.gebeta.app/" },
+    { label: "Customers", value: "Open your dashboard", href: "/dashboard" },
+];
 
 export default function Contact() {
     const [formData, setFormData] = useState({
@@ -79,148 +92,95 @@ export default function Contact() {
         }
     };
 
+    const set = (key: keyof typeof formData) => (e) => setFormData({ ...formData, [key]: e.target.value });
+
     return (
         <Container>
-            <div className="mt-[80px] max-w-2xl mx-auto px-4 ">
-                <h1 className="text-[48px] text-center text-[#1B1E2B] dark:text-white leading-60 mb-[40px]">
-                    Contact Us
-                </h1>
+            <div className="grid gap-12 py-16 md:py-24 lg:grid-cols-12 lg:gap-8">
+                <div className="flex flex-col gap-10 lg:col-span-5">
+                    <div className="flex flex-col gap-4">
+                        <h1 className="text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[64px]">
+                            Talk to us
+                        </h1>
+                        <p className="max-w-[40ch] text-[18px] leading-[1.5] text-soft">
+                            Questions about pricing, enterprise plans, custom data or a partnership.
+                        </p>
+                    </div>
+                    <dl className="flex flex-col gap-6">
+                        {CONTACT_DETAILS.map((item) => (
+                            <div key={item.label} className="flex flex-col gap-1">
+                                <dt className="text-[15px] text-soft">{item.label}</dt>
+                                <dd className="text-[17px] text-foreground">
+                                    {item.href ? (
+                                        <Link href={item.href} className="inline-flex items-center gap-1 underline-offset-4 hover:underline">
+                                            {item.value} <ArrowUpRight aria-hidden className="size-4"/>
+                                        </Link>
+                                    ) : item.value}
+                                </dd>
+                            </div>
+                        ))}
+                    </dl>
+                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            required
-                            minLength={2}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1B1E2B] dark:bg-gray-800 dark:border-gray-700 dark:text-white transition duration-200"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            disabled={status.loading}
-                            placeholder="Your name"
-                        />
+                <Card className="p-6 md:p-8 lg:col-span-7">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    <div className="grid gap-5 sm:grid-cols-2">
+                        <Field label="Name" htmlFor="name" required>
+                            <Input id="name" autoComplete="name" required minLength={2} value={formData.name}
+                                   onChange={set('name')} disabled={status.loading} placeholder="Your name"/>
+                        </Field>
+                        <Field label="Email" htmlFor="email" required>
+                            <Input id="email" type="email" autoComplete="email" required value={formData.email}
+                                   onChange={set('email')} disabled={status.loading} placeholder="you@company.com"/>
+                        </Field>
                     </div>
 
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1B1E2B] dark:bg-gray-800 dark:border-gray-700 dark:text-white transition duration-200"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            disabled={status.loading}
-                            placeholder="your.email@example.com"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
-                            Phone Number
-                        </label>
+                    <Field label="Phone number" htmlFor="phone" required>
                         <PhoneInput
-                            country={'et'}
+                            id="phone"
+                            required
+                            country="et"
                             value={formData.phone}
                             onChange={handlePhoneChange}
                             disabled={status.loading}
-                            inputProps={{
-                                required: true,
-                                id: 'phone',
-                                minLength: 10
-                            }}
-                            enableSearch={true}
-                            searchPlaceholder="Search country"
-                            placeholder="your phone number"
-                            countryCodeEditable={false}
-                            isValid={(value, country) => {
-                                if (value.length <= country.dialCode.length) {
-                                    return false;
-                                }
-                                return true;
-                            }}
-                            containerStyle={{
-                                width: '100%'
-                            }}
-                            inputStyle={{
-                                width: '100%',
-                                height: '42px',
-                                fontSize: '14px',
-                                paddingLeft: '48px',
-                                borderRadius: '6px',
-                                border: '1px solid #d1d5db'
-                            }}
-                            buttonStyle={{
-                                borderRadius: '6px 0 0 6px',
-                                border: '1px solid #d1d5db'
-                            }}
+                            placeholder="Your phone number"
+                            isValid={(value, country) => value.length > country.dialCode.length}
                         />
-                    </div>
+                    </Field>
 
-                    <div>
-                        <label htmlFor="subject" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
-                            Subject
-                        </label>
-                        <input
-                            type="text"
-                            id="subject"
-                            required
-                            minLength={2}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1B1E2B] dark:bg-gray-800 dark:border-gray-700 dark:text-white transition duration-200"
-                            value={formData.subject}
-                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                            disabled={status.loading}
-                            placeholder="What is this about?"
-                        />
-                    </div>
+                    <Field label="Subject" htmlFor="subject" required>
+                        <Input id="subject" required minLength={2} value={formData.subject} onChange={set('subject')}
+                               disabled={status.loading} placeholder="What is this about?"/>
+                    </Field>
 
-                    <div>
-                        <label htmlFor="message" className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2">
-                            Message
-                        </label>
-                        <textarea
-                            id="message"
-                            required
-                            minLength={10}
-                            rows={6}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1B1E2B] dark:bg-gray-800 dark:border-gray-700 dark:text-white transition duration-200"
-                            value={formData.message}
-                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                            disabled={status.loading}
-                            placeholder="Your message here..."
-                        />
-                    </div>
+                    <Field label="Message" htmlFor="message" required>
+                        <Textarea id="message" required minLength={10} rows={6} value={formData.message}
+                                  onChange={set('message')} disabled={status.loading}
+                                  placeholder="Tell us about your project"/>
+                    </Field>
 
-                    {/* for honeypot- hidden from users */}
+                    {/* honeypot, hidden from users */}
                     <input
                         type="text"
                         name="company"
                         value={formData.company}
-                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        style={{ display: 'none' }}
+                        onChange={set('company')}
+                        className="hidden"
                         tabIndex={-1}
                         autoComplete="off"
+                        aria-hidden
                     />
 
-                    <button
-                        type="submit"
-                        disabled={status.loading}
-                        className="w-full bg-[#FFA500] text-white py-3 px-4 rounded-md hover:bg-opacity-90 transition-all disabled:opacity-50">
-                        {status.loading ? 'Sending...' : 'Send Message'}
-                    </button>
-
-                    {status.error && (
-                        <p className="text-red-500 text-sm text-center">{status.error}</p>
-                    )}
+                    {status.error && <Notice>{status.error}</Notice>}
                     {status.success && (
-                        <p className="text-green-500 text-sm text-center">Message sent successfully!</p>
+                        <Notice tone="success">Message sent. We&apos;ll be in touch soon.</Notice>
                     )}
+
+                    <Button type="submit" size="lg" className="w-full" loading={status.loading}>
+                        Send message
+                    </Button>
                 </form>
+                </Card>
             </div>
         </Container>
     );

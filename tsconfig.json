@@ -35,7 +35,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/utils/fast-blur.js"
+    "src/utils/fast-blur.js",
+    ".next-probe/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

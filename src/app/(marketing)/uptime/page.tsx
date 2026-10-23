@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Container from "@/sections/Container";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { STATUS_LEVELS, STATUS_PAGE, statusLevel, type StatusLevel } from "@/constants/status";
 
 interface IncidentInfo {
     summary: string;
@@ -9,103 +15,46 @@ interface IncidentInfo {
     related: string;
 }
 
-interface ServiceDay {
-    date: string;
+interface ServiceStatus {
+    service: string;
     downtime_hours: number;
     status: string;
     uptime: number;
     reason?: string | null;
     incident?: IncidentInfo | null;
-    service: string;
 }
 
-interface ApiDay {
-    date: string;
-    services: {
-        downtime_hours: number;
-        service: string;
-        status: string;
-        uptime: number;
-        reason?: string | null;
-        incident?: IncidentInfo | null;
-    }[];
-}
+type ServiceDay = ServiceStatus & { date: string };
 
 interface ApiResponse {
-    data: ApiDay[];
+    data: { date: string; services: ServiceStatus[] }[];
 }
 
 const API_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/v1/uptime`;
+const SKELETON_ROWS = 4;
 
-function statusColor(status: string, uptime: number) {
-    if (status ===  "Scheduled Maintenance")
-        return "bg-[hsl(210,95%,55%)]"; // blue
+const average = (days: ServiceDay[]) => days.reduce((sum, d) => sum + d.uptime, 0) / (days.length || 1);
+const isIncident = (d: ServiceDay) => !["operational", "maintenance"].includes(statusLevel(d.status, d.uptime));
 
-    if (status === "Major Outage" || uptime < 90)
-        return "bg-[hsl(0,75%,55%)]";
-
-    if (status === "Minor Incident" || uptime < 99)
-        return "bg-[hsl(35,95%,55%)]";
-
-    if (uptime < 99.7)
-        return "bg-[hsl(48,95%,55%)]";
-
-    return "bg-[hsl(140,60%,45%)]";
-}
-
-function overallStatusForService(days: ServiceDay[]) {
+/** A day's level as shown on the service's current-status label: today's status, not its uptime figure. */
+function currentLevel(days: ServiceDay[]): StatusLevel {
     const latest = days[days.length - 1];
-
-    if (!latest)
-        return {
-            label: "Unknown",
-            color: "text-gray-500",
-        };
-
-    if (latest.status === "Server Upgrade")
-        return {
-            label: "Server Upgrade",
-            color: "text-[hsl(210,95%,45%)]",
-        };
-
-    if (latest.status === "Major Outage")
-        return {
-            label: "Major Outage",
-            color: "text-[hsl(0,75%,50%)]",
-        };
-
-    if (latest.status === "Minor Incident")
-        return {
-            label: "Minor Incident",
-            color: "text-[hsl(35,95%,45%)]",
-        };
-
-    return {
-        label: "Operational",
-        color: "text-[hsl(140,60%,38%)]",
-    };
+    if (!latest) return "operational";
+    const level = statusLevel(latest.status, 100);
+    return level === "degraded" ? "operational" : level;
 }
 
-function LegendDot({
-                       className,
-                       label,
-                   }: {
-    className: string;
-    label: string;
-}) {
-    return (
-        <span className="flex items-center gap-2">
-            <span className={`h-3 w-3 rounded-sm ${className}`} />
-            {label}
-        </span>
-    );
+function StatusDot({ level, className }: { level: StatusLevel; className?: string }) {
+    return <span aria-hidden className={cn("inline-block size-2.5 shrink-0 rounded-full", STATUS_LEVELS[level].bar, className)} />;
 }
 
 export default function UptimeStatus() {
     const [data, setData] = useState<ApiResponse | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(false);
+    // The selected day outlives the dialog's open state, so its content stays put while it animates closed.
     const [selected, setSelected] = useState<ServiceDay | null>(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     useEffect(() => {
         fetch(API_URL)
@@ -113,384 +62,168 @@ export default function UptimeStatus() {
                 if (!r.ok) throw new Error("Failed to fetch");
                 return r.json() as Promise<ApiResponse>;
             })
-            .then((json) => setData(json))
-            .catch((e: Error) => setError(e.message))
+            .then(setData)
+            .catch(() => setError(true))
             .finally(() => setLoading(false));
     }, []);
 
-    // Close modal on ESC
-    useEffect(() => {
-        if (!selected) return;
+    // The API lists days newest first; the bars run oldest to newest, left to right.
+    const days = useMemo(() => [...(data?.data ?? [])].sort((a, b) => a.date.localeCompare(b.date)), [data]);
 
-        const onKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") {
-                setSelected(null);
-            }
-        };
-
-        window.addEventListener("keydown", onKey);
-
-        return () => {
-            window.removeEventListener("keydown", onKey);
-        };
-    }, [selected]);
-
-    const byService: Record<string, ServiceDay[]> = {};
-
-    if (data) {
-        for (const day of data.data) {
+    const services = useMemo(() => {
+        const byService = new Map<string, ServiceDay[]>();
+        for (const day of days) {
             for (const s of day.services) {
-                if (!byService[s.service]) {
-                    byService[s.service] = [];
-                }
-
-                byService[s.service].push({
-                    date: day.date,
-                    downtime_hours: s.downtime_hours,
-                    status: s.status,
-                    uptime: s.uptime,
-                    reason: s.reason,
-                    incident: s.incident,
-                    service: s.service,
-                });
+                if (!byService.has(s.service)) byService.set(s.service, []);
+                byService.get(s.service)!.push({ ...s, date: day.date });
             }
         }
-    }
+        return Array.from(byService, ([name, days]) => ({ name, days, level: currentLevel(days), uptime: average(days) }));
+    }, [days]);
 
-    const serviceNames = Object.keys(byService);
-
-    const allOperational = serviceNames.every((n) => {
-        const latest = byService[n][byService[n].length - 1];
-
-        return (
-            latest &&
-            (latest.status === "Operational" ||
-                latest.status === "Server Upgrade")
-        );
-    });
-
-    const avgUptime = serviceNames.length
-        ? (
-            serviceNames.reduce((acc, n) => {
-                const days = byService[n];
-
-                const avg =
-                    days.reduce((sum, d) => sum + d.uptime, 0) /
-                    days.length;
-
-                return acc + avg;
-            }, 0) / serviceNames.length
-        ).toFixed(2)
-        : "0";
-
-    const incidentsByService: Record<string, ServiceDay[]> = {};
-
-    for (const name of serviceNames) {
-        const incs = byService[name].filter(
-            (d) =>
-                d.status !== "Operational" &&
-                d.status !== "Server Upgrade",
-        );
-
-        if (incs.length) {
-            incidentsByService[name] = incs;
-        }
-    }
+    const dayCount = days.length;
+    const latestDate = days[dayCount - 1]?.date;
+    const overall: StatusLevel = services.some((s) => s.level === "major")
+        ? "major"
+        : services.some((s) => s.level === "minor")
+          ? "minor"
+          : "operational";
+    const avgUptime = services.length ? (services.reduce((sum, s) => sum + s.uptime, 0) / services.length).toFixed(2) : "0";
 
     return (
-        <div className="min-h-screen mt-[5%] bg-[#fffaf3]">
-            <header className="border-b border-[#f1e4cf] bg-white/70 backdrop-blur">
-                <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[hsl(32,100%,52%)] font-bold text-white">
-                            G
-                        </div>
+        <Container>
+            <div className="mx-auto flex max-w-4xl flex-col gap-10 py-16 md:py-24">
+                <header className="flex flex-col gap-4">
+                    <h1 className="text-[44px] font-medium leading-[1] tracking-[-0.035em] text-foreground md:text-[64px]">{STATUS_PAGE.title}</h1>
+                    <p className="max-w-[48ch] text-[18px] leading-[1.5] text-soft">{STATUS_PAGE.description}</p>
+                </header>
 
-                        <span className="text-xl font-semibold text-[#2b2b2b]">
-                            GebetaMaps Status
-                        </span>
-                    </div>
-
-                    <a
-                        href="https://gebeta.app"
-                        className="rounded-md bg-[#1a1a1a] px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white hover:bg-black"
-                    >
-                        Subscribe to Updates
-                    </a>
-                </div>
-            </header>
-
-            <main className="mx-auto max-w-6xl px-6 py-10">
-                <div
-                    className={`rounded-xl px-8 py-7 text-white shadow-sm ${
-                        loading
-                            ? "bg-gray-400"
-                            : error
-                                ? "bg-[hsl(0,75%,55%)]"
-                                : allOperational
-                                    ? "bg-[hsl(140,55%,42%)]"
-                                    : "bg-[hsl(35,95%,50%)]"
-                    }`}
-                >
-                    <h1 className="text-2xl font-bold sm:text-3xl">
-                        {loading
-                            ? "Loading status…"
-                            : error
-                                ? "Unable to fetch status"
-                                : allOperational
-                                    ? "All Systems Operational"
-                                    : "Some Systems Affected"}
-                    </h1>
-
-                    {!loading && !error && (
-                        <p className="mt-1 text-sm opacity-90">
-                            Average uptime across all services: {avgUptime}%
+                <Card className="flex flex-col gap-1 p-6" aria-live="polite">
+                    {loading ? (
+                        <>
+                            <Skeleton className="h-6 w-56" />
+                            <Skeleton className="mt-2 h-4 w-72" />
+                        </>
+                    ) : error ? (
+                        <p className="flex items-center gap-3 text-[18px] font-medium text-foreground">
+                            <StatusDot level="major" />
+                            {STATUS_PAGE.error}
                         </p>
+                    ) : (
+                        <>
+                            <p className="flex items-center gap-3 text-[22px] font-medium tracking-[-0.01em] text-foreground">
+                                <StatusDot level={overall} className="size-3" />
+                                {overall === "operational" ? STATUS_PAGE.allOperational : STATUS_PAGE.someAffected}
+                            </p>
+                            <p className="pl-6 text-[15px] text-soft">
+                                {STATUS_PAGE.averageUptime(avgUptime, dayCount)}
+                                {latestDate && <> · {STATUS_PAGE.lastUpdated(latestDate)}</>}
+                            </p>
+                        </>
                     )}
-                </div>
+                </Card>
 
-                <section className="mt-10">
-                    <div className="mb-4 flex items-end justify-between">
-                        <div />
+                {!error && (
+                    <section className="flex flex-col gap-4">
+                        <Card className="divide-y divide-border p-0">
+                            {loading
+                                ? Array.from({ length: SKELETON_ROWS }, (_, i) => (
+                                      <div key={i} className="flex flex-col gap-3 px-6 py-5">
+                                          <Skeleton className="h-4 w-32" />
+                                          <Skeleton className="h-9 w-full" />
+                                      </div>
+                                  ))
+                                : services.map(({ name, days, level, uptime }) => (
+                                      <div key={name} className="flex flex-col gap-3 px-6 py-5">
+                                          <div className="flex items-center justify-between gap-3">
+                                              <h2 className="text-[16px] font-medium text-foreground">{name}</h2>
+                                              <span className={cn("flex items-center gap-2 text-[14px] font-medium", STATUS_LEVELS[level].text)}>
+                                                  <StatusDot level={level} />
+                                                  {STATUS_LEVELS[level].label}
+                                              </span>
+                                          </div>
+                                          <div className="flex h-9 items-stretch gap-[2px]">
+                                              {days.map((d) => {
+                                                  const dayLevel = statusLevel(d.status, d.uptime);
+                                                  const incident = isIncident(d);
+                                                  const label = `${name}, ${d.date}: ${d.uptime}% uptime${d.downtime_hours ? `, ${d.downtime_hours} h down` : ""}, ${d.status}`;
+                                                  return (
+                                                      <button
+                                                          type="button"
+                                                          key={d.date}
+                                                          title={label}
+                                                          aria-label={label}
+                                                          disabled={!incident}
+                                                          onClick={() => {
+                                                              setSelected(d);
+                                                              setDialogOpen(true);
+                                                          }}
+                                                          className={cn(
+                                                              "flex-1 rounded-[3px] outline-none transition-opacity duration-150 focus-visible:ring-2 focus-visible:ring-ring/60 disabled:cursor-default",
+                                                              STATUS_LEVELS[dayLevel].bar,
+                                                              incident && "cursor-pointer hover:opacity-80",
+                                                          )}
+                                                      />
+                                                  );
+                                              })}
+                                          </div>
+                                          <div className="flex items-center justify-between text-[13px] text-subtle">
+                                              <span>{days[0]?.date}</span>
+                                              <span className="font-medium tabular-nums text-soft">{uptime.toFixed(2)}% uptime</span>
+                                              <span>{days[days.length - 1]?.date}</span>
+                                          </div>
+                                      </div>
+                                  ))}
+                        </Card>
 
-                        <p className="text-sm text-[#7a6f5e]">
-                            Uptime over the past {data?.data.length ?? 0} days.
-                        </p>
-                    </div>
-
-                    <div className="overflow-hidden rounded-xl border border-[#f1e4cf] bg-white">
-                        {error && (
-                            <div className="p-6 text-sm text-red-600">
-                                Error: {error}
-                            </div>
-                        )}
-
-                        {!error &&
-                            serviceNames.map((name, idx) => {
-                                const days = byService[name];
-
-                                const overall =
-                                    overallStatusForService(days);
-
-                                const avg = (
-                                    days.reduce(
-                                        (sum, d) => sum + d.uptime,
-                                        0,
-                                    ) / days.length
-                                ).toFixed(2);
-
-                                return (
-                                    <div
-                                        key={name}
-                                        className={`px-6 py-5 ${
-                                            idx !== 0
-                                                ? "border-t border-[#f5ecdb]"
-                                                : ""
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="text-base font-semibold text-[#2b2b2b]">
-                                                {name === "OSM"
-                                                    ? "ONM"
-                                                    : name}
-                                            </h3>
-
-                                            <span
-                                                className={`text-sm font-semibold ${overall.color}`}
-                                            >
-                                                {overall.label}
-                                            </span>
-                                        </div>
-
-                                        <div className="mt-3 flex h-10 items-stretch gap-[2px]">
-                                            {days.map((d) => {
-                                                const isIncident =
-                                                    d.status !==
-                                                    "Operational" &&
-                                                    d.status !==
-                                                    "Server Upgrade";
-
-                                                return (
-                                                    <button
-                                                        type="button"
-                                                        key={d.date}
-                                                        onClick={() =>
-                                                            isIncident &&
-                                                            setSelected(d)
-                                                        }
-                                                        title={`${d.date} — ${d.uptime}% uptime${
-                                                            d.downtime_hours
-                                                                ? ` · ${d.downtime_hours}h downtime`
-                                                                : ""
-                                                        } · ${d.status}`}
-                                                        className={`flex-1 rounded-sm transition-transform hover:scale-y-110 ${statusColor(
-                                                            d.status,
-                                                            d.uptime,
-                                                        )} ${
-                                                            isIncident
-                                                                ? "cursor-pointer"
-                                                                : "cursor-default"
-                                                        }`}
-                                                        aria-label={`${name} on ${d.date}`}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-
-                                        <div className="mt-2 flex items-center justify-between text-xs text-[#9a8f7e]">
-                                            <span>{days[0]?.date}</span>
-
-                                            <span className="font-medium text-[#7a6f5e]">
-                                                {avg}% uptime
-                                            </span>
-
-                                            <span>Today</span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-
-                        {loading &&
-                            !error &&
-                            Array.from({ length: 4 }).map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={`px-6 py-5 ${
-                                        i !== 0
-                                            ? "border-t border-[#f5ecdb]"
-                                            : ""
-                                    }`}
-                                >
-                                    <div className="h-4 w-32 animate-pulse rounded bg-[#f1e4cf]" />
-
-                                    <div className="mt-3 h-10 animate-pulse rounded bg-[#faf0dc]" />
-                                </div>
-                            ))}
-                    </div>
-                </section>
-
-                <div className="mt-6 flex flex-wrap gap-4 text-xs text-[#7a6f5e]">
-                    <LegendDot
-                        className="bg-[hsl(140,60%,45%)]"
-                        label="Operational"
-                    />
-
-                    <LegendDot
-                        className="bg-[hsl(210,95%,55%)]"
-                        label="Server Upgrade"
-                    />
-
-                    <LegendDot
-                        className="bg-[hsl(48,95%,55%)]"
-                        label="Degraded"
-                    />
-
-                    <LegendDot
-                        className="bg-[hsl(35,95%,55%)]"
-                        label="Minor Incident"
-                    />
-
-                    <LegendDot
-                        className="bg-[hsl(0,75%,55%)]"
-                        label="Major Outage"
-                    />
-                </div>
-
-                <footer className="mt-12 border-t border-[#f1e4cf] pt-6 text-center text-xs text-[#9a8f7e]">
-                    Data from Gebeta Maps
-                </footer>
-            </main>
-
-            {/* Modal */}
-            {selected && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4"
-                    role="dialog"
-                    aria-modal="true"
-                    onClick={() => setSelected(null)}
-                >
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
-                    <div
-                        className="relative z-10 w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            type="button"
-                            onClick={() => setSelected(null)}
-                            aria-label="Close"
-                            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-md text-[#9a8f7e] hover:bg-[#fff7e8] hover:text-[#2b2b2b]"
-                        >
-                            ✕
-                        </button>
-
-                        <h2 className="pr-8 text-lg font-bold text-[#2b2b2b]">
-                            {selected.incident?.summary ??
-                                selected.status}{" "}
-                            — {selected.service}
-                        </h2>
-
-                        <p className="mt-1 text-sm text-[#7a6f5e]">
-                            {selected.incident?.related ??
-                                selected.reason ??
-                                "Incident details"}
-                        </p>
-
-                        <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
-                            <div>
-                                <dt className="text-xs uppercase tracking-wide text-[#9a8f7e]">
-                                    Date
-                                </dt>
-
-                                <dd className="font-medium text-[#2b2b2b]">
-                                    {selected.incident?.date ??
-                                        selected.date}
-                                </dd>
-                            </div>
-
-                            <div>
-                                <dt className="text-xs uppercase tracking-wide text-[#9a8f7e]">
-                                    Duration
-                                </dt>
-
-                                <dd className="font-medium text-[#2b2b2b]">
-                                    {selected.incident?.duration ??
-                                        `${selected.downtime_hours} hrs`}
-                                </dd>
-                            </div>
-
-                            <div>
-                                <dt className="text-xs uppercase tracking-wide text-[#9a8f7e]">
-                                    Uptime
-                                </dt>
-
-                                <dd className="font-medium text-[#2b2b2b]">
-                                    {selected.uptime}%
-                                </dd>
-                            </div>
-                        </dl>
-
-                        {selected.reason && (
-                            <div className="mt-4 rounded-md bg-[#fff7e8] px-3 py-2 text-sm text-[#7a6f5e]">
-                                <span className="font-semibold text-[#2b2b2b]">
-                                    Reason:
-                                </span>{" "}
-                                {selected.reason}
-                            </div>
-                        )}
-
-                        <div className="mt-5 flex justify-end">
-                            <button
-                                type="button"
-                                onClick={() => setSelected(null)}
-                                className="rounded-md bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white hover:bg-black"
-                            >
-                                Close
-                            </button>
+                        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-[13px] text-soft">
+                            <ul className="flex flex-wrap gap-x-4 gap-y-2" aria-label="Legend">
+                                {(Object.keys(STATUS_LEVELS) as StatusLevel[]).map((level) => (
+                                    <li key={level} className="flex items-center gap-2">
+                                        <span aria-hidden className={cn("size-2.5 rounded-[3px]", STATUS_LEVELS[level].bar)} />
+                                        {STATUS_LEVELS[level].label}
+                                    </li>
+                                ))}
+                            </ul>
+                            <span className="text-subtle">{STATUS_PAGE.incidentHint}</span>
                         </div>
-                    </div>
-                </div>
-            )}
-        </div>
+                    </section>
+                )}
+            </div>
+
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent>
+                    {selected && (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle>
+                                    {selected.service}: {selected.incident?.summary ?? selected.status}
+                                </DialogTitle>
+                                <DialogDescription>{selected.incident?.related ?? selected.reason ?? selected.status}</DialogDescription>
+                            </DialogHeader>
+                            <DialogBody>
+                                <dl className="grid grid-cols-3 gap-3 text-[14px]">
+                                    {[
+                                        { label: "Date", value: selected.incident?.date ?? selected.date },
+                                        { label: "Duration", value: selected.incident?.duration ?? `${selected.downtime_hours} h` },
+                                        { label: "Uptime", value: `${selected.uptime}%` },
+                                    ].map((item) => (
+                                        <div key={item.label} className="flex flex-col gap-1">
+                                            <dt className="text-[13px] text-subtle">{item.label}</dt>
+                                            <dd className="font-medium tabular-nums text-foreground">{item.value}</dd>
+                                        </div>
+                                    ))}
+                                </dl>
+                                {selected.reason && (
+                                    <p className="rounded-md bg-raised px-3 py-2 text-[14px] text-soft">
+                                        <span className="font-medium text-foreground">Reason:</span> {selected.reason}
+                                    </p>
+                                )}
+                            </DialogBody>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
+        </Container>
     );
 }

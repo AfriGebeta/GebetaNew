@@ -1,93 +1,100 @@
 "use client";
-import Image from "next/image";
-import {useEffect, useState} from "react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
+import Button from "@/components/ui/button";
+import {CSSProperties, useState} from "react";
 import Container from "@/sections/Container";
 
+const videos = [
+    {id: "IYE3lYxlX5w", title: "Introduction: Gebeta Maps Mini Series 2024"},
+    {id: "pTD69UWcH5Q", title: "Introducing Gebeta Maps"},
+    {id: "8cheBwH9M8k", title: "Gebeta Maps"},
+];
+
 export default function VideoCarousel() {
-    const videos = [
-        "https://www.youtube.com/embed/IYE3lYxlX5w",
-        "https://www.youtube.com/embed/pTD69UWcH5Q",
-        "https://www.youtube.com/embed/8cheBwH9M8k",
-    ];
-
     const [currentVideoIndex, setCurrentVideoIndex] = useState(1);
-    const [windowWidth, setWindowWidth] = useState(0);
+    // YouTube players are only mounted once the user asks to play, so the page
+    // doesn't pay for three iframes (~1MB of JS each) on first load.
+    const [playingId, setPlayingId] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setWindowWidth(window.innerWidth);
-        }
-    }, []);
-
-    const nextVideo = () => {
-        setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videos.length);
+    const goTo = (index: number) => {
+        setPlayingId(null);
+        setCurrentVideoIndex(index);
     };
 
-    const prevVideo = () => {
-        setCurrentVideoIndex((prevIndex) => (prevIndex - 1 + videos.length) % videos.length);
-    };
+    const nextVideo = () => goTo((currentVideoIndex + 1) % videos.length);
+    const prevVideo = () => goTo((currentVideoIndex - 1 + videos.length) % videos.length);
 
     return (
-        <div
-            className="flex flex-col gap-4 sm:gap-8 justify-center items-center w-full mt-[60px] sm:mt-[120px] bg-custom pb-[20px] sm:pb-[40px] px-4 sm:px-[0px]">
-            <Container className="max-w-8xl">
+        <section className="flex w-full flex-col items-center gap-4 pb-24 pt-8 sm:gap-8 md:pb-28">
+            <Container className="flex flex-col gap-10">
+                <h2 className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
+                    See it in motion
+                </h2>
                 <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] overflow-hidden">
                     {videos.map((video, index) => {
                         const offset = index - currentVideoIndex;
-                        const translateX = offset * (windowWidth < 640 ? 100 : 75);
-                        const scale = offset === 0 ? 1 : windowWidth < 640 ? 0 : 0.65;
-                        const zIndex = offset === 0 ? 10 : 0;
-                        const opacity = offset === 0 ? 1 : windowWidth < 640 ? 0 : 0.5;
+                        const isActive = offset === 0;
+                        // Mobile vs desktop values are resolved in CSS so server and client render the same markup.
+                        const style = {
+                            "--offset": offset,
+                            "--scale-sm": isActive ? 1 : 0,
+                            "--scale": isActive ? 1 : 0.65,
+                            "--opacity-sm": isActive ? 1 : 0,
+                            "--opacity": isActive ? 1 : 0.5,
+                            zIndex: isActive ? 10 : 0,
+                            height: "100%",
+                        } as CSSProperties;
 
                         return (
                             <div
-                                key={index}
-                                className={`absolute top-1/2 left-1/2 w-full sm:w-[80%] md:w-[70%] lg:w-[40%] aspect-video transition-all duration-500 ease-in-out`}
-                                style={{
-                                    transform: `translate(-50%, -50%) translateX(${translateX}%) scale(${scale})`,
-                                    opacity,
-                                    zIndex,
-                                    height: '100%',
-                                }}
+                                key={video.id}
+                                className="absolute top-1/2 left-1/2 w-full sm:w-[80%] md:w-[70%] lg:w-[40%] aspect-video transition-all duration-500 ease-in-out
+                                    [transform:translate(-50%,-50%)_translateX(calc(var(--offset)*100%))_scale(var(--scale-sm))] opacity-[var(--opacity-sm)]
+                                    sm:[transform:translate(-50%,-50%)_translateX(calc(var(--offset)*75%))_scale(var(--scale))] sm:opacity-[var(--opacity)]"
+                                style={style}
                             >
-                                <iframe
-                                    className="w-full h-full rounded-[16px] border-none"
-                                    src={video}
-                                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    style={{objectFit: 'cover'}}
-                                ></iframe>
+                                {playingId === video.id ? (
+                                    <iframe
+                                        className="w-full h-full rounded-xl border-none"
+                                        src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
+                                        title={video.title}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    ></iframe>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        aria-label={`Play video: ${video.title}`}
+                                        onClick={() => (isActive ? setPlayingId(video.id) : goTo(index))}
+                                        className="group relative block w-full h-full overflow-hidden rounded-xl bg-black"
+                                    >
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
+                                            alt={video.title}
+                                            loading={isActive ? "eager" : "lazy"}
+                                            decoding="async"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <span
+                                            className="absolute inset-0 m-auto flex size-14 items-center justify-center rounded-full bg-ink text-ink-foreground transition-transform duration-150 ease-power3-out group-hover:scale-110">
+                                            <Play aria-hidden className="size-6 fill-current"/>
+                                        </span>
+                                    </button>
+                                )}
                             </div>
                         );
                     })}
                 </div>
-                <div className="flex justify-center gap-6 sm:gap-10 mt-2 sm:mt-4">
-                    <button
-                        onClick={prevVideo}
-                        className="focus:outline-none transition-transform hover:scale-[1.2] p-2"
-                    >
-                        <Image
-                            src="/assets/prev-icon.svg"
-                            alt="prev icon button for carousel"
-                            width={8}
-                            height={15}
-                            className="w-[8px] h-[15px] sm:w-[12px] sm:h-[19px]"
-                        />
-                    </button>
-                    <button
-                        onClick={nextVideo}
-                        className="focus:outline-none transition-transform hover:scale-[1.2] p-2"
-                    >
-                        <Image
-                            src="/assets/next-icon.svg"
-                            alt="next icon button for carousel"
-                            width={8}
-                            height={15}
-                            className="w-[8px] h-[15px] sm:w-[12px] sm:h-[19px]"
-                        />
-                    </button>
+                <div className="flex justify-center gap-2">
+                    <Button variant="secondary" size="icon" onClick={prevVideo} aria-label="Previous video">
+                        <ChevronLeft aria-hidden/>
+                    </Button>
+                    <Button variant="secondary" size="icon" onClick={nextVideo} aria-label="Next video">
+                        <ChevronRight aria-hidden/>
+                    </Button>
                 </div>
             </Container>
-        </div>
+        </section>
     );
 }

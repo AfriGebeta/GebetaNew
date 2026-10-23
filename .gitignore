@@ -35,3 +35,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env
+
+.next-probe
+# design inspector output
+.taste-skill/
+
+# local AI tooling (Claude Code settings and installed skills)
+.claude/
+.agents/
+skills-lock.json

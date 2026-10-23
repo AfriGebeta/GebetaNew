@@ -22,6 +22,7 @@ export interface User {
     username: string;
     email: string;
     phone?: string;
+    allow_image_upload?: boolean;
     role: UserRole;
     token: UserToken[]
 }

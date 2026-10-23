@@ -1,107 +1,64 @@
-//@ts-nocheck
 "use client";
 
-import {showcases} from "../constants";
+import { useState } from "react";
 import Image from "next/image";
-import Container from "@/sections/Container";
-import {useEffect, useState} from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { showcases } from "@/constants";
+import SegmentedControl from "@/components/ui/segmented-control";
+import { DURATION, EASE, IN_VIEW, blurFadeRise, stagger, staggerBlur } from "@/lib/motion";
+
+const items = showcases.filter((s) => s.title);
 
 export default function Showcase() {
-    const [activeTab, setActiveTab] = useState(0);
-    const [isChanging, setIsChanging] = useState(false);
-    const showcaseCompany = showcases.map((showcase, index) => showcase.title);
-
-    useEffect(() => {
-        if (isChanging) {
-            const timer = setTimeout(() => {
-                setIsChanging(false);
-            }, 300);
-            return () => clearTimeout(timer);
-        }
-    }, [isChanging]);
-
-    const handleTabChange = (tab) => {
-        setIsChanging(true);
-        setActiveTab(tab);
-    };
+    const [active, setActive] = useState(items[0]?.title ?? "");
+    const current = items.find((s) => s.title === active) ?? items[0];
 
     return (
-        <Container>
-            <div className="mt-[80px] md:mt-[104px] pb-[200px]">
-                <h4 className="text-[#979BAA] text-[12px] text-center font-bold tracking-20 uppercase ">We love to
-                    see you grow</h4>
-                <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center mt-[10px]">Showcase</h2>
-                <p className="text-[#62677F] text-[20px] text-center mt-[42px]">Businesses, from startups to
-                    enterprises, power their location intelligence with GebetaMaps.</p>
-
-                <div className="flex flex-col gap-[40px]">
-                    <div className="flex justify-center items-center gap-4 mt-[44px]">
-                        {
-                            showcaseCompany.map((company, index) => (
-                                <div
-                                    key={index}
-                                    className={`cursor-pointer px-6 py-2 rounded-full transition-all duration-300 border-2 ${activeTab === index ? 'border-[#FFA500] bg-[#FFF7E8]' : 'border-transparent bg-[#F8F9FA]'}`}
-                                    onClick={() => handleTabChange(index)}
-                                >
-                                    <h5 className={`text-[${activeTab === index ? '#FFA500' : '#1B1E2B'}] text-[16px] font-semibold transition-colors duration-300`}>
-                                        {company}
-                                    </h5>
-                                </div>
-                            ))
-                        }
-                    </div>
-
-                    <div className="mt-[24px] relative h-[500px]">
-                        {
-                            showcases.map((showcase, index) => (
-                                <div key={index}
-                                     className={`absolute top-0 left-0 w-full transition-opacity duration-300 ${activeTab === index ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${isChanging ? 'pointer-events-none' : ''}`}>
-                                    <div className="flex justify-center items-center md:flex-row gap-[32px]">
-                                        <div
-                                            className="w-4/5 bg-[#FFF7E8] dark:bg-zinc-900 flex justify-center items-center px-[50px] md:px-[100px] py-[25px] md:py-[50px] rounded-[16px]">
-                                            <Image
-                                                src={showcase.showcasePicture}
-                                                className="object-contain"
-                                                width={300}
-                                                height={200}
-                                                alt={showcase.title}
-                                            />
-                                        </div>
-                                        {/*<div className="w-full pt-4 md:w-2/5 md:pt-[120px]">*/}
-                                        {/*    <Image*/}
-                                        {/*        src={showcase.companyLogo}*/}
-                                        {/*        alt="zayride logo"*/}
-                                        {/*        width={showcase.companyLogoSize.width}*/}
-                                        {/*        height={showcase.companyLogoSize.height}*/}
-                                        {/*    />*/}
-                                        {/*    /!*<p className="text-[#62677F] text-[16px] leading-20 mt-[40px]">{showcase.description}</p>*!/*/}
-                                        {/*    /!*<p className="text-[#62677F] text-[16px] leading-20 mt-2">an interview with zayride CEO Habtamu Tadesse</p>*!/*/}
-
-                                        {/*    /!*<div className="mt-[60px] flex gap-[32px] items-center">*!/*/}
-                                        {/*    /!*    /!*<button*!/*!/*/}
-                                        {/*    /!*    /!*    className="flex gap-[4px] transition-all border border-[#99AFCC] hover:border-[#FFA500] hover:text-[#FFA500] hover:bg-[#FFA500]/20 px-[30px] py-[12px] text-[#2E384E] dark:text-white text-[14px] whitespace-nowrap font-medium">*!/*!/*/}
-                                        {/*    /!*    /!*    <Image*!/*!/*/}
-                                        {/*    /!*    /!*        src="/assets/play.svg"*!/*!/*/}
-                                        {/*    /!*    /!*        width={24}*!/*!/*/}
-                                        {/*    /!*    /!*        height={24}*!/*!/*/}
-                                        {/*    /!*    /!*        alt="play"*!/*!/*/}
-                                        {/*    /!*    /!*    />*!/*!/*/}
-                                        {/*    /!*    /!*    Watch video*!/*!/*/}
-                                        {/*    /!*    /!*</button>*!/*!/*/}
-                                        {/*    /!*    /!*<Link*!/*!/*/}
-                                        {/*    /!*    /!*    href="/stories"*!/*!/*/}
-                                        {/*    /!*    /!*    className="text-[#1B1E2B] dark:text-white hover:text-[#FFA500] hover:underline text-[14px] font-bold whitespace-nowrap">*!/*!/*/}
-                                        {/*    /!*    /!*    See all success stories*!/*!/*/}
-                                        {/*    /!*    /!*</Link>*!/*!/*/}
-                                        {/*    /!*</div>*!/*/}
-                                        {/*</div>*/}
-                                    </div>
-                                </div>
-                            ))
-                        }
-                    </div>
-                </div>
-            </div>
-        </Container>
-    )
+        <section className="bg-raised">
+            <motion.div
+                variants={staggerBlur()}
+                initial="hidden"
+                whileInView="show"
+                viewport={IN_VIEW}
+                className="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-24 sm:px-6 md:py-36 lg:px-8"
+            >
+                <motion.div variants={blurFadeRise} className="flex flex-col gap-4">
+                    <h2 className="text-[36px] font-medium leading-[1.05] tracking-[-0.03em] text-foreground md:text-[48px]">
+                        Built on Gebeta
+                    </h2>
+                    <p className="max-w-[48ch] text-[18px] leading-[1.5] text-soft">
+                        Ride-hailing, national ID registration and delivery, running on our maps today.
+                    </p>
+                </motion.div>
+                <motion.div variants={blurFadeRise}>
+                    <SegmentedControl
+                        aria-label="Customer"
+                        value={active}
+                        onValueChange={setActive}
+                        options={items.map((s) => ({ value: s.title, label: s.title }))}
+                    />
+                </motion.div>
+                <motion.div variants={blurFadeRise} className="relative flex h-[420px] items-center justify-center overflow-hidden rounded-xl bg-card md:h-[520px]">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={current.title}
+                            initial={{ opacity: 0, scale: 1.04 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: DURATION.slow, ease: EASE.out }}
+                            className="relative size-full"
+                        >
+                            <Image
+                                src={current.showcasePicture}
+                                alt={`${current.title} app built with GebetaMaps`}
+                                fill
+                                sizes="(min-width: 1280px) 1200px, 100vw"
+                                className="object-contain p-6"
+                            />
+                        </motion.div>
+                    </AnimatePresence>
+                </motion.div>
+            </motion.div>
+        </section>
+    );
 }

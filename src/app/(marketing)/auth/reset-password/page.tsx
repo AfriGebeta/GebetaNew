@@ -6,7 +6,12 @@ import Link from "next/link";
 import {useMutation} from "@tanstack/react-query";
 import {apiClient} from "@/service/apiClient";
 import {useRouter} from 'nextjs-toploader/app';
-import {BarLoader} from "react-spinners";
+import Button from "@/components/ui/button";
+import Field from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import OtpInput from "@/components/ui/otp-input";
+import Notice from "@/components/ui/notice";
+import AuthHeading from "../_components/auth-heading";
 import {getErrorMessage} from "@/lib/errors";
 
 const ResetPassword: React.FC = () => {
@@ -68,19 +73,6 @@ const ResetPassword: React.FC = () => {
         }
     };
 
-    const handleOtpChange = (element: HTMLInputElement, index: number) => {
-        if (isNaN(Number(element.value))) return;
-
-        const newOtp = [...otp];
-        newOtp[index] = element.value;
-        setOtp(newOtp);
-
-        if (element.value && index < 5) {
-            const nextInput = document.querySelector(`input[name=otp-${index + 1}]`) as HTMLInputElement;
-            if (nextInput) nextInput.focus();
-        }
-    };
-
     const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const otpString = otp.join('');
@@ -137,117 +129,73 @@ const ResetPassword: React.FC = () => {
         }
     };
 
+    const titles = {1: 'Reset password', 2: 'Verify code', 3: 'Choose a new password'};
+    const descriptions = {
+        1: "Enter your account email and we'll send you a 6-digit code.",
+        2: `Enter the code sent to ${email}.`,
+        3: 'Use at least 6 characters.',
+    };
+
     return (
         <>
-            <h2 className="text-[#1B1E2B] dark:text-white text-[40px] text-center leading-50 mt-[10px]">
-                {step === 1 ? 'Reset Password' : step === 2 ? 'Verify OTP' : 'Change Password'}
-            </h2>
-            {error && (
-                <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
+            <AuthHeading title={titles[step]} description={descriptions[step]}/>
 
             {step === 1 && (
-                <form className="space-y-6 mt-[40px]" onSubmit={handleContinue}>
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Email Address
-                        </label>
-                        <input
-                            type="email"
+                <form className="mt-8 flex flex-col gap-5" onSubmit={handleContinue}>
+                    <Field label="Email address" htmlFor="email" required>
+                        <Input
                             id="email"
+                            type="email"
+                            autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            placeholder="youremail@example.com"
-                            className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                                       focus:outline-none focus:ring focus:ring-[#FFA500]
-                                       focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                                       dark:text-gray-300 transition duration-200 ease-in-out"
+                            placeholder="you@company.com"
                         />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={requestOtpMutation.isPending}
-                        className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
-                    >
-                        {requestOtpMutation.isPending ? <BarLoader /> : 'Continue'}
-                    </button>
+                    </Field>
+                    {error && <Notice>{error}</Notice>}
+                    <Button type="submit" size="lg" className="w-full" loading={requestOtpMutation.isPending}>
+                        Continue
+                    </Button>
                 </form>
             )}
 
             {step === 2 && (
-                <form className="space-y-6 mt-[40px]" onSubmit={handleVerifyOtp}>
-                    <h3 className="text-lg text-center">Enter the OTP sent to {email}</h3>
-                    <div className="flex justify-center gap-2">
-                        {otp.map((digit, index) => (
-                            <input
-                                key={index}
-                                type="text"
-                                name={`otp-${index}`}
-                                maxLength={1}
-                                value={digit}
-                                onChange={(e) => handleOtpChange(e.target, index)}
-                                className="w-12 h-12 text-center border-2 rounded-lg focus:border-[#FFA500]
-                                           focus:outline-none dark:bg-gray-700 dark:text-white"
-                            />
-                        ))}
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={verifyOtpMutation.isPending}
-                        className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
-                    >
-                        {verifyOtpMutation.isPending ? 'Verifying OTP...' : 'Verify OTP'}
-                    </button>
-                    <div className="mt-[8px] flex justify-center">
-                        <button
-                            type="button"
-                            onClick={handleResendOtp}
-                            disabled={!canResend}
-                            className={`text-sm text-[#FFA500] ${canResend ? '' : 'opacity-50 cursor-not-allowed'}`}
-                        >
-                            Resend
-                            OTP {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
-                        </button>
-                    </div>
+                <form className="mt-8 flex flex-col gap-5" onSubmit={handleVerifyOtp}>
+                    <OtpInput value={otp} onChange={setOtp}/>
+                    {error && <Notice>{error}</Notice>}
+                    <Button type="submit" size="lg" className="w-full" loading={verifyOtpMutation.isPending}>
+                        Verify code
+                    </Button>
+                    <Button variant="ghost" className="self-center" onClick={handleResendOtp} disabled={!canResend}>
+                        Resend code {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
+                    </Button>
                 </form>
             )}
 
             {step === 3 && (
-                <form className="space-y-6 mt-[40px]" onSubmit={handleChangePassword}>
-                    <div>
-                        <label htmlFor="newPassword"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            New Password
-                        </label>
-                        <input
-                            type="password"
+                <form className="mt-8 flex flex-col gap-5" onSubmit={handleChangePassword}>
+                    <Field label="New password" htmlFor="newPassword" required>
+                        <Input
                             id="newPassword"
+                            type="password"
+                            autoComplete="new-password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
                             required
                             placeholder="Enter new password"
-                            className="mt-1 block w-full px-3 py-2 border border-[#D1D5DB] rounded-md shadow-sm
-                                       focus:outline-none focus:ring focus:ring-[#FFA500]
-                                       focus:border-[#FFA500] dark:bg-gray-700 dark:border-gray-600
-                                       dark:text-gray-300 transition duration-200 ease-in-out"
                         />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={changePasswordMutation.isPending}
-                        className="w-full py-2 px-4 bg-[#FFA500] text-white rounded-md hover:opacity-75 disabled:opacity-50"
-                    >
-                        {changePasswordMutation.isPending ? <BarLoader /> : 'Change Password'}
-                    </button>
+                    </Field>
+                    {error && <Notice>{error}</Notice>}
+                    <Button type="submit" size="lg" className="w-full" loading={changePasswordMutation.isPending}>
+                        Change password
+                    </Button>
                 </form>
             )}
 
-            <p className="text-center text-sm text-gray-600 dark:text-gray-300 mt-4">
+            <p className="mt-6 text-center text-[13px] text-soft">
                 Remembered your password?{" "}
-                <Link href="/auth/signin" className="text-[#FFA500] hover:text-[#FF8C00]">
-                    Sign In
-                </Link>
+                <Link href="/auth/signin" className="font-medium text-foreground underline-offset-4 hover:underline">Sign in</Link>
             </p>
         </>
     );
