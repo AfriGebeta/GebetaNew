@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import SegmentBar from "@/components/ui/segment-bar";
 import {
+    type Credit,
     type CurrentPlan,
+    type PlanKind,
+    isPaidCredit,
     PLAN_LABEL,
     formatCallType,
     getCreditUsage,
@@ -15,7 +18,7 @@ import Link from "next/link";
 
 type CurrentPlanCardProps = {
     plan: CurrentPlan;
-    bundleName?: string;
+    bundleNameFor?: (bundleId?: string) => string | undefined;
 };
 
 // const TAG_TONE = { paid: "green", payg: "blue", free: "neutral", none: "neutral" } as const;
@@ -24,8 +27,23 @@ function formatExpiration(expiration?: string) {
     return parseExpiration(expiration)?.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export default function CurrentPlanCard({ plan, bundleName }: CurrentPlanCardProps) {
-    const { kind, credit } = plan;
+export default function CurrentPlanCard({ plan, bundleNameFor }: CurrentPlanCardProps) {
+    if (plan.credits.length === 0) return <PlanCard kind={plan.kind} credit={null} />;
+    return (
+        <div className="flex flex-col gap-4">
+            {plan.credits.map((credit) => (
+                <PlanCard
+                    key={credit.id}
+                    kind={isPaidCredit(credit) ? "paid" : "free"}
+                    credit={credit}
+                    bundleName={bundleNameFor?.(credit.bundle_id)}
+                />
+            ))}
+        </div>
+    );
+}
+
+function PlanCard({ kind, credit, bundleName }: { kind: PlanKind; credit: Credit | null; bundleName?: string }) {
     const usage = credit ? getCreditUsage(credit) : [];
     const expires = formatExpiration(credit?.expiration);
 
