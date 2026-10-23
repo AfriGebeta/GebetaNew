@@ -37,7 +37,7 @@ export default function UserPlan() {
     const yearlyPlans = plans.filter(plan => plan.expiredIn === 365);
 
     const currentPlan = getCurrentPlan(currentUser?.user);
-    const activePlan = currentPlan.credit ? plans.find(p => p.id === currentPlan.credit.bundle_id) || null : null;
+    const bundleNameFor = (id) => plans.find(p => p.id === id)?.name;
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
@@ -50,7 +50,7 @@ export default function UserPlan() {
                 description="Your active plan and the bundles you can upgrade to."
             />
             <Section title="Current plan">
-                <CurrentPlanCard plan={currentPlan} bundleName={activePlan?.name} />
+                <CurrentPlanCard plan={currentPlan} bundleNameFor={bundleNameFor} />
             </Section>
             <Section
                 title="Available plans"
@@ -65,7 +65,6 @@ export default function UserPlan() {
             >
                 <div className="flex flex-wrap gap-4">
                     {(activeTab === "monthly" ? monthlyPlans : yearlyPlans)
-                        .filter(p => p.id !== activePlan?.id)
                         .map((plan, idx) => (
                             <Plan key={plan.id || idx} data={plan} label="Upgrade" index={idx} activeTab={activeTab} monthlyPlans={monthlyPlans} />
                         ))}

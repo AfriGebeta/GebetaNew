@@ -14,6 +14,7 @@ import Container from "@/sections/Container";
 import { ArrowRight, Check, Mail } from "lucide-react";
 import { IN_VIEW, blurFadeRise, stagger, staggerBlur } from "@/lib/motion";
 import Button from "@/components/ui/button";
+import { isCreditActive } from "@/lib/subscription";
 import { Card } from "@/components/ui/card";
 import Tag from "@/components/ui/tag";
 import SegmentedControl from "@/components/ui/segmented-control";
@@ -141,7 +142,7 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
         }
     };
 
-    const isPurchased = data?.name !== 'Custom' ? currentUser?.user?.credits?.find(item => item?.bundle_id === data?.id) : false
+    const isPurchased = data?.name !== 'Custom' ? currentUser?.user?.credits?.find(item => item?.bundle_id === data?.id && isCreditActive(item)) : false
 
     if (!data) {
         return
@@ -150,7 +151,7 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
     const isCustom = data.name === "Custom";
 
     return (
-        <Card className={cn("relative flex h-full flex-col justify-between gap-8 p-6", featured && "shadow-[0_0_0_1.5px_hsl(var(--ink))]")}>
+        <Card className={cn("relative flex h-full flex-col justify-between gap-8 p-6", isPurchased && "opacity-60 grayscale", featured && "shadow-[0_0_0_1.5px_hsl(var(--ink))]")}>
             <div className="flex flex-col gap-5">
                 <h3 className="text-[18px] font-medium text-foreground">{data?.name}</h3>
 
@@ -191,8 +192,8 @@ export function Plan({ data, label, isCurrentPlan, index, activeTab, monthlyPlan
                 className={cn(label && "w-full")}
             >
                 {isCustom && !label && <Mail aria-hidden />}
-                {label ? label : `Choose ${data.name}`}
-                {!isCustom && !label && <ArrowRight aria-hidden />}
+                {isPurchased ? "Bought" : label ? label : `Choose ${data.name}`}
+                {!isCustom && !label && !isPurchased && <ArrowRight aria-hidden />}
             </Button>
         </Card>
     )

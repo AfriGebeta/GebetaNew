@@ -14,6 +14,8 @@ export type PlanKind = "paid" | "payg" | "free" | "none";
 export type CurrentPlan = {
     kind: PlanKind;
     credit: Credit | null;
+    // Every active credit, paid first, so users holding several see all of them.
+    credits: Credit[];
 };
 
 export type CreditUsage = {
@@ -56,10 +58,14 @@ export function getCurrentPlan(user?: { credits?: Credit[]; purchased_date?: str
     const freemium = latestExpiring(active.filter((credit) => !isPaidCredit(credit)));
 
     // Pay as you go is billed by usage, so it carries no credit caps to display.
-    if (user?.purchased_date) return { kind: "payg", credit: null };
-    if (paid) return { kind: "paid", credit: paid };
-    if (freemium) return { kind: "free", credit: freemium };
-    return { kind: "none", credit: null };
+    if (user?.purchased_date) return { kind: "payg", credit: null, credits: [] };
+    const credits = [...active].sort(
+        (a, b) => Number(isPaidCredit(b)) - Number(isPaidCredit(a)) ||
+            (parseExpiration(b.expiration)?.getTime() ?? Infinity) - (parseExpiration(a.expiration)?.getTime() ?? Infinity),
+    );
+    if (paid) return { kind: "paid", credit: paid, credits };
+    if (freemium) return { kind: "free", credit: freemium, credits };
+    return { kind: "none", credit: null, credits: [] };
 }
 
 export function getCreditUsage(credit: Credit): CreditUsage[] {
