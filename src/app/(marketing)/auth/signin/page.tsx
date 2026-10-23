@@ -2,6 +2,7 @@
 "use client";
 import React, { useContext, useEffect, useState } from 'react';
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from 'nextjs-toploader/app';
 import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/service/apiClient";
@@ -17,6 +18,7 @@ const SignIn: React.FC = () => {
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
 
     //read from location
@@ -89,15 +91,26 @@ const SignIn: React.FC = () => {
                     required
                     trailing={<Link href="/auth/reset-password" className="caption-style text-soft hover:text-foreground">Forgot password?</Link>}
                 >
-                    <Input
-                        id="password"
-                        type="password"
-                        autoComplete="current-password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        placeholder="Enter your password"
-                    />
+                    <div className="relative">
+                        <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            placeholder="Enter your password"
+                            className="pr-10"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((v) => !v)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-subtle hover:text-foreground"
+                        >
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                    </div>
                 </Field>
                 {error && <Notice>{error}</Notice>}
                 <Button type="submit" size="lg" className="w-full" loading={signInMutation.isPending}>

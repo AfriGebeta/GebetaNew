@@ -55,7 +55,8 @@ export function getCurrentPlan(user?: { credits?: Credit[]; purchased_date?: str
     const paid = latestExpiring(active.filter(isPaidCredit));
     const freemium = latestExpiring(active.filter((credit) => !isPaidCredit(credit)));
 
-    if (user?.purchased_date) return { kind: "payg", credit: paid ?? freemium };
+    // Pay as you go is billed by usage, so it carries no credit caps to display.
+    if (user?.purchased_date) return { kind: "payg", credit: null };
     if (paid) return { kind: "paid", credit: paid };
     if (freemium) return { kind: "free", credit: freemium };
     return { kind: "none", credit: null };

@@ -32,11 +32,9 @@ export default function CurrentPlanCard({ plan, bundleName }: CurrentPlanCardPro
     const title = kind === "paid" ? bundleName || "Paid plan" : PLAN_LABEL[kind];
     const description = {
         paid: expires ? `Credits valid until ${expires}.` : "Your purchased credit bundle.",
-        payg: credit
-            ? `Billed by usage. Your remaining credits${expires ? ` (valid until ${expires})` : ""} are listed below.`
-            : "Billed by usage, with tiered pricing per API.",
+        payg: "Billed by usage, with tiered pricing per API.",
         free: expires ? `Free credits valid until ${expires}.` : "Your free credits.",
-        none: "You have no active credits. Pick a plan below to keep making calls.",
+        none: "You have no active credits or pay-as-you-go plan. Pick a plan below to keep making calls.",
     }[kind];
 
     return (
