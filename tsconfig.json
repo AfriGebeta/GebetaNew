@@ -24,6 +24,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "nextjs-toploader/app": [
+        "./node_modules/nextjs-toploader/dist/app"
       ]
     },
     "typeRoots": [

@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { initDownloadTables, recordClick } from "@/lib/downloads/db";
+import { META_PIXEL_NOSCRIPT_SRC, META_PIXEL_SCRIPT } from "@/lib/meta-pixel";
 
 const PLAY_STORE_LINK = "https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map";
 const APP_STORE_LINK = "https://apps.apple.com/us/app/gebeta-maps/id6793868587";
@@ -58,6 +59,14 @@ function referrerHost(referrer: string) {
     }
 }
 
+// A bare 302 never reaches a browser, so the Meta Pixel can't fire on it. Real
+// visitors get a tiny page that sends the PageView, then forwards to the store.
+function pixelRedirectPage(link: string) {
+    const target = JSON.stringify(link);
+    return `<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="3;url=${link}"><title>Gebeta Maps</title><script>${META_PIXEL_SCRIPT}
+(function(){var done=false;function go(){if(done)return;done=true;location.replace(${target})}var s=document.querySelector('script[src*="fbevents.js"]');if(s)s.onload=function(){setTimeout(go,300)};setTimeout(go,1500)})();</script></head><body><noscript><img height="1" width="1" style="display:none" src="${META_PIXEL_NOSCRIPT_SRC}" alt=""></noscript><p style="font-family:sans-serif;text-align:center;margin-top:40vh">Opening the store… <a href="${link}">Continue</a></p></body></html>`;
+}
+
 async function track(req: NextRequest, platform: string) {
     const params = req.nextUrl.searchParams;
     const userAgent = req.headers.get("user-agent") || "";
@@ -89,7 +98,8 @@ async function track(req: NextRequest, platform: string) {
 }
 
 export async function GET(req: NextRequest) {
-    const platform = detectPlatform(req.headers.get("user-agent") || "");
+    const userAgent = req.headers.get("user-agent") || "";
+    const platform = detectPlatform(userAgent);
     const link = platform === "ios" ? APP_STORE_LINK : PLAY_STORE_LINK;
 
     // Never let an analytics failure block the redirect.
@@ -99,5 +109,12 @@ export async function GET(req: NextRequest) {
         console.error("[download] failed to record click", err);
     }
 
-    return NextResponse.redirect(link, { status: 302 });
+    // Bots skip the pixel so they don't pollute the Meta audience.
+    if (BOT_RE.test(userAgent) || !userAgent) {
+        return NextResponse.redirect(link, { status: 302 });
+    }
+
+    return new NextResponse(pixelRedirectPage(link), {
+        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+    });
 }

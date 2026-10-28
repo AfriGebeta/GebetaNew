@@ -2,7 +2,8 @@
 "use client";
 import React, {createContext, useCallback, useEffect, useRef, useState} from 'react';
 import useLocalStorage from "../hooks/use-local-storage";
-import {usePathname, useRouter} from "next/navigation";
+import {usePathname} from "next/navigation";
+import {useRouter} from "nextjs-toploader/app";
 import {User} from "@/types/user";
 import {
     SESSION_EXPIRED_EVENT,

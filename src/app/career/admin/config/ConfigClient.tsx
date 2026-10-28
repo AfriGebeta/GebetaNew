@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { CertificateConfig, EmailTemplate } from "@/lib/career/db";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save, Upload, X, Plus, Pencil, Trash2, Check, ChevronDown, ChevronUp } from "lucide-react";

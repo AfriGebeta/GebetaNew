@@ -8,6 +8,7 @@ import Pricing from "@/sections/Pricing";
 import Testimonial from "@/sections/Testimonal";
 import Showcase from "@/sections/Showcase";
 import CallToAction from "@/sections/CallToAction";
+import MetaPixel from "@/components/marketing/MetaPixel";
 
 export const metadata: Metadata = {
     alternates: { canonical: "/" },
@@ -38,6 +39,7 @@ export default async function Home() {
     const { plans, exchangeRate } = await fetchPricingData();
     return (
         <main>
+            <MetaPixel/>
             <Header/>
             <Partners/>
             <Bento/>

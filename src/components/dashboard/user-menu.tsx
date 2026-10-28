@@ -2,7 +2,7 @@
 
 import { useContext } from "react";
 import { CreditCard, Laptop, LogOut, Moon, Settings2, Sun } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { AuthContext } from "@/providers/AuthProvider";
 import { useTheme } from "@/providers/theme-provider";
 import { Button } from "@/components/ui/button";

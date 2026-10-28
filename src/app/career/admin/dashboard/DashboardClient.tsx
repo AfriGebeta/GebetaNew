@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { Intern, EmailTemplate } from "@/lib/career/db";
 import RichTextEditor from "@/components/ui/rich-text-editor";
 import {
