@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientIp, directions, parseLatLng, rateLimited } from "@/lib/gebeta-api";
+import { clientIp, directions, fromOwnSite, parseLatLng, rateLimited } from "@/lib/gebeta-api";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +9,7 @@ const MAX_DESTINATIONS = 5;
 
 /** ?origin=lat,lng&destination=lat,lng (repeat destination for several routes from one origin). */
 export async function GET(req: NextRequest) {
+    if (!fromOwnSite(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const origin = parseLatLng(req.nextUrl.searchParams.get("origin"));
     const destinations = req.nextUrl.searchParams.getAll("destination").slice(0, MAX_DESTINATIONS).map(parseLatLng);
     if (!origin || !destinations.length || destinations.some((d) => !d)) {

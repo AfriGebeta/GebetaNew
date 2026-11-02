@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientIp, geocode, rateLimited } from "@/lib/gebeta-api";
+import { clientIp, fromOwnSite, geocode, rateLimited } from "@/lib/gebeta-api";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +8,7 @@ const MAX_RESULTS = 6;
 const REQUESTS_PER_MINUTE = 60;
 
 export async function GET(req: NextRequest) {
+    if (!fromOwnSite(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const name = req.nextUrl.searchParams.get("name")?.trim().slice(0, MAX_QUERY);
     if (!name) return NextResponse.json({ error: "name is required" }, { status: 422 });
     if (rateLimited(`geocode:${clientIp(req)}`, REQUESTS_PER_MINUTE)) {

@@ -35,6 +35,31 @@ export function clientIp(req: Request) {
     return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "local";
 }
 
+/* ─── Same-origin check: only our own pages may use the proxy ──────────────────────────────────────── */
+
+function hostOf(url: string | null) {
+    if (!url) return null;
+    try {
+        return new URL(url).host;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * True when the request comes from a page on this site. Browsers send Sec-Fetch-Site on every request, and
+ * Origin or Referer as a fallback; a request with none of them, or from another site, is refused.
+ * Non-browser clients can forge these headers, so this blocks other websites from using the proxy, not
+ * scripts. The per-IP rate limit covers those.
+ */
+export function fromOwnSite(req: Request) {
+    const site = req.headers.get("sec-fetch-site");
+    if (site) return site === "same-origin";
+    const host = req.headers.get("x-forwarded-host")?.split(",")[0]?.trim() || req.headers.get("host");
+    const source = hostOf(req.headers.get("origin")) ?? hostOf(req.headers.get("referer"));
+    return !!host && source === host;
+}
+
 export function parseLatLng(value: string | null): LngLat | null {
     if (!value) return null;
     const [lat, lng] = value.split(",").map(Number);

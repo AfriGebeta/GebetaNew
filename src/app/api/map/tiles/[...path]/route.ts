@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TILES_ORIGIN, clientIp, gebetaKey, rateLimited } from "@/lib/gebeta-api";
+import { TILES_ORIGIN, clientIp, fromOwnSite, gebetaKey, rateLimited } from "@/lib/gebeta-api";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +14,7 @@ const CACHE = {
 const SERVER_CACHE_S = { styles: 3600, asset: 86_400 };
 
 export async function GET(req: NextRequest, { params }: { params: { path: string[] } }) {
+    if (!fromOwnSite(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const key = gebetaKey();
     if (!key) return NextResponse.json({ error: "Map is not configured" }, { status: 503 });
 
