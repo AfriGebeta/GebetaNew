@@ -40,7 +40,7 @@ function Announcement({ onDismiss }: { onDismiss: () => void }) {
                 <p className="truncate">
                     {ANNOUNCEMENT.text} {store.name}.
                 </p>
-                <a href={store.link} className="inline-flex shrink-0 items-center gap-1 font-medium text-primary hover:underline">
+                <a href={ANNOUNCEMENT.href} className="inline-flex shrink-0 items-center gap-1 font-medium text-primary hover:underline">
                     {ANNOUNCEMENT.cta} <ArrowRight aria-hidden className="size-3.5" />
                 </a>
                 <button

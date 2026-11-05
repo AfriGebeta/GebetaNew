@@ -49,9 +49,10 @@ export type NavMenuId = (typeof NAV_MENUS)[number]["id"];
 export const ANNOUNCEMENT = {
     text: "The Gebeta Maps app is now on",
     cta: "Download",
+    href: "/download?utm_source=website&utm_medium=announcement",
     stores: {
-        android: { name: "the Play Store", link: "https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map" },
-        ios: { name: "the App Store", link: "https://apps.apple.com/us/app/gebeta-maps/id6793868587" },
-        other: { name: "the Play Store and App Store", link: "https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map" },
+        android: { name: "the Play Store" },
+        ios: { name: "the App Store" },
+        other: { name: "the Play Store and App Store" },
     },
 };
