@@ -3,16 +3,16 @@ import { ArrowUpRight } from "lucide-react";
 import Container from "@/sections/Container";
 import { Icons } from "@/components/icons";
 import { PRODUCTS, productHref } from "@/constants/products";
-import { SOLUTIONS } from "@/constants/solutions";
+import { SOLUTIONS, solutionHref } from "@/constants/solutions";
 
 const COLUMNS = [
     {
         title: "Products",
         links: PRODUCTS.map((p) => ({ label: p.name, href: productHref(p.slug) })),
     },
-     {
+    {
         title: "Solutions",
-        links: SOLUTIONS.map((p) => ({ label: p.name, href: productHref(p.slug) })),
+        links: SOLUTIONS.map((s) => ({ label: s.name, href: solutionHref(s.slug) })),
     },
     {
         title: "Resources",
