@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import {
     Dialog,
+    DialogBody,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -10,6 +11,10 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Field from "@/components/ui/field";
 import { formatScopeLabel } from "@/lib/referenceData";
 
 interface ScopeSelectionModalProps {
@@ -47,81 +52,64 @@ export default function ScopeSelectionModal({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-lg bg-white dark:bg-[#0a0a0f] border-gray-200 dark:border-gray-800">
+            <DialogContent className="max-w-[520px]">
                 <DialogHeader>
-                    <DialogTitle className="text-[#1B1E2B] dark:text-white text-xl">
-                        Restrict access
-                    </DialogTitle>
-                    <DialogDescription className="text-gray-600 dark:text-gray-400">
-                        Choose what this token can access
-                    </DialogDescription>
+                    <DialogTitle>Restrict access</DialogTitle>
+                    <DialogDescription>Choose what this token can access</DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-4">
-                    <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                        <p className="text-sm font-medium text-[#1B1E2B] dark:text-white">Scopes</p>
+                <DialogBody className="gap-5">
+                    <fieldset className="flex flex-col gap-2">
+                        <legend className="caption-style mb-2 text-soft">Scopes</legend>
                         {scopesLoading ? (
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Loading scopes...</p>
+                            <p className="caption-style text-subtle">Loading scopes...</p>
                         ) : availableScopes.length === 0 ? (
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{emptyScopesMessage}</p>
-                        ) : null}
-                        {availableScopes.map((scope) => (
-                            <div key={scope} className="flex items-center space-x-3">
-                                <input
-                                    type="checkbox"
-                                    id={scope}
-                                    checked={selectedScopes.includes(scope)}
-                                    onChange={() => onToggleScope(scope)}
-                                    className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-[#FFA500] focus:ring-[#FFA500] focus:ring-offset-0 cursor-pointer"
-                                />
-                                <label
-                                    htmlFor={scope}
-                                    className="text-[#1B1E2B] dark:text-white text-sm font-medium cursor-pointer select-none"
-                                >
-                                    {formatScopeLabel(scope)}
-                                </label>
-                            </div>
-                        ))}
-                    </div>
+                            <p className="caption-style text-subtle">{emptyScopesMessage}</p>
+                        ) : (
+                            <ul className="grid max-h-[320px] grid-cols-1 gap-1 overflow-y-auto sm:grid-cols-2">
+                                {availableScopes.map((scope) => (
+                                    <li key={scope}>
+                                        <Label
+                                            htmlFor={`scope-${scope}`}
+                                            className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-[14px] text-foreground transition-colors duration-150 ease-power3-out hover:bg-hover"
+                                        >
+                                            <Checkbox
+                                                id={`scope-${scope}`}
+                                                checked={selectedScopes.includes(scope)}
+                                                onCheckedChange={() => onToggleScope(scope)}
+                                            />
+                                            {formatScopeLabel(scope)}
+                                        </Label>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </fieldset>
 
-                    <div>
-                        <label
-                            htmlFor="identifierName"
-                            className="block text-sm font-medium text-[#1B1E2B] dark:text-white mb-2"
-                        >
-                            Token Identifier
-                        </label>
-                        <input
-                            type="text"
+                    <Field label="Token Identifier" htmlFor="identifierName" required>
+                        <Input
                             id="identifierName"
                             value={identifierName}
                             onChange={(e) => setIdentifierName(e.target.value)}
-                            placeholder="e.g., Your App Name"
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                                     bg-white dark:bg-gray-800 text-[#1B1E2B] dark:text-white
-                                     focus:outline-none focus:ring-2 focus:ring-[#FFA500] focus:border-transparent
-                                     placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                            placeholder="e.g. Your App Name"
                         />
-                    </div>
-                </div>
+                    </Field>
+                </DialogBody>
 
-                <DialogFooter className="flex gap-2">
+                <DialogFooter>
                     <Button
-                        type="button"
-                        variant="outline"
+                        variant="secondary"
                         onClick={() => {
                             onOpenChange(false);
                             setIdentifierName("");
                         }}
-                        className="border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
                         Cancel
                     </Button>
                     <Button
-                        type="button"
+                        variant="primary"
                         onClick={handleCreateToken}
                         disabled={isCreating || scopesLoading || selectedScopes.length === 0 || !identifierName.trim()}
-                        className="bg-[#FFA500] text-white hover:bg-[#FF8C00] disabled:opacity-50"
                     >
                         {isCreating ? "Creating..." : "Set Token"}
                     </Button>

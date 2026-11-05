@@ -3,6 +3,7 @@ import withPlaiceholder from "@plaiceholder/next";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: process.env.NEXT_OUTPUT || 'standalone',
+    distDir: process.env.NEXT_DIST_DIR || '.next',
     reactStrictMode: false,
     transpilePackages: ["geist"],
     basePath: '',

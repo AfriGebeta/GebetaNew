@@ -1,55 +1,54 @@
 import React from 'react';
 
 export const MDXComponents = {
+    // The page already renders the post title as the H1, so a leading "# " in the
+    // MDX becomes an H2 to keep one H1 per page and a clean heading hierarchy.
     h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h1 {...props} className="text-3xl font-bold text-zinc-700 dark:text-white mb-4 mt-6" />
+        <h2 {...props} className="mb-4 mt-12 text-[28px] font-medium leading-[1.2] tracking-[-0.02em] text-foreground" />
     ),
     h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h2 {...props} className="text-2xl font-semibold text-zinc-700 dark:text-white mb-3 mt-5" />
+        <h2 {...props} className="mb-4 mt-12 text-[26px] font-medium leading-[1.2] tracking-[-0.02em] text-foreground" />
     ),
     h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-        <h3 {...props} className="text-xl font-medium text-zinc-700 dark:text-white mb-2 mt-4" />
+        <h3 {...props} className="mb-3 mt-8 text-[20px] font-medium leading-[1.3] text-foreground" />
     ),
     p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-        <p {...props} className="text-zinc-500 dark:text-gray-300 mb-4  leading-relaxed" />
+        <p {...props} className="mb-5 text-[18px] leading-[1.65] text-foreground" />
     ),
     ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
-        <ul {...props} className="list-disc list-inside mb-4 text-zinc-500 dark:text-gray-300" />
+        <ul {...props} className="mb-5 list-disc space-y-2 pl-6 text-[18px] leading-[1.6] text-foreground marker:text-subtle" />
     ),
     ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
-        <ol {...props} className="list-decimal list-inside mb-4 text-gray-300" />
+        <ol {...props} className="mb-5 list-decimal space-y-2 pl-6 text-[18px] leading-[1.6] text-foreground marker:text-subtle" />
     ),
-    li: (props: React.HTMLAttributes<HTMLLIElement>) => (
-        <li {...props} className="mb-1" />
-    ),
+    li: (props: React.HTMLAttributes<HTMLLIElement>) => <li {...props} className="pl-1" />,
     blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
-        <blockquote {...props} className="border-l-4 border-gray-500 pl-4 italic text-gray-400 mb-4" />
+        <blockquote {...props} className="my-8 rounded-lg bg-raised px-6 py-5 text-[20px] leading-[1.5] text-foreground [&>p]:mb-0" />
     ),
     a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-        <a {...props} className="text-blue-400 hover:text-blue-300 underline" />
+        <a {...props} className="text-foreground underline decoration-foreground/30 decoration-1 underline-offset-4 hover:decoration-foreground" />
     ),
     code: (props: React.HTMLAttributes<HTMLElement>) => (
-        <code {...props} className="bg-gray-800 rounded px-1 py-0.5 text-sm text-pink-400" />
+        <code {...props} className="rounded bg-raised px-1.5 py-0.5 font-mono text-[0.88em] text-foreground [pre_&]:bg-transparent [pre_&]:p-0 [pre_&]:text-background" />
     ),
     pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-        <pre {...props} className="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto" />
+        <pre {...props} className="my-6 overflow-x-auto rounded-lg bg-foreground p-5 text-[14px] leading-[1.6] text-background" />
     ),
-    strong: (props: React.HTMLAttributes<HTMLElement>) => (
-        <strong {...props} className="font-bold text-zinc-700 dark:text-white" />
-    ),
-    em: (props: React.HTMLAttributes<HTMLElement>) => (
-        <em {...props} className="italic text-gray-300" />
-    ),
+    strong: (props: React.HTMLAttributes<HTMLElement>) => <strong {...props} className="font-semibold text-foreground" />,
+    em: (props: React.HTMLAttributes<HTMLElement>) => <em {...props} className="italic" />,
     table: (props: React.TableHTMLAttributes<HTMLTableElement>) => (
-        <table {...props} className="w-full border-collapse mb-4" />
+        <div className="my-6 overflow-x-auto rounded-lg shadow-card">
+            <table {...props} className="w-full border-collapse text-[15px]" />
+        </div>
     ),
     th: (props: React.ThHTMLAttributes<HTMLTableCellElement>) => (
-        <th {...props} className="border border-gray-700 px-4 py-2  bg-[#ffa500] text-white" />
+        <th {...props} className="border-b border-line-strong bg-raised px-4 py-2.5 text-left font-medium text-foreground" />
     ),
     td: (props: React.TdHTMLAttributes<HTMLTableCellElement>) => (
-        <td {...props} className="border border-gray-700 px-4 py-2" />
+        <td {...props} className="border-b border-border px-4 py-2.5 text-foreground" />
     ),
-    img: (props: React.HTMLAttributes<HTMLImageElement>) => (
-        <img {...props} className="w-full object-cover object-center" />
-    )
+    img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+        // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+        <img {...props} className="my-8 w-full rounded-lg object-cover object-center" />
+    ),
 };

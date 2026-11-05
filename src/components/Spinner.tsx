@@ -1,4 +1,3 @@
-// Spinner.tsx
 import {Loader2} from "lucide-react";
 
 const Spinner = () => {

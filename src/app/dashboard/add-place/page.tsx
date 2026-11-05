@@ -5,12 +5,15 @@
 import React, {useState, useRef, useContext} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Field from "@/components/ui/field";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Page as DashboardPage, PageIntro } from "@/components/dashboard/page";
 import { X, Plus, UploadCloud } from "lucide-react";
 import {AuthContext} from "@/providers/AuthProvider";
 import toast from "react-hot-toast";
 
 export default function Page() {
+    const { currentUser } = useContext(AuthContext);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -185,86 +188,74 @@ export default function Page() {
 
     };
 
+    const renderField = (field) => (
+        <Field key={field.id} label={field.label} htmlFor={field.id} className={field.colSpan}>
+            <Input
+                id={field.id}
+                name={field.id}
+                value={formData[field.id]}
+                onChange={handleChange}
+            />
+        </Field>
+    );
+
     return (
-        <div className="max-w-6xl mx-auto p-6 min-h-screen">
+        <DashboardPage>
+            <PageIntro
+                title="Add New Place"
+                description="Submit a place with its location, address details, and photos."
+                actions={
+                    <Button variant="primary" onClick={handleSubmit}>
+                        Submit
+                    </Button>
+                }
+            />
 
-            <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Add New Place</h1>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <Card>
+                    <CardHeader className="border-b border-line-strong">
+                        <CardTitle>Place Information</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-6 pt-5">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            {[
+                                {id: "name", label: "Name", colSpan: "md:col-span-2"},
+                                {id: "type", label: "Type"},
+                                {id: "city", label: "City"},
+                                {id: "country", label: "Country"},
+                                {id: "lat", label: "Latitude"},
+                                {id: "lon", label: "Longitude"}
+                            ].map(renderField)}
+                        </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Left Column - Form Fields */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Place Information</h2>
+                        <Field label="Metadata" htmlFor="metadata">
+                            <Input
+                                id="metadata"
+                                name="metadata"
+                                value={formData.metadata.myvalue || ""}
+                                onChange={handleChange}
+                                placeholder="Enter custom metadata value"
+                            />
+                        </Field>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                            {id: "name", label: "Name", colSpan: "md:col-span-2"},
-                            {id: "type", label: "Type"},
-                            {id: "city", label: "City"},
-                            {id: "country", label: "Country"},
-                            {id: "lat", label: "Latitude"},
-                            {id: "lon", label: "Longitude"}
-                        ].map((field) => (
-                            <div key={field.id} className={field.colSpan || ""}>
-                                <Label htmlFor={field.id} className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {field.label}
-                                </Label>
-                                <Input
-                                    id={field.id}
-                                    name={field.id}
-                                    value={formData[field.id]}
-                                    onChange={handleChange}
-                                    className="mt-1 dark:bg-gray-700 dark:border-gray-600"
-                                />
-                            </div>
-                        ))}
-                    </div>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            {[
+                                {id: "county", label: "County"},
+                                {id: "province", label: "Province"},
+                                {id: "municipality", label: "Municipality"},
+                                {id: "borough", label: "Borough"},
+                                {id: "district", label: "District"},
+                            ].map(renderField)}
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    <div className="mt-4">
-                        <Label htmlFor="metadata" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Metadata
-                        </Label>
-                        <Input
-                            id="metadata"
-                            name="metadata"
-                            value={formData.metadata.myvalue || ""}
-                            onChange={handleChange}
-                            className="mt-1 dark:bg-gray-700 dark:border-gray-600"
-                            placeholder="Enter custom metadata value"
-                        />
-                    </div>
-
-                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                            {id: "county", label: "County"},
-                            {id: "province", label: "Province"},
-                            {id: "municipality", label: "Municipality"},
-                            {id: "borough", label: "Borough"},
-                            {id: "district", label: "District"},
-                        ].map((field) => (
-                            <div key={field.id}>
-                                <Label htmlFor={field.id} className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {field.label}
-                                </Label>
-                                <Input
-                                    id={field.id}
-                                    name={field.id}
-                                    value={formData[field.id]}
-                                    onChange={handleChange}
-                                    className="mt-1 dark:bg-gray-700 dark:border-gray-600"
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Images</h2>
-
-                    <div
-                        className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                        onClick={() => fileInputRef.current.click()}
-                    >
+                <Card>
+                    <CardHeader className="border-b border-line-strong">
+                        <CardTitle>Images</CardTitle>
+                        <CardDescription>PNG, JPG, GIF up to 10MB</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-5 pt-5">
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -273,57 +264,51 @@ export default function Page() {
                             multiple
                             className="hidden"
                         />
-                        <UploadCloud className="mx-auto h-12 w-12 text-gray-400" />
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            Drag and drop images here, or click to select files
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                            PNG, JPG, GIF up to 10MB
-                        </p>
-                    </div>
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current.click()}
+                            className="flex cursor-pointer flex-col items-center gap-3 rounded-lg border border-dashed border-line-strong px-6 py-10 text-center outline-none transition-colors duration-150 ease-power3-out hover:bg-hover focus-visible:border-ring"
+                        >
+                            <UploadCloud aria-hidden className="size-8 text-faint" />
+                            <span className="lead-style text-foreground">Click to select images</span>
+                            <span className="caption-style text-subtle">You can pick several at once</span>
+                        </button>
 
-                    {uploading && (
-                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-md text-blue-700 dark:text-blue-300">
-                            <p>Uploading images, please wait...</p>
-                        </div>
-                    )}
+                        {uploading && (
+                            <p className="caption-style rounded-lg border border-[var(--ds-tag-blue-border)] bg-[var(--ds-tag-blue-bg)] p-3 text-[var(--ds-tag-blue-text)]">
+                                Uploading images, please wait...
+                            </p>
+                        )}
 
-                    {/* Image Gallery */}
-                    {formData.images.length > 0 && (
-                        <div className="mt-6">
-                            <h3 className="text-md font-medium mb-3 text-gray-700 dark:text-gray-300">Uploaded Images</h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                {formData.images.map((image, index) => (
-                                    <div key={index} className="relative group">
-                                        <img
-                                            src={image.preview}
-                                            alt={`Preview ${index + 1}`}
-                                            className="w-full h-32 object-cover rounded-md border border-gray-200 dark:border-gray-600"
-                                        />
-                                        <button
-                                            onClick={() => removeImage(index)}
-                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </button>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">{image.name}</p>
-                                    </div>
-                                ))}
+                        {formData.images.length > 0 && (
+                            <div className="flex flex-col gap-3">
+                                <h3 className="eyebrow-style text-subtle">Uploaded images</h3>
+                                <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                    {formData.images.map((image, index) => (
+                                        <li key={index} className="group relative flex flex-col gap-1.5">
+                                            <img
+                                                src={image.preview}
+                                                alt={`Preview ${index + 1}`}
+                                                className="h-28 w-full rounded-md object-cover outline outline-1 -outline-offset-1 outline-black/10"
+                                            />
+                                            <Button
+                                                variant="secondary"
+                                                size="icon-sm"
+                                                onClick={() => removeImage(index)}
+                                                aria-label={`Remove ${image.name}`}
+                                                className="absolute right-1.5 top-1.5 opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
+                                            >
+                                                <X aria-hidden />
+                                            </Button>
+                                            <span className="caption-style truncate text-subtle">{image.name}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
-
-            {/* Submit Button */}
-            <div className="mt-6 flex justify-end">
-                <Button
-                    onClick={handleSubmit}
-                    className="bg-[#FFA500] hover:bg-[#FF8C00] text-white px-6 py-2 rounded-md shadow"
-                >
-                    Submit
-                </Button>
-            </div>
-        </div>
+        </DashboardPage>
     );
 }

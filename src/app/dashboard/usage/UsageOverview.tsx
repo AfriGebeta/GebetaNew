@@ -2,31 +2,26 @@
 
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {useQuery} from "@tanstack/react-query";
 import {getMatrix} from "@/service/apis";
 import {IconPackage, IconTrendingDown, IconTrendingUp,} from "@tabler/icons-react";
 
-import {MetricCard, MetricCardSkeleton} from "@/components/metric-card";
+import {StatCard, StatCardSkeleton} from "@/components/dashboard/stat-card";
+import {PLAN_LABEL, getCurrentPlan} from "@/lib/subscription";
 
 interface UsageOverviewProps {
     currentUser: any;
 }
 
 export default function UsageOverview({ currentUser }: UsageOverviewProps) {
-    const [purchasedPlans, setPurchasedPlans] = useState("");
-
     const { data, isLoading } = useQuery({
         queryKey: ["metrics", currentUser.token],
         queryFn: () => getMatrix(currentUser.token),
         staleTime: 5 * 60 * 1000,
     });
 
-    useEffect(() => {
-        if (currentUser?.user?.token) setPurchasedPlans("Credits");
-        if (currentUser?.user?.purchased_date != null)
-            setPurchasedPlans("Pay as you go");
-    }, [currentUser]);
+    const plan = getCurrentPlan(currentUser?.user);
 
     const capitalize = (str: string) =>
         str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
@@ -50,41 +45,41 @@ export default function UsageOverview({ currentUser }: UsageOverviewProps) {
 
     const cards = [
         {
-            description: "Total Usage",
-            title: totalUsage,
-            footer: "Across all call types",
-            badgeLabel: "Calls",
-            icon: <IconTrendingUp className="size-4" />,
+            label: "Total Usage",
+            value: totalUsage.toLocaleString(),
+            hint: "Across all call types",
+            badge: "Calls",
+            icon: <IconTrendingUp />,
         },
         {
-            description: "Subscription",
-            title: purchasedPlans,
-            footer: "Current billing model",
-            badgeLabel: "Plan",
-            icon: <IconPackage className="size-4" />,
+            label: "Subscription",
+            value: PLAN_LABEL[plan.kind],
+            hint: "Current billing model",
+            badge: "Plan",
+            icon: <IconPackage />,
         },
         {
-            description: "Max Usage",
-            title: maxUsage,
-            footer: "Highest call volume",
-            badgeLabel: "Peak",
-            icon: <IconTrendingUp className="size-4" />,
+            label: "Max Usage",
+            value: maxUsage,
+            hint: "Highest call volume",
+            badge: "Peak",
+            icon: <IconTrendingUp />,
         },
         {
-            description: "Min Usage",
-            title: minUsage,
-            footer: "Lowest call volume",
-            badgeLabel: "Lowest",
-            icon: <IconTrendingDown className="size-4" />,
+            label: "Min Usage",
+            value: minUsage,
+            hint: "Lowest call volume",
+            badge: "Lowest",
+            icon: <IconTrendingDown />,
         },
     ];
 
     return (
-        <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {isLoading
-                ? cards.map((_, i) => <MetricCardSkeleton key={i} />)
+                ? cards.map((_, i) => <StatCardSkeleton key={i} />)
                 : cards.map((card, i) => (
-                    <MetricCard key={i} {...card} />
+                    <StatCard key={i} {...card} />
                 ))}
         </div>
     );

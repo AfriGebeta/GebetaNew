@@ -9,6 +9,9 @@ import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
 import {Label } from "@/components/ui/label";
+import Field from "@/components/ui/field";
+import OtpInput from "@/components/ui/otp-input";
+import {Page, PageIntro} from "@/components/dashboard/page";
 import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs";
 import {useToast} from "@/hooks/use-toast";
 import {Switch } from "@/components/ui/switch";
@@ -157,19 +160,6 @@ export default function Account() {
         }
     };
 
-    const handleOtpChange = (element: HTMLInputElement, index: number) => {
-        if (isNaN(Number(element.value))) return;
-
-        const newOtp = [...otp];
-        newOtp[index] = element.value;
-        setOtp(newOtp);
-
-        if (element.value && index < 5) {
-            const nextInput = document.querySelector(`input[name=otp-${index + 1}]`) as HTMLInputElement;
-            if (nextInput) nextInput.focus();
-        }
-    };
-
     const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const otpString = otp.join('');
@@ -229,97 +219,81 @@ export default function Account() {
 
     const renderAccountInfo = () => (
         <Card>
-            <CardHeader>
+            <CardHeader className="border-b border-line-strong">
                 <CardTitle>Account Information</CardTitle>
                 <CardDescription>
                     Make changes to your account here. Click save when you're done.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-                <div className="space-y-1">
-                    <Label htmlFor="username">Username</Label>
+            <CardContent className="flex max-w-[520px] flex-col gap-5 pt-5">
+                <Field label="Username" htmlFor="username">
                     <Input
                         id="username"
-                        className="w-full md:w-1/2"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
-                </div>
+                </Field>
                 {isOrganization ? (
-                    <div className="space-y-1">
-                        <Label htmlFor="company-name">Company Name</Label>
+                    <Field label="Company Name" htmlFor="company-name">
                         <Input
                             id="company-name"
-                            className="w-full md:w-1/2"
                             value={companyOrFirstName}
                             onChange={(e) => setCompanyOrFirstName(e.target.value)}
                         />
-                    </div>
+                    </Field>
                 ) : (
-                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-1/2">
-                        <div className="space-y-1 flex-1">
-                            <Label htmlFor="first-name">First Name</Label>
+                    <div className="flex flex-col gap-5 sm:flex-row sm:gap-3">
+                        <Field label="First Name" htmlFor="first-name" className="flex-1">
                             <Input
                                 id="first-name"
                                 value={companyOrFirstName}
                                 onChange={(e) => setCompanyOrFirstName(e.target.value)}
                             />
-                        </div>
-                        <div className="space-y-1 flex-1">
-                            <Label htmlFor="last-name">Last Name</Label>
+                        </Field>
+                        <Field label="Last Name" htmlFor="last-name" className="flex-1">
                             <Input
                                 id="last-name"
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                             />
-                        </div>
+                        </Field>
                     </div>
                 )}
-                <div className="space-y-1">
-                    <Label htmlFor="email">Email</Label>
+                <Field label="Email" htmlFor="email" hint="Email can't be changed here, contact support to update it.">
                     <Input
                         type="email"
-                        className="w-full md:w-1/2"
                         id="email"
                         value={email}
                         disabled
                         readOnly
                     />
-                    <p className="text-xs text-[#aaa]">
-                        Email can't be changed here — contact support to update it.
-                    </p>
-                </div>
-                <div className="space-y-1">
-                    <Label htmlFor="phone">Phone Number</Label>
+                </Field>
+                <Field label="Phone Number" htmlFor="phone">
                     <Input
                         type="tel"
-                        className="w-full md:w-1/2"
                         id="phone"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                     />
-                </div>
-                <div className="space-y-1 pt-2">
-                    <div className="flex items-center justify-between w-full md:w-1/2">
-                        <div className="space-y-0.5 flex-1">
-                            <Label htmlFor="abuse-detection">Abuse Detection & Notifications</Label>
-                            <p className="text-xs text-[#aaa]">
-                                Receive notifications when suspicious activity is detected
-                            </p>
-                        </div>
-                        <Switch
-                            id="abuse-detection"
-                            checked={allowAbuseDetection}
-                            onCheckedChange={setAllowAbuseDetection}
-                            className="ml-4"
-                        />
+                </Field>
+                <div className="flex items-center justify-between gap-4 rounded-lg border border-line-strong p-3">
+                    <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="abuse-detection" className="text-foreground">Abuse Detection & Notifications</Label>
+                        <span className="caption-style leading-[1.4] text-subtle">
+                            Receive notifications when suspicious activity is detected
+                        </span>
                     </div>
+                    <Switch
+                        id="abuse-detection"
+                        checked={allowAbuseDetection}
+                        onCheckedChange={setAllowAbuseDetection}
+                    />
                 </div>
-                {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-                {success && <p className="text-green-500 text-sm text-center">{success}</p>}
+                {error && <p className="caption-style text-danger">{error}</p>}
+                {success && <p className="caption-style text-success">{success}</p>}
             </CardContent>
-            <CardFooter>
-                <Button className="bg-[#FFA500] hover:bg-[#FFA500]/80" onClick={handleSubmit} disabled={updateUserMutation.isPending}>
+            <CardFooter className="justify-end">
+                <Button variant="primary" onClick={handleSubmit} disabled={updateUserMutation.isPending}>
                     {updateUserMutation.isPending ? 'Updating...' : 'Save changes'}
                 </Button>
             </CardFooter>
@@ -328,81 +302,57 @@ export default function Account() {
 
     const renderResetPassword = () => (
         <Card>
-            <CardHeader>
+            <CardHeader className="border-b border-line-strong">
                 <CardTitle>Reset Password</CardTitle>
                 <CardDescription>
                     Change your password here. After saving, you'll be logged out.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-                {/*<h2 className="text-sm mt-2 mb-2 font-medium">{step === 1 ? 'Request OTP' : step === 2 ? 'Verify OTP' : 'Change Password'}</h2>*/}
-                {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+            <CardContent className="flex max-w-[520px] flex-col gap-5 pt-5">
+                {error && <p className="caption-style text-danger">{error}</p>}
                 {step === 1 && (
-                    <form className="space-y-6 mt-[40px]" onSubmit={handleContinue}>
-                        <div className="space-y-2">
-                            <Label htmlFor="reset-email">Email Address</Label>
+                    <form className="flex flex-col items-start gap-5" onSubmit={handleContinue}>
+                        <Field label="Email Address" htmlFor="reset-email" className="w-full" hint="We'll send a one-time code to this address.">
                             <Input
                                 type="email"
-                                className="w-full md:w-1/2"
                                 id="reset-email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                readOnly
                                 required
-                                placeholder="youremail@example.com"
                             />
-                        </div>
-                        <Button className="bg-[#FFA500] hover:bg-[#FFA500]/80" type="submit" disabled={requestOtpMutation.isPending}>
+                        </Field>
+                        <Button variant="primary" type="submit" disabled={requestOtpMutation.isPending}>
                             {requestOtpMutation.isPending ? 'Requesting...' : 'Request OTP'}
                         </Button>
                     </form>
                 )}
                 {step === 2 && (
-                    <form className="space-y-6 mt-[40px]" onSubmit={handleVerifyOtp}>
-                        <h3 className="text-lg">Enter the OTP sent to {email}</h3>
-                        <div className="flex justify-center gap-2">
-                            {otp.map((digit, index) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    name={`otp-${index}`}
-                                    maxLength={1}
-                                    value={digit}
-                                    onChange={(e) => handleOtpChange(e.target, index)}
-                                    className="w-12 h-12 text-center border-2 rounded-lg focus:border-[#FFA500] focus:outline-none dark:bg-gray-700 dark:text-white"
-                                />
-                            ))}
-                        </div>
-                        <Button type="submit" disabled={verifyOtpMutation.isPending}>
-                            {verifyOtpMutation.isPending ? 'Verifying OTP...' : 'Verify OTP'}
-                        </Button>
-                        <div className="mt-[8px] flex justify-center">
-                            <button
-                                type="button"
-                                onClick={handleResendOtp}
-                                disabled={!canResend}
-                                className={`text-sm text-[#FFA500] ${canResend ? '' : 'opacity-50 cursor-not-allowed'}`}
-                            >
-                                Resend
-                                OTP {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
-                            </button>
+                    <form className="flex flex-col items-start gap-5" onSubmit={handleVerifyOtp}>
+                        <p className="p-style text-soft">Enter the code sent to <span className="text-foreground">{email}</span></p>
+                        <OtpInput value={otp} onChange={setOtp} className="justify-start"/>
+                        <div className="flex items-center gap-3">
+                            <Button variant="primary" type="submit" disabled={verifyOtpMutation.isPending}>
+                                {verifyOtpMutation.isPending ? 'Verifying OTP...' : 'Verify OTP'}
+                            </Button>
+                            <Button variant="ghost" onClick={handleResendOtp} disabled={!canResend}>
+                                Resend OTP {timer > 0 && `(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})`}
+                            </Button>
                         </div>
                     </form>
                 )}
                 {step === 3 && (
-                    <form className="space-y-6 mt-[40px]" onSubmit={handleChangePassword}>
-                        <div className="space-y-2">
-                            <Label htmlFor="new-password">New Password</Label>
+                    <form className="flex flex-col items-start gap-5" onSubmit={handleChangePassword}>
+                        <Field label="New Password" htmlFor="new-password" className="w-full" hint="At least 6 characters.">
                             <Input
                                 type="password"
                                 id="new-password"
-                                className="w-1/2"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 required
                                 placeholder="Enter new password"
                             />
-                        </div>
-                        <Button type="submit" disabled={changePasswordMutation.isPending}>
+                        </Field>
+                        <Button variant="primary" type="submit" disabled={changePasswordMutation.isPending}>
                             {changePasswordMutation.isPending ? 'Changing...' : 'Change Password'}
                         </Button>
                     </form>
@@ -412,9 +362,10 @@ export default function Account() {
     );
 
     return (
-        <div className="w-full p-6">
-            <Tabs defaultValue="account" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-4">
+        <Page>
+            <PageIntro title="Account" description="Manage your profile, notifications, and password." />
+            <Tabs defaultValue="account" className="gap-6">
+                <TabsList>
                     <TabsTrigger value="account">Account Info</TabsTrigger>
                     <TabsTrigger value="password">Reset Password</TabsTrigger>
                 </TabsList>
@@ -425,6 +376,6 @@ export default function Account() {
                     {renderResetPassword()}
                 </TabsContent>
             </Tabs>
-        </div>
+        </Page>
     );
 }
