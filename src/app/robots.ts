@@ -5,8 +5,19 @@ export default function robots(): MetadataRoute.Robots {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: ['/private/', '/admin/', '/api/'],
+            // Signed-in app surfaces, admin tooling and embed/API endpoints carry no
+            // search value and would otherwise soak up crawl budget.
+            disallow: [
+                '/private/',
+                '/admin/',
+                '/api/',
+                '/dashboard/',
+                '/career/admin/',
+                '/auth/',
+                '/embed/',
+            ],
         },
         sitemap: 'https://gebeta.app/sitemap.xml',
+        host: 'https://gebeta.app',
     }
 }

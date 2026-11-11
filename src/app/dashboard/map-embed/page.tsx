@@ -4,6 +4,9 @@ import { generateMapEmbed, type Marker } from "@/app/actions/map-embed";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Field from "@/components/ui/field";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Page, PageIntro } from "@/components/dashboard/page";
 import { useToast } from "@/hooks/use-toast";
 import { uploadMarkerImage } from "@/lib/upload";
 import {
@@ -21,6 +24,7 @@ import {
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { createExternalPlace, createManyExternalPlaces, getAllExternalPlaces } from "@/lib/external";
 import { AuthContext } from "@/providers/AuthProvider";
+import { tokenColor } from "@/lib/tokens";
 
 export default function MapEmbedPage() {
     const { toast } = useToast();
@@ -146,7 +150,7 @@ export default function MapEmbedPage() {
                     const label = feature.properties.label;
                     if (!label) return;
                     popup.setLngLat(feature.geometry.coordinates)
-                        .setHTML('<div style="font-family:Roboto,Arial,sans-serif;font-size:13px;font-weight:600;color:#333;padding:2px 4px;">' + label + "</div>")
+                        .setHTML('<div class="px-1 py-0.5 text-[13px] font-semibold">' + label + "</div>")
                         .addTo(map);
                 });
                 map.on("mouseenter", "dashboard-places-layer", () => { map.getCanvas().style.cursor = "pointer"; });
@@ -394,7 +398,7 @@ export default function MapEmbedPage() {
         if (!mapRef.current) return;
         if (centerMarkerRef.current) centerMarkerRef.current.remove();
         const el = document.createElement("div");
-        el.style.cssText = "width:20px;height:20px;border-radius:50%;background:#3B82F6;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:move;";
+        el.className = "size-5 cursor-move rounded-full border-[3px] border-white bg-[var(--ds-tag-blue-text)] shadow-overlay";
         const marker = new (window as any).maplibregl.Marker({ element: el, draggable: true })
             .setLngLat([lng, lat]).addTo(mapRef.current);
         marker.on("dragend", () => {
@@ -423,11 +427,11 @@ export default function MapEmbedPage() {
             mapRef.current.addSource("bounds-preview", { type: "geojson", data: geojson });
             mapRef.current.addLayer({
                 id: "bounds-fill", type: "fill", source: "bounds-preview",
-                paint: { "fill-color": "#FFA500", "fill-opacity": 0.08 },
+                paint: { "fill-color": tokenColor("--primary"), "fill-opacity": 0.08 },
             });
             mapRef.current.addLayer({
                 id: "bounds-line", type: "line", source: "bounds-preview",
-                paint: { "line-color": "#FFA500", "line-width": 2, "line-dasharray": [4, 2] },
+                paint: { "line-color": tokenColor("--primary"), "line-width": 2, "line-dasharray": [4, 2] },
             });
         }
     };
@@ -550,154 +554,153 @@ export default function MapEmbedPage() {
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const stepHeader = (step: number, title: string, description: string | null, optional = false) => (
+        <CardHeader className="border-b border-line-strong">
+            <CardTitle className="flex items-center gap-2">
+                <span className="caption-style inline-flex size-5 items-center justify-center rounded-full bg-muted text-chip shadow-badge">{step}</span>
+                {title}
+                {optional && <span className="caption-style text-subtle">Optional</span>}
+            </CardTitle>
+            {description && <CardDescription>{description}</CardDescription>}
+        </CardHeader>
+    );
+
+    const fileButtonClasses = "inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-line-strong bg-secondary px-3 text-[12px] leading-none text-soft transition-colors duration-150 ease-power3-out hover:bg-muted hover:text-foreground [&_svg]:size-3.5";
+
     return (
-        <div className="p-4 md:p-6 mt-2 max-w-5xl">
-            <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">Map Embed</h2>
-                <p className="text-[#aaa]">
-                    Paste your tokens, load the map, then click to configure center, markers, and an optional bounding box.
-                </p>
-            </div>
+        <Page className="max-w-[960px]">
+            <PageIntro
+                title="Map Embed"
+                description="Paste your tokens, load the map, then click to configure center, markers, and an optional bounding box."
+            />
 
-            <div className="space-y-6">
-                <div className="space-y-3">
-                    <Label>1. Service Account Tokens</Label>
-                    <div className="space-y-2">
-                        <div className="space-y-1">
-                            <Label className="text-xs">Server Token</Label>
+            <Card>
+                {stepHeader(1, "Service Account Tokens", "Use a service account's server and client tokens. They're exchanged for a token-free embed URL.")}
+                <CardContent className="flex flex-col items-start gap-4 pt-5">
+                    <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+                        <Field label="Server Token" htmlFor="server-token">
                             <div className="flex gap-2">
-                                <Input type={showServerToken ? "text" : "password"} placeholder="Paste server token..."
+                                <Input id="server-token" type={showServerToken ? "text" : "password"} placeholder="Paste server token..."
                                     value={serverToken} onChange={e => setServerToken(e.target.value)} />
-                                <Button variant="outline" size="icon" className="border-white/10 bg-transparent shrink-0"
+                                <Button variant="secondary" size="icon" className="mt-[3px]"
+                                    aria-label={showServerToken ? "Hide server token" : "Show server token"}
                                     onClick={() => setShowServerToken(v => !v)}>
-                                    {showServerToken ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                                    {showServerToken ? <EyeOffIcon aria-hidden /> : <EyeIcon aria-hidden />}
                                 </Button>
                             </div>
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs">Client Token</Label>
+                        </Field>
+                        <Field label="Client Token" htmlFor="client-token">
                             <div className="flex gap-2">
-                                <Input type={showClientToken ? "text" : "password"} placeholder="Paste client token..."
+                                <Input id="client-token" type={showClientToken ? "text" : "password"} placeholder="Paste client token..."
                                     value={clientToken} onChange={e => setClientToken(e.target.value)} />
-                                <Button variant="outline" size="icon" className="border-white/10 bg-transparent shrink-0"
+                                <Button variant="secondary" size="icon" className="mt-[3px]"
+                                    aria-label={showClientToken ? "Hide client token" : "Show client token"}
                                     onClick={() => setShowClientToken(v => !v)}>
-                                    {showClientToken ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                                    {showClientToken ? <EyeOffIcon aria-hidden /> : <EyeIcon aria-hidden />}
                                 </Button>
                             </div>
-                        </div>
+                        </Field>
                     </div>
-                    <Button onClick={handleLoadMap} disabled={mapLoading || !serverToken.trim() || !clientToken.trim()}
-                        variant="outline" className="border-white/10 bg-transparent hover:bg-white/10">
+                    <Button onClick={handleLoadMap} disabled={mapLoading || !serverToken.trim() || !clientToken.trim()} variant="secondary">
                         {mapLoading
-                            ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Loading Map...</>
+                            ? <><Loader2 aria-hidden className="animate-spin" />Loading Map...</>
                             : mapLoaded
-                                ? <><RotateCcw className="w-4 h-4 mr-2" />Reload Map</>
-                                : <><MapIcon className="w-4 h-4 mr-2" />Load Map to Configure</>}
+                                ? <><RotateCcw aria-hidden />Reload Map</>
+                                : <><MapIcon aria-hidden />Load Map to Configure</>}
                     </Button>
-                </div>
+                </CardContent>
+            </Card>
 
-                <div className="space-y-2">
-                    <Label>2. Configure on Map</Label>
-                    <p className="text-sm text-[#aaa]">
-                        {mapLoaded
-                            ? "Click to set center and drop markers"
-                            : "Load the map above to start configuring."}
-                    </p>
-
+            <Card>
+                {stepHeader(2, "Configure on Map", mapLoaded ? "Click to set center and drop markers" : "Load the map above to start configuring.")}
+                <CardContent className="flex flex-col gap-3 pt-4">
                     {(mapLoaded || mapRef.current) && (
-                        <div className="flex gap-2 flex-wrap">
-                            <Button size="sm" variant="outline" onClick={() => setMode("center")}
-                                className={`text-xs border-white/10 bg-transparent ${mode === "center" ? "border-[#3B82F6] text-[#3B82F6]" : ""}`}>
-                                <MousePointer className="w-3 h-3 mr-1" /> Set Center
+                        <div className="flex flex-wrap gap-2">
+                            <Button size="sm" variant={mode === "center" ? "muted" : "ghost"} aria-pressed={mode === "center"} onClick={() => setMode("center")}>
+                                <MousePointer aria-hidden className="text-[var(--ds-tag-blue-text)]" /> Set Center
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => setMode("marker")}
-                                className={`text-xs border-white/10 bg-transparent ${mode === "marker" ? "border-[#FFA500] text-[#FFA500]" : ""}`}>
-                                <MapIcon className="w-3 h-3 mr-1" /> Drop Marker
+                            <Button size="sm" variant={mode === "marker" ? "muted" : "ghost"} aria-pressed={mode === "marker"} onClick={() => setMode("marker")}>
+                                <MapIcon aria-hidden className="text-primary" /> Drop Marker
                             </Button>
-                            <Button size="sm" variant="outline"
-                                onClick={() => { handleClearBounds(); setMode("bounds"); toast({ description: "Click two opposite corners to draw the bounding box." }); }}
-                                className={`text-xs border-white/10 bg-transparent ${mode === "bounds" ? "border-[#FFA500] text-[#FFA500]" : bounds ? "border-orange-400 text-orange-400" : ""}`}>
-                                <BoxSelect className="w-3 h-3 mr-1" />
+                            <Button size="sm" variant={mode === "bounds" ? "muted" : "ghost"} aria-pressed={mode === "bounds"}
+                                onClick={() => { handleClearBounds(); setMode("bounds"); toast({ description: "Click two opposite corners to draw the bounding box." }); }}>
+                                <BoxSelect aria-hidden className="text-primary" />
                                 {boundsCorner1 ? "Click 2nd corner…" : bounds ? "Redraw Bounds" : "Draw Bounds"}
                             </Button>
                             {bounds && mode !== "bounds" && (
-                                <Button size="sm" variant="outline" onClick={handleClearBounds}
-                                    className="text-xs border-white/10 text-red-400 bg-transparent">
-                                    <RotateCcw className="w-3 h-3 mr-1" /> Clear Bounds
+                                <Button size="sm" variant="ghost" onClick={handleClearBounds} className="hover:text-danger">
+                                    <RotateCcw aria-hidden /> Clear Bounds
                                 </Button>
                             )}
                         </div>
                     )}
 
-                    <div className="relative rounded-xl overflow-hidden border border-white/10" style={{ height: 450 }}>
-                        <div ref={mapContainerRef} className="w-full h-full" />
+                    <div className="relative h-[450px] overflow-hidden rounded-lg border border-line-strong">
+                        <div ref={mapContainerRef} className="h-full w-full" />
                         {!mapLoaded && !mapLoading && !mapRef.current && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#111] gap-3">
-                                <MapIcon className="w-10 h-10 text-white/20" />
-                                <p className="text-[#555]">Paste your tokens and click "Load Map to Configure"</p>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-muted/40">
+                                <MapIcon aria-hidden className="size-8 text-faint" />
+                                <p className="caption-style text-subtle">Paste your tokens and click "Load Map to Configure"</p>
                             </div>
                         )}
                         {mapLoading && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-[#111]">
-                                <Loader2 className="w-8 h-8 text-[#FFA500] animate-spin" />
+                            <div className="absolute inset-0 flex items-center justify-center bg-muted/40">
+                                <Loader2 aria-hidden className="size-6 animate-spin text-primary" />
                             </div>
                         )}
                         {mapLoaded && (
-                            <div className="absolute bottom-3 left-3 bg-black/70 rounded-lg px-3 py-2 text-xs space-y-1 pointer-events-none">
+                            <div className="caption-style pointer-events-none absolute bottom-3 left-3 flex flex-col gap-2 rounded-lg border border-line-strong bg-popover/90 px-3 py-2 text-foreground shadow-overlay backdrop-blur-sm">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-[#3B82F6] border border-white shrink-0" />
-                                    <span className="text-white">Center (draggable)</span>
+                                    <span className="size-2.5 shrink-0 rounded-full border border-white bg-[var(--ds-tag-blue-text)]" />
+                                    Center (draggable)
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-[#FFA500] shrink-0" />
-                                    <span className="text-white">Markers</span>
+                                    <span className="size-2.5 shrink-0 rounded-full bg-primary" />
+                                    Markers
                                 </div>
                                 {bounds && (
                                     <div className="flex items-center gap-2">
-                                        <div className="w-3 h-3 border-2 border-dashed border-[#FFA500] shrink-0" />
-                                        <span className="text-orange-400">Bounds active</span>
+                                        <span className="size-2.5 shrink-0 border border-dashed border-primary" />
+                                        Bounds active
                                     </div>
                                 )}
                             </div>
                         )}
                         {pendingMarker && (
-                            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-white border border-white/15 rounded-xl shadow-2xl p-4 w-72">
-                                <p className="text-xs text-[#aaa] mb-3">
+                            <div className="absolute left-1/2 top-3 z-20 flex w-72 -translate-x-1/2 flex-col gap-3 rounded-xl border border-line-strong bg-popover p-4 text-popover-foreground shadow-overlay">
+                                <p className="caption-style tabular-nums text-subtle">
                                     {pendingMarker.lat.toFixed(5)}, {pendingMarker.lng.toFixed(5)}
                                 </p>
-                                <div className="space-y-2 mb-3">
-                                    <Input
-                                        autoFocus
-                                        placeholder="Place name (optional)"
-                                        value={pendingLabel}
-                                        onChange={e => setPendingLabel(e.target.value)}
-                                        onKeyDown={e => e.key === "Enter" && confirmPendingMarker()}
+                                <Input
+                                    autoFocus
+                                    aria-label="Place name"
+                                    placeholder="Place name (optional)"
+                                    value={pendingLabel}
+                                    onChange={e => setPendingLabel(e.target.value)}
+                                    onKeyDown={e => e.key === "Enter" && confirmPendingMarker()}
+                                />
+                                <label className={fileButtonClasses}>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={e => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handlePendingImageUpload(file);
+                                        }}
                                     />
-                                    <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] border border-black/10 rounded-lg px-3 py-2">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={e => {
-                                                const file = e.target.files?.[0];
-                                                if (file) handlePendingImageUpload(file);
-                                            }}
-                                        />
-                                        {pendingUploading
-                                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...</>
-                                            : pendingImage
-                                                ? <><img src={pendingImage} className="w-5 h-5 rounded object-cover" alt="" /> Image uploaded ✓</>
-                                                : <><ImagePlus className="w-3.5 h-3.5" /> Upload marker image</>}
-                                    </label>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button size="sm" onClick={confirmPendingMarker}
-                                        className="flex-1 bg-[#FFA500] text-white text-xs font-semibold hover:bg-[#FF8C00]">
-                                        Add Place
-                                    </Button>
-                                    <Button size="sm" variant="outline"
-                                        onClick={cancelPendingMarker}>
+                                    {pendingUploading
+                                        ? <><Loader2 aria-hidden className="animate-spin" /> Uploading...</>
+                                        : pendingImage
+                                            ? <><img src={pendingImage} className="size-5 rounded object-cover" alt="" /> Image uploaded</>
+                                            : <><ImagePlus aria-hidden /> Upload marker image</>}
+                                </label>
+                                <div className="flex justify-end gap-2">
+                                    <Button variant="secondary" onClick={cancelPendingMarker}>
                                         Cancel
+                                    </Button>
+                                    <Button variant="primary" onClick={confirmPendingMarker}>
+                                        Add Place
                                     </Button>
                                 </div>
                             </div>
@@ -705,145 +708,147 @@ export default function MapEmbedPage() {
                     </div>
 
                     {mapLoaded && (
-                        <div className="flex gap-4 text-xs text-[#aaa]">
-                            <span>Center: {center.lat.toFixed(5)}, {center.lng.toFixed(5)}</span>
+                        <div className="caption-style flex flex-wrap gap-x-4 gap-y-2 tabular-nums text-subtle">
+                            <span>Center: <span className="text-soft">{center.lat.toFixed(5)}, {center.lng.toFixed(5)}</span></span>
                             {bounds && (
-                                <span className="text-orange-400">
-                                    Bounds: [{bounds.map(v => v.toFixed(4)).join(", ")}] ✓
+                                <span>
+                                    Bounds: <span className="text-soft">[{bounds.map(v => v.toFixed(4)).join(", ")}]</span>
                                 </span>
                             )}
                         </div>
                     )}
-                </div>
+                </CardContent>
+            </Card>
 
-                <div className="space-y-2">
-                    <Label>3. Add Place Manually <span className="text-[#aaa] font-normal">(optional)</span></Label>
-                    <div className="flex gap-2 flex-wrap items-center">
-                        <Input className="w-48" placeholder="Name" value={manualName} onChange={e => setManualName(e.target.value)} />
-                        <Input className="w-32" placeholder="Latitude" value={manualLat} onChange={e => setManualLat(e.target.value)} />
-                        <Input className="w-32" placeholder="Longitude" value={manualLng} onChange={e => setManualLng(e.target.value)} />
-                        <Input className="w-32" placeholder="Type (optional)" value={manualType} onChange={e => setManualType(e.target.value)} />
-                        <label className="flex items-center gap-2 cursor-pointer text-xs text-[#aaa] border border-white/10 rounded-lg px-3 py-2 h-9">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={e => {
-                                    const file = e.target.files?.[0];
-                                    if (file) handleManualImageUpload(file);
-                                }}
-                            />
-                            {manualUploading
-                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                : manualImage
-                                    ? <img src={manualImage} className="w-5 h-5 rounded object-cover" alt="" />
-                                    : <ImagePlus className="w-3.5 h-3.5" />}
-                        </label>
-                        <Button size="sm" onClick={handleManualAdd} disabled={manualSubmitting}
-                            className="bg-[#FFA500] text-black font-semibold hover:bg-[#FF8C00]">
-                            {manualSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
-                        </Button>
-                        <label className="flex items-center gap-2 cursor-pointer text-xs border border-white/10 rounded-lg px-3 py-2 h-9 hover:bg-white/10">
-                            <input
-                                type="file"
-                                accept=".csv"
-                                className="hidden"
-                                onChange={e => {
-                                    const file = e.target.files?.[0];
-                                    if (file) handleCsvUpload(file);
-                                }}
-                            />
-                            {csvUploading
-                                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading CSV...</>
-                                : <><UploadCloud className="w-3.5 h-3.5" /> Upload CSV</>}
-                        </label>
-                    </div>
-                    <p className="text-xs text-[#555]">
-                        CSV columns: name (or location_name), lat/latitude, lng/longitude, type (or location_type)
-                    </p>
-                </div>
+            <Card>
+                {stepHeader(3, "Add Place Manually", "CSV columns: name (or location_name), lat/latitude, lng/longitude, type (or location_type)", true)}
+                <CardContent className="flex flex-wrap items-center gap-2 pt-5">
+                    <Input className="w-48" aria-label="Name" placeholder="Name" value={manualName} onChange={e => setManualName(e.target.value)} />
+                    <Input className="w-32" aria-label="Latitude" placeholder="Latitude" value={manualLat} onChange={e => setManualLat(e.target.value)} />
+                    <Input className="w-32" aria-label="Longitude" placeholder="Longitude" value={manualLng} onChange={e => setManualLng(e.target.value)} />
+                    <Input className="w-32" aria-label="Type" placeholder="Type (optional)" value={manualType} onChange={e => setManualType(e.target.value)} />
+                    <label className={fileButtonClasses} aria-label="Upload place image">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={e => {
+                                const file = e.target.files?.[0];
+                                if (file) handleManualImageUpload(file);
+                            }}
+                        />
+                        {manualUploading
+                            ? <Loader2 aria-hidden className="animate-spin" />
+                            : manualImage
+                                ? <img src={manualImage} className="size-5 rounded object-cover" alt="" />
+                                : <ImagePlus aria-hidden />}
+                    </label>
+                    <Button variant="primary" onClick={handleManualAdd} disabled={manualSubmitting}>
+                        {manualSubmitting ? <Loader2 aria-hidden className="animate-spin" /> : "Add"}
+                    </Button>
+                    <span aria-hidden className="mx-1 h-5 w-px bg-line-strong" />
+                    <label className={fileButtonClasses}>
+                        <input
+                            type="file"
+                            accept=".csv"
+                            className="hidden"
+                            onChange={e => {
+                                const file = e.target.files?.[0];
+                                if (file) handleCsvUpload(file);
+                            }}
+                        />
+                        {csvUploading
+                            ? <><Loader2 aria-hidden className="animate-spin" /> Uploading CSV...</>
+                            : <><UploadCloud aria-hidden /> Upload CSV</>}
+                    </label>
+                </CardContent>
+            </Card>
 
-                {markers.length > 0 && (
-                    <div className="space-y-2">
-                        <Label>4. Marker Labels <span className="text-[#aaa] font-normal">(optional)</span></Label>
-                        <div className="space-y-2">
-                            {markers.slice(0, visibleMarkerCount).map((m, sliceIdx) => {
-                                const i = sliceIdx; // slice always starts at 0, so index matches original array
-                                return (
-                                    <div key={i} className="flex gap-2 items-center border border-white/10 rounded-lg p-2">
-                                        <span className="text-xs text-[#aaa] w-36 shrink-0">{m.lat.toFixed(4)}, {m.lng.toFixed(4)}</span>
-                                        <Input className="bg-transparent border-white/10 text-xs placeholder:text-[#555] flex-1"
-                                            placeholder="Label (optional)" value={m.label ?? ""}
-                                            onChange={e => updateMarkerLabel(i, e.target.value)} />
+            {markers.length > 0 && (
+                <Card>
+                    {stepHeader(4, "Marker Labels", null, true)}
+                    <CardContent className="flex flex-col gap-3 pt-4">
+                        <ul className="divide-y divide-line-strong">
+                            {markers.slice(0, visibleMarkerCount).map((m, i) => (
+                                <li key={i} className="flex items-center gap-2 py-2">
+                                    <span className="caption-style w-36 shrink-0 tabular-nums text-subtle">{m.lat.toFixed(4)}, {m.lng.toFixed(4)}</span>
+                                    <Input className="h-8 flex-1 text-[12px]"
+                                        aria-label={`Label for marker ${i + 1}`}
+                                        placeholder="Label (optional)" value={m.label ?? ""}
+                                        onChange={e => updateMarkerLabel(i, e.target.value)} />
 
-                                        {m.image ? (
-                                            <img src={m.image} alt="" className="w-7 h-7 rounded object-cover shrink-0" />
-                                        ) : (
-                                            <label className="cursor-pointer shrink-0">
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    className="hidden"
-                                                    onChange={(e) => {
-                                                        const file = e.target.files?.[0];
-                                                        if (file) handleMarkerImageUpload(i, file);
-                                                    }}
-                                                />
-                                                {uploadingIndex === i
-                                                    ? <Loader2 className="w-4 h-4 animate-spin text-[#aaa]" />
-                                                    : <ImagePlus className="w-4 h-4 text-[#aaa] hover:text-white" />}
-                                            </label>
-                                        )}
+                                    {m.image ? (
+                                        <img src={m.image} alt="" className="size-7 shrink-0 rounded object-cover" />
+                                    ) : (
+                                        <label className="flex size-[30px] shrink-0 cursor-pointer items-center justify-center rounded-full text-subtle transition-colors duration-150 ease-power3-out hover:bg-hover hover:text-foreground" aria-label={`Upload image for marker ${i + 1}`}>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) handleMarkerImageUpload(i, file);
+                                                }}
+                                            />
+                                            {uploadingIndex === i
+                                                ? <Loader2 aria-hidden className="size-3.5 animate-spin" />
+                                                : <ImagePlus aria-hidden className="size-3.5" />}
+                                        </label>
+                                    )}
 
-                                        <Button size="icon" variant="ghost" className="text-red-400 hover:text-red-300 h-8 w-8 shrink-0"
-                                            onClick={() => removeMarker(i)}>
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </Button>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                    <Button size="icon" variant="ghost" className="hover:text-danger" aria-label={`Remove marker ${i + 1}`}
+                                        onClick={() => removeMarker(i)}>
+                                        <Trash2 aria-hidden />
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
                         {visibleMarkerCount < markers.length && (
-                            <Button size="sm" variant="outline"
-                                className="border-white/10 bg-transparent text-xs w-full"
+                            <Button size="sm" variant="secondary" className="self-center"
                                 onClick={() => setVisibleMarkerCount(c => c + 5)}>
                                 Load More ({markers.length - visibleMarkerCount} remaining)
                             </Button>
                         )}
-                    </div>
-                )}
+                    </CardContent>
+                </Card>
+            )}
 
-                <Button onClick={handleGenerate}
-                    disabled={generating || !serverToken.trim() || !clientToken.trim()}
-                    className="bg-[#FFA500] text-black font-semibold hover:bg-[#FF8C00] w-full sm:w-auto">
+            <div>
+                <Button variant="primary" size="lg" onClick={handleGenerate}
+                    disabled={generating || !serverToken.trim() || !clientToken.trim()}>
                     {generating
-                        ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating...</>
+                        ? <><Loader2 aria-hidden className="animate-spin" />Generating...</>
                         : "Generate Embed"}
                 </Button>
+            </div>
 
-                {iframeSrc && (
-                    <div id="embed-result" className="space-y-4 pt-2">
-                        <Label>Embed Preview</Label>
-                        <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg">
-                            <iframe src={iframeSrc} width="100%" height="420"
+            {iframeSrc && (
+                <Card id="embed-result">
+                    <CardHeader className="border-b border-line-strong">
+                        <CardTitle>Embed Preview</CardTitle>
+                        <CardDescription>This URL contains no raw tokens. Safe to share publicly.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-4 pt-4">
+                        <div className="overflow-hidden rounded-lg border border-line-strong">
+                            <iframe src={iframeSrc} width="100%" height="420" title="Map embed preview"
                                 style={{ border: 0, display: "block" }} allowFullScreen loading="lazy" />
                         </div>
-                        <div className="space-y-1">
+                        <div className="flex flex-col gap-2">
                             <Label>Copy & paste on any website</Label>
                             <div className="relative">
-                                <pre className="bg-[#111] border border-white/10 rounded-lg p-4 text-xs text-[#aaa] overflow-x-auto whitespace-pre-wrap font-mono">
+                                <pre className="overflow-x-auto whitespace-pre-wrap rounded-lg border border-line-strong bg-secondary p-4 pr-12 font-mono text-[12px] leading-[1.5] text-soft">
                                     {iframeSnippet}
                                 </pre>
-                                <button onClick={handleCopy}
-                                    className="absolute top-3 right-3 p-1.5 rounded bg-white/10 hover:bg-white/20 border border-white/10">
-                                    {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-                                </button>
+                                <Button variant="secondary" size="icon-sm" onClick={handleCopy}
+                                    aria-label={copied ? "Copied" : "Copy embed code"}
+                                    className="absolute right-3 top-3">
+                                    {copied ? <Check aria-hidden className="text-success" /> : <Copy aria-hidden />}
+                                </Button>
                             </div>
-                            <p className="text-xs text-[#aaa]">This URL contains no raw tokens. Safe to share publicly.</p>
                         </div>
-                    </div>
-                )}
-            </div>
-        </div>
+                    </CardContent>
+                </Card>
+            )}
+        </Page>
     );
 }

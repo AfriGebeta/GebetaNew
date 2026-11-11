@@ -1,90 +1,27 @@
 //@ts-nocheck
 "use client"
 
-import {usePathname} from 'next/navigation';
-import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
-import {AppSidebar} from "@/components/app-sidebar";
-import {Separator} from "@/components/ui/separator";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import {useState} from "react";
 import {Toaster} from "@/components/ui/toaster"
 import PrivateRoute from "@/components/PrivateRoute";
-import {useQuery} from "@tanstack/react-query";
-import {getUser} from "@/service/apis";
-import {useContext, useEffect} from "react";
-import {AuthContext} from "@/providers/AuthProvider";
+import Sidebar from "@/components/dashboard/sidebar";
+import Header from "@/components/dashboard/header";
 
 export default function DashboardLayout({children}: { children: React.ReactNode }) {
-    const pathname = usePathname();
-    const {currentUser, setCurrentUser} = useContext(AuthContext)
-
-    const {data, isSuccess} = useQuery({
-        queryKey: ["me"],
-        queryFn: () => getUser(currentUser.token),
-        enabled: !!currentUser?.token,
-        staleTime: 5 * 60 * 1000,
-    })
-
-
-    useEffect(() => {
-        if (isSuccess && data) {
-            // setCurrentUser(user)
-        }
-    }, [isSuccess, data]);
-    // Create breadcrumb items from the pathname
-    const breadcrumbItems = pathname
-        .split('/')
-        .filter(segment => segment) // Remove empty segments
-        .map((segment, index) => {
-            const formattedSegment = segment.replace(/-/g, ' '); // Replace underscores with spaces
-            const href = '/dashboard' + pathname.split('/').slice(1, index + 1).join('/'); // Create href for each segment
-
-            return {
-                title: formattedSegment.charAt(0).toUpperCase() + formattedSegment.slice(1),
-                href
-            };
-        });
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
     return (
         <PrivateRoute>
-            <SidebarProvider>
-                <AppSidebar/>
-                <SidebarInset className="dark:bg-[#05050a]">
-                    <header
-                        className="flex h-fit shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-fit">
-                        <div className="flex items-center gap-2 px-4 pt-2">
-                            <SidebarTrigger className="-ml-1"/>
-                            <Separator orientation="vertical" className="mr-2 h-4"/>
-                            <Breadcrumb>
-                                <BreadcrumbList className="flex items-center">
-                                    {breadcrumbItems.map((item, index) => (
-                                        <div key={item.href} className="flex items-center">
-                                            <BreadcrumbItem
-                                                className="hidden md:block px-1"> {/* Add padding for spacing */}
-                                                <BreadcrumbLink href={item.href}>
-                                                    {item.title}
-                                                </BreadcrumbLink>
-                                            </BreadcrumbItem>
-                                            {index < breadcrumbItems.length - 1 && (
-                                                <BreadcrumbSeparator className="mx-1"/> // Add horizontal margin for consistency
-                                            )}
-                                        </div>
-                                    ))}
-                                </BreadcrumbList>
-                            </Breadcrumb>
-                        </div>
-                    </header>
-                    <div className="flex flex-1 overflow-hidden relative flex-col gap-4 p-4 pt-0">
+            <main className="dash-root flex h-dvh max-w-full overflow-hidden bg-background font-sans text-foreground antialiased">
+                <Sidebar mobileOpen={mobileNavOpen} onMobileOpenChange={setMobileNavOpen}/>
+                <section className="flex min-h-0 min-w-0 flex-1 flex-col">
+                    <Header onOpenNavigation={() => setMobileNavOpen(true)}/>
+                    <div className="relative min-h-0 flex-1 overflow-y-auto">
                         {children}
                     </div>
-                    <Toaster/>
-                </SidebarInset>
-            </SidebarProvider>
+                </section>
+                <Toaster/>
+            </main>
         </PrivateRoute>
     );
 }

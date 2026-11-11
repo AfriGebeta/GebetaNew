@@ -12,7 +12,7 @@ export default function RootLayout({
     return (
         <LenisScrollProvider>
             <div
-                className="relative w-full antialiased pt-[50px] flex flex-col min-h-screen dark:bg-[#05050a]"
+                className="relative flex min-h-screen w-full flex-col bg-background antialiased"
             >
                 <Navbar/>
                 <div className="flex-1">

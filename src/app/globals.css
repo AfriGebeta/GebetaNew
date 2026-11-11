@@ -4,9 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
-::selection {
-    background: #FFA500;
-    color: white;
+html[data-auth] .auth-signed-out,
+html:not([data-auth]) .auth-signed-in {
+    display: none !important;
 }
 
 @layer utilities {
@@ -21,109 +21,21 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 0%;
-        --card: oklch(1 0 0);
-        --card-foreground: oklch(0.3211 0 0);
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 0%;
-        --primary: 39 100% 50%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 39 100% 96%;
-        --secondary-foreground: 0 0% 0%;
-        --muted: 39 50% 96%;
-        --muted-foreground: 0 0% 45%;
-        --accent: 39 100% 96%;
-        --accent-foreground: 0 0% 0%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 100%;
-        --border: 39 30% 90%;
-        --input: 39 30% 90%;
-        --ring: 39 100% 50%;
-        --chart-1: 39 100% 50%;
-        --chart-2: 39 80% 60%;
-        --chart-3: 39 60% 70%;
-        --chart-4: 39 40% 80%;
-        --chart-5: 39 20% 90%;
         --radius: 0.5rem;
-        --sidebar-background: 39 50% 98%;
-        --sidebar-foreground: 0 0% 0%;
-        --sidebar-primary: 39 100% 50%;
-        --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 39 50% 95%;
-        --sidebar-accent-foreground: 0 0% 0%;
-        --sidebar-border: 39 30% 90%;
-        --sidebar-ring: 39 100% 50%;
+        --chart-1: 35 100% 50%;
+        --chart-2: 35 100% 65%;
+        --chart-3: 35 100% 78%;
+        --chart-4: 35 100% 88%;
+        --chart-5: 35 100% 94%;
+        --chart-highlight: 29 100% 48%;
         --shadow-color: oklch(0 0 0);
-        --shadow-opacity: 0.1;
-        --shadow-blur: 3px;
-        --shadow-spread: 0px;
-        --shadow-offset-x: 0;
-        --shadow-offset-y: 1px;
         --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
         --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-        --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-            0 1px 2px -1px hsl(0 0% 0% / 0.1);
+        --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
         --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-        --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-            0 2px 4px -1px hsl(0 0% 0% / 0.1);
-        --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-            0 4px 6px -1px hsl(0 0% 0% / 0.1);
-        --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-            0 8px 10px -1px hsl(0 0% 0% / 0.1);
-        --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-    }
-
-    .dark {
-        --background: 39 30% 10%;
-        --foreground: 0 0% 100%;
-        --card: oklch(0.321 0.0078 223.6661);
-        --card-foreground: oklch(0.9219 0 0);
-        --popover: 39 30% 10%;
-        --popover-foreground: 0 0% 100%;
-        --primary: 39 100% 50%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 39 30% 15%;
-        --secondary-foreground: 0 0% 100%;
-        --muted: 39 30% 20%;
-        --muted-foreground: 0 0% 70%;
-        --accent: 39 30% 20%;
-        --accent-foreground: 0 0% 100%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 100%;
-        --border: 39 30% 20%;
-        --input: 39 30% 20%;
-        --ring: 39 100% 50%;
-        --chart-1: 39 100% 50%;
-        --chart-2: 39 80% 60%;
-        --chart-3: 39 60% 70%;
-        --chart-4: 39 40% 80%;
-        --chart-5: 39 20% 90%;
-        --sidebar-background: 39 30% 15%;
-        --sidebar-foreground: 0 0% 100%;
-        --sidebar-primary: 39 100% 50%;
-        --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 39 30% 20%;
-        --sidebar-accent-foreground: 0 0% 100%;
-        --sidebar-border: 39 30% 25%;
-        --sidebar-ring: 39 100% 50%;
-        --shadow-color: oklch(0 0 0);
-        --shadow-opacity: 0.1;
-        --shadow-blur: 3px;
-        --shadow-spread: 0px;
-        --shadow-offset-x: 0;
-        --shadow-offset-y: 1px;
-        --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-        --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-        --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-            0 1px 2px -1px hsl(0 0% 0% / 0.1);
-        --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-        --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-            0 2px 4px -1px hsl(0 0% 0% / 0.1);
-        --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-            0 4px 6px -1px hsl(0 0% 0% / 0.1);
-        --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1),
-            0 8px 10px -1px hsl(0 0% 0% / 0.1);
+        --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+        --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+        --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
         --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
     }
 }
@@ -136,6 +48,223 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+/* Design system tokens shared by the marketing site and the dashboard (ported from kargulstudio/sales-crm). */
+@layer base {
+    :root {
+        color-scheme: light;
+        --background: 0 0.0% 98.4%;
+        --foreground: 0 0.0% 8.6%;
+        --card: 0 0.0% 100.0%;
+        --card-foreground: 0 0.0% 8.6%;
+        --popover: 0 0.0% 100.0%;
+        --popover-foreground: 0 0.0% 8.6%;
+        --primary: 39 100.0% 50.0%;
+        --primary-foreground: 36 62.5% 6.3%;
+        --ink: 30 10.0% 9.0%;
+        --ink-foreground: 40 20.0% 98.0%;
+        --secondary: 0 0.0% 100.0%;
+        --secondary-foreground: 0 0.0% 8.6%;
+        --muted: 0 0.0% 94.5%;
+        --muted-foreground: 0 0.0% 42.0%;
+        --accent: 0 0.0% 94.5%;
+        --accent-foreground: 0 0.0% 8.6%;
+        --destructive: 0 72.2% 50.6%;
+        --destructive-foreground: 0 0.0% 100.0%;
+        --border: 0 0.0% 92.5%;
+        --input: 0 0.0% 86.3%;
+        --ring: 0 0.0% 63.9%;
+        --sidebar-background: 0 0.0% 96.5%;
+        --sidebar-foreground: 0 0.0% 42.0%;
+        --sidebar-primary: 0 0.0% 100.0%;
+        --sidebar-primary-foreground: 0 0.0% 8.6%;
+        --sidebar-accent: 0 0.0% 93.7%;
+        --sidebar-accent-foreground: 0 0.0% 8.6%;
+        --sidebar-border: 0 0.0% 91.0%;
+        --sidebar-ring: 0 0.0% 63.9%;
+        --ds-line-strong: 0 0.0% 86.3%;
+        --ds-subtle: 0 0.0% 54.1%;
+        --ds-faint: 0 0.0% 70.2%;
+        --ds-soft: 0 0.0% 32.2%;
+        --ds-chip: 0 0.0% 23.9%;
+        --ds-icon: 218 8.5% 25.3%;
+        --ds-success: 142 76.2% 36.3%;
+        --ds-warning: 32 94.6% 43.7%;
+        --ds-danger: 0 72.2% 50.6%;
+        --ds-trend: 161 93.5% 30.4%;
+        --ds-trend-muted: 153 38.6% 75.1%;
+        --ds-track: 0 0.0% 89.8%;
+        --ds-status: 166 83.8% 33.9%;
+        --ds-raised: 0 0.0% 95.7%;
+        --ds-raised-hover: 0 0.0% 92.2%;
+        --ds-hover: rgba(0, 0, 0, 0.04);
+        --ds-scrollbar: rgba(0, 0, 0, 0.2);
+        --ds-tag-blue-bg: #eff6ff;
+        --ds-tag-blue-border: #bfdbfe;
+        --ds-tag-blue-text: #1d4ed8;
+        --ds-tag-purple-bg: #f5f3ff;
+        --ds-tag-purple-border: #ddd6fe;
+        --ds-tag-purple-text: #6d28d9;
+        --ds-tag-green-bg: #f0fdf4;
+        --ds-tag-green-border: #bbf7d0;
+        --ds-tag-green-text: #15803d;
+        --ds-tag-red-bg: #fef2f2;
+        --ds-tag-red-border: #fecaca;
+        --ds-tag-red-text: #b91c1c;
+        --ds-tag-orange-bg: #fff7ed;
+        --ds-tag-orange-border: #fed7aa;
+        --ds-tag-orange-text: #c2410c;
+        --ds-tag-amber-bg: #fffbeb;
+        --ds-tag-amber-border: #fde68a;
+        --ds-tag-amber-text: #b45309;
+        --ds-tag-teal-bg: #f0fdfa;
+        --ds-tag-teal-border: #99f6e4;
+        --ds-tag-teal-text: #0f766e;
+        --ds-tag-yellow-bg: #fefce8;
+        --ds-tag-yellow-border: #fef08a;
+        --ds-tag-yellow-text: #a16207;
+        --ds-tag-neutral-bg: #f4f4f4;
+        --ds-tag-neutral-border: #e2e2e2;
+        --ds-tag-neutral-text: #3d3d3d;
+        --ds-shadow-overlay: 0px 16px 40px 0px rgba(0, 0, 0, 0.12), 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
+        --ds-shadow-btn-primary: 0px 1px 2px 0px rgba(150, 70, 0, 0.22), 0px 0px 0px 1px #e58a00, inset 0px 1px 0px 0px rgba(255, 255, 255, 0.5), inset 0px 0px 0px 1px rgba(255, 255, 255, 0.12), inset 0px -6px 12px 0px rgba(214, 100, 0, 0.22);
+        --ds-shadow-btn-ink: 0px 1px 2px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 1px hsl(30 10% 9%), inset 0px 1px 0px 0px rgba(255, 255, 255, 0.14);
+        --ds-shadow-btn: 0px 1px 2px 0px rgba(0, 0, 0, 0.05), 0px 0px 0px 1px rgba(0, 0, 0, 0.1), inset 0px 1px 0px 0px rgba(255, 255, 255, 0.8);
+        --ds-shadow-btn-subtle: 0px 0px 0px 1px #e2e2e2;
+        --ds-shadow-card: 0px 1px 2px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.07);
+        --ds-shadow-badge: 0px 0px 0px 0.5px #d4d4d4;
+    }
+
+    :root.dark {
+        color-scheme: dark;
+        --background: 0 0.0% 8.6%;
+        --foreground: 220 100.0% 98.8%;
+        --card: 216 8.5% 11.6%;
+        --card-foreground: 220 100.0% 98.8%;
+        --popover: 0 0.0% 8.6%;
+        --popover-foreground: 220 100.0% 98.8%;
+        --primary: 39 100.0% 50.0%;
+        --primary-foreground: 36 62.5% 6.3%;
+        --ink: 40 20.0% 96.0%;
+        --ink-foreground: 30 10.0% 9.0%;
+        --secondary: 0 0.0% 11.8%;
+        --secondary-foreground: 220 100.0% 98.8%;
+        --muted: 0 0.0% 16.5%;
+        --muted-foreground: 0 0.0% 49.8%;
+        --accent: 0 0.0% 16.5%;
+        --accent-foreground: 220 100.0% 98.8%;
+        --destructive: 0 91.8% 71.4%;
+        --destructive-foreground: 0 0.0% 8.6%;
+        --border: 0 0.0% 13.7%;
+        --input: 0 0.0% 22.4%;
+        --ring: 0 0.0% 40.4%;
+        --sidebar-background: 0 0.0% 9.0%;
+        --sidebar-foreground: 0 0.0% 49.8%;
+        --sidebar-primary: 0 0.0% 16.5%;
+        --sidebar-primary-foreground: 220 100.0% 98.8%;
+        --sidebar-accent: 0 0.0% 9.4%;
+        --sidebar-accent-foreground: 220 100.0% 98.8%;
+        --sidebar-border: 0 0.0% 13.7%;
+        --sidebar-ring: 0 0.0% 40.4%;
+        --ds-line-strong: 0 0.0% 22.4%;
+        --ds-subtle: 0 0.0% 40.4%;
+        --ds-faint: 0 0.0% 27.1%;
+        --ds-soft: 0 0.0% 64.3%;
+        --ds-chip: 0 0.0% 81.2%;
+        --ds-icon: 222 16.0% 84.1%;
+        --ds-success: 142 70.6% 45.3%;
+        --ds-warning: 43 96.4% 56.3%;
+        --ds-danger: 0 91.8% 71.4%;
+        --ds-trend: 152 100.0% 35.5%;
+        --ds-trend-muted: 152 24.5% 29.6%;
+        --ds-track: 0 0.0% 22.7%;
+        --ds-status: 166 80.2% 43.5%;
+        --ds-raised: 0 0.0% 13.7%;
+        --ds-raised-hover: 0 0.0% 20.0%;
+        --ds-hover: rgba(255, 255, 255, 0.06);
+        --ds-scrollbar: rgba(255, 255, 255, 0.2);
+        --ds-tag-blue-bg: #1d2b3e;
+        --ds-tag-blue-border: #23354c;
+        --ds-tag-blue-text: #bfdbfe;
+        --ds-tag-purple-bg: #231f3a;
+        --ds-tag-purple-border: #4b437b;
+        --ds-tag-purple-text: #b7aee9;
+        --ds-tag-green-bg: #1f3a2d;
+        --ds-tag-green-border: #275137;
+        --ds-tag-green-text: #b1ebc5;
+        --ds-tag-red-bg: #3e1d1e;
+        --ds-tag-red-border: #4c2324;
+        --ds-tag-red-text: #febfc6;
+        --ds-tag-orange-bg: #3e291d;
+        --ds-tag-orange-border: #764d35;
+        --ds-tag-orange-text: #eeb390;
+        --ds-tag-amber-bg: #31221b;
+        --ds-tag-amber-border: #6c4830;
+        --ds-tag-amber-text: #fed7aa;
+        --ds-tag-teal-bg: #102a27;
+        --ds-tag-teal-border: #3b6149;
+        --ds-tag-teal-text: #22c55e;
+        --ds-tag-yellow-bg: #33301a;
+        --ds-tag-yellow-border: #5a5228;
+        --ds-tag-yellow-text: #fde68a;
+        --ds-tag-neutral-bg: #2a2a2a;
+        --ds-tag-neutral-border: #363636;
+        --ds-tag-neutral-text: #cfcfcf;
+        --ds-shadow-overlay: 0px 16px 40px 0px rgba(0, 0, 0, 0.5), 0px 0px 0px 1px #0e0e0e;
+        --ds-shadow-btn-primary: 0px 4px 4px 0px rgba(0, 0, 0, 0.32), 0px 0px 0px 1px #0e0e0e, inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4), inset 0px 0px 0px 1px rgba(255, 255, 255, 0.12), inset 0px -8px 14px 0px rgba(200, 90, 0, 0.28);
+        --ds-shadow-btn-ink: 0px 1px 2px 0px rgba(0, 0, 0, 0.32), 0px 0px 0px 1px rgba(255, 255, 255, 0.9), inset 0px -2px 4px 0px rgba(0, 0, 0, 0.06);
+        --ds-shadow-btn: 0px 0px 0px 1px rgba(0, 0, 0, 0.4), inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1), inset 0px 0px 0px 1px rgba(255, 255, 255, 0.06);
+        --ds-shadow-btn-subtle: 0px 0px 0px 1px #333333;
+        --ds-shadow-card: 0px 4px 4px 0px rgba(42, 42, 42, 0.32), 0px 0px 0px 1px #0e0e0e, inset 0px 1px 0px 0px rgba(255, 255, 255, 0.08), inset 0px 0px 0px 1px rgba(255, 255, 255, 0.08);
+        --ds-shadow-badge: 0px 0px 0px 0.5px #0e0e0e;
+    }
+}
+
+@layer components {
+    .h1-style {
+        @apply text-[16px] leading-none font-medium tracking-normal;
+    }
+
+    .h2-style {
+        @apply text-[16px] leading-none font-semibold tracking-normal;
+    }
+
+    .h3-style {
+        @apply text-[16px] leading-none font-normal tracking-normal;
+    }
+
+    .p-style {
+        @apply text-[14px] leading-[1.15] font-normal tracking-normal;
+    }
+
+    .lead-style {
+        @apply text-[14px] leading-none font-normal tracking-normal;
+    }
+
+    .caption-style {
+        @apply text-[12px] leading-none font-normal tracking-normal;
+    }
+
+    .eyebrow-style {
+        @apply text-[12px] leading-none font-normal tracking-[1px] uppercase;
+    }
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ds-scrollbar) transparent;
+}
+
+body {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background: hsl(var(--primary) / 0.3);
+    color: inherit;
 }
 
 @layer utilities {
@@ -156,22 +285,6 @@
 
 :root {
     box-sizing: border-box;
-}
-
-h1,
-h2,
-h3,
-h5,
-h6 {
-    line-height: 1.5;
-    letter-spacing: -0.01em;
-}
-
-p,
-span,
-a {
-    letter-spacing: -0.04em;
-    line-height: 1.15;
 }
 
 .animate-scroll-x {
@@ -211,8 +324,8 @@ a {
     -webkit-appearance: none;
     width: 36px;
     height: 36px;
-    background: white;
-    border: 4px solid #ffa500;
+    background: hsl(var(--card));
+    border: 4px solid hsl(var(--primary));
     border-radius: 50%;
     cursor: pointer;
 }
@@ -220,8 +333,8 @@ a {
 .custom-range::-moz-range-thumb {
     width: 40px;
     height: 40px;
-    background: white;
-    border: 4px solid #ffa500;
+    background: hsl(var(--card));
+    border: 4px solid hsl(var(--primary));
     border-radius: 50%;
     cursor: pointer;
 }
@@ -230,4 +343,112 @@ a {
     .react-multi-carousel-arrow {
         display: none !important;
     }
+}
+
+/* TipTap placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
+  height: 0;
+}
+html[data-sidebar-resizing],
+html[data-sidebar-resizing] * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+/* react-phone-input-2, restyled with design tokens (src/components/ui/phone-input.tsx) */
+.ds-phone.react-tel-input { font-family: inherit; width: 100%; }
+.ds-phone.react-tel-input .form-control {
+  width: 100%;
+  height: 2.25rem;
+  padding-left: 3rem;
+  font-size: 14px;
+  color: hsl(var(--foreground));
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--ds-line-strong));
+  border-radius: 0.5rem;
+  transition: border-color 150ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+.ds-phone.react-tel-input .form-control:focus { border-color: hsl(var(--ring)); box-shadow: none; }
+.ds-phone.react-tel-input .flag-dropdown,
+.ds-phone.react-tel-input .flag-dropdown.open,
+.ds-phone.react-tel-input .selected-flag,
+.ds-phone.react-tel-input .selected-flag:hover,
+.ds-phone.react-tel-input .flag-dropdown.open .selected-flag {
+  background: transparent;
+  border: 0;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+.ds-phone.react-tel-input .country-list {
+  background: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.5rem;
+  box-shadow: var(--ds-shadow-overlay);
+  font-size: 14px;
+}
+.ds-phone.react-tel-input .country-list .search { background: hsl(var(--popover)); }
+.ds-phone.react-tel-input .country-list .search-box {
+  width: calc(100% - 1rem);
+  margin: 0;
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--ds-line-strong));
+  border-radius: 0.5rem;
+}
+.ds-phone.react-tel-input .country-list .country:hover,
+.ds-phone.react-tel-input .country-list .country.highlight { background: var(--ds-hover); }
+.ds-phone.react-tel-input .country-list .country .dial-code { color: hsl(var(--ds-subtle)); }
+.ds-phone.react-tel-input .form-control.invalid-number,
+.ds-phone.react-tel-input .flag-dropdown.invalid-number { background: hsl(var(--secondary)); border-color: hsl(var(--ds-line-strong)); }
+.ds-phone.react-tel-input .form-control.invalid-number:focus { border-color: hsl(var(--ring)); background: hsl(var(--secondary)); }
+
+.maplibregl-ctrl-group:not(:empty) {
+  background: hsl(var(--card));
+  border-radius: 0.5rem;
+  box-shadow: var(--ds-shadow-overlay);
+  overflow: hidden;
+}
+.maplibregl-ctrl-group button + button { border-top: 1px solid hsl(var(--border)); }
+.maplibregl-ctrl-group button:hover { background-color: var(--ds-hover); }
+.dark .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1); }
+
+.hero-map {
+  -webkit-mask-image: radial-gradient(ellipse 38% 34% at 50% 44%, rgb(0 0 0 / 0.12) 0%, rgb(0 0 0 / 0.45) 55%, #000 100%),
+    linear-gradient(to bottom, #000 55%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: radial-gradient(ellipse 38% 34% at 50% 44%, rgb(0 0 0 / 0.12) 0%, rgb(0 0 0 / 0.45) 55%, #000 100%),
+    linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-composite: intersect;
+}
+/* Portrait screens: a wider clearing, since the copy fills most of the width. */
+@media (max-width: 639px) {
+  .hero-map {
+    -webkit-mask-image: radial-gradient(ellipse 75% 38% at 50% 48%, rgb(0 0 0 / 0.1) 0%, rgb(0 0 0 / 0.4) 60%, #000 100%),
+      linear-gradient(to bottom, #000 60%, transparent 100%);
+    mask-image: radial-gradient(ellipse 75% 38% at 50% 48%, rgb(0 0 0 / 0.1) 0%, rgb(0 0 0 / 0.4) 60%, #000 100%),
+      linear-gradient(to bottom, #000 60%, transparent 100%);
+  }
+}
+.hero-map-image { opacity: 0.75; }
+/* Film grain over the map only (never the copy), so the text keeps its contrast. Inside .hero-map, it fades with the same mask. */
+.hero-map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px;
+  opacity: 0.1;
+  mix-blend-mode: multiply;
+}
+.dark .hero-map::after { mix-blend-mode: screen; filter: invert(1); opacity: 0.06; }
+.dark .hero-map-image { filter: invert(1) hue-rotate(180deg) brightness(0.9); opacity: 0.5; }
+
+/* Blur-fade-rise reveal — triggered by parent setting --reveal-play-state: running */
+.blur-fade-rise-item {
+  opacity: 0;
+  animation: blur-fade-rise 0.6s ease-out both;
+  animation-play-state: var(--reveal-play-state, paused);
 }

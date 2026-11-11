@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
+    DialogBody,
     DialogClose,
     DialogContent,
     DialogDescription,
@@ -13,6 +14,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Field from "@/components/ui/field";
+import Tag from "@/components/ui/tag";
+import { EmptyState, Page, PageIntro, Section } from "@/components/dashboard/page";
 import React, { useContext, useEffect, useState } from "react";
 import { createServiceAccount, getServiceAccounts, deleteServiceAccount } from "@/service/apis";
 import { useToast } from "@/hooks/use-toast"
@@ -174,133 +178,126 @@ export default function ServiceAccount() {
     };
 
     return (
-        <div className="rounded text-[#aaa] p-4 md:p-6 mt-2">
-            <div className="mb-6">
-                <h2 className="text-xl font-semibold text-white mb-2">Service Accounts</h2>
-                <p className="text-sm text-[#aaa]">
-                    Service accounts provide secure authentication using two tokens (client and server).
-                    Combine them to get short lived access tokens instead of exposing long term credentials.
-                </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                <h3 className="text-sm font-medium text-white">Your Service Accounts</h3>
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="bg-[#FFA500] text-white hover:bg-[#FF8C00] text-sm px-4 py-2">
-                            <PlusIcon className="w-4 h-4 mr-1" /> Create Service Account
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                            <DialogTitle>Create Service Account</DialogTitle>
-                            <DialogDescription>
-                                Create a new service account with client and server tokens for secure authentication.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-2">
-                            <div className="space-y-1">
-                                <Label htmlFor="description">Description (Optional)</Label>
-                                <Input
-                                    id="description"
-                                    placeholder="e.g., Production API access"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex items-center justify-between space-x-2 py-2">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor="admin-mode">Admin Token</Label>
-                                    <p className="text-xs text-[#aaa]">Grant admin privileges to this service account</p>
-                                </div>
-                                <Switch
-                                    id="admin-mode"
-                                    checked={isAdmin}
-                                    onCheckedChange={setIsAdmin}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Scopes</Label>
-                                <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto p-2 border rounded">
-                                    {scopesLoading ? (
-                                        <p className="text-sm text-[#aaa] col-span-2">Loading scopes...</p>
-                                    ) : grantedScopes.length === 0 ? (
-                                        <p className="text-sm text-[#aaa] col-span-2">Your account has no API scopes granted yet. Contact support to enable them.</p>
-                                    ) : (
-                                        grantedScopes.map((scope) => (
-                                            <div key={scope} className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={scope}
-                                                    checked={selectedScopes.includes(scope)}
-                                                    onCheckedChange={() => toggleScope(scope)}
-                                                />
-                                                <label
-                                                    htmlFor={scope}
-                                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                >
-                                                    {formatScopeLabel(scope)}
-                                                </label>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button type="button" variant="secondary">Cancel</Button>
-                            </DialogClose>
-                            <Button
-                                className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
-                                onClick={createAccount}
-                                disabled={isCreating || scopesLoading || selectedScopes.length === 0}
-                            >
-                                {isCreating ? "Creating..." : "Create"}
+        <Page>
+            <PageIntro
+                title="Service Accounts"
+                description="Service accounts provide secure authentication using two tokens (client and server). Combine them to get short lived access tokens instead of exposing long term credentials."
+                actions={
+                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="primary">
+                                <PlusIcon aria-hidden /> Create Service Account
                             </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-[520px]">
+                            <DialogHeader>
+                                <DialogTitle>Create Service Account</DialogTitle>
+                                <DialogDescription>
+                                    Create a new service account with client and server tokens for secure authentication.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogBody className="gap-5">
+                                <Field label="Description" htmlFor="description" hint="Optional">
+                                    <Input
+                                        id="description"
+                                        placeholder="e.g. Production API access"
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                    />
+                                </Field>
+                                <div className="flex items-center justify-between gap-4 rounded-lg border border-line-strong p-3">
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label htmlFor="admin-mode" className="text-foreground">Admin Token</Label>
+                                        <span className="caption-style text-subtle">Grant admin privileges to this service account</span>
+                                    </div>
+                                    <Switch
+                                        id="admin-mode"
+                                        checked={isAdmin}
+                                        onCheckedChange={setIsAdmin}
+                                    />
+                                </div>
+                                <fieldset className="flex flex-col gap-2">
+                                    <legend className="caption-style mb-2 text-soft">Scopes</legend>
+                                    {scopesLoading ? (
+                                        <p className="caption-style text-subtle">Loading scopes...</p>
+                                    ) : grantedScopes.length === 0 ? (
+                                        <p className="caption-style text-subtle">Your account has no API scopes granted yet. Contact support to enable them.</p>
+                                    ) : (
+                                        <ul className="grid max-h-[220px] grid-cols-1 gap-1 overflow-y-auto sm:grid-cols-2">
+                                            {grantedScopes.map((scope) => (
+                                                <li key={scope}>
+                                                    <Label
+                                                        htmlFor={`sa-scope-${scope}`}
+                                                        className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-[14px] text-foreground transition-colors duration-150 ease-power3-out hover:bg-hover"
+                                                    >
+                                                        <Checkbox
+                                                            id={`sa-scope-${scope}`}
+                                                            checked={selectedScopes.includes(scope)}
+                                                            onCheckedChange={() => toggleScope(scope)}
+                                                        />
+                                                        {formatScopeLabel(scope)}
+                                                    </Label>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </fieldset>
+                            </DialogBody>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="secondary">Cancel</Button>
+                                </DialogClose>
+                                <Button
+                                    variant="primary"
+                                    onClick={createAccount}
+                                    disabled={isCreating || scopesLoading || selectedScopes.length === 0}
+                                >
+                                    {isCreating ? "Creating..." : "Create"}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                }
+            />
 
             <Dialog open={tokenDialogOpen} onOpenChange={setTokenDialogOpen}>
-                <DialogContent className="sm:max-w-2xl">
+                <DialogContent className="max-w-[560px]">
                     <DialogHeader>
                         <DialogTitle>Service Account Token Created</DialogTitle>
                         <DialogDescription>
                             Save this token securely. You won't be able to see it again!
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                            <Label>Token</Label>
+                    <DialogBody>
+                        <Field label="Token" htmlFor="new-sa-token">
                             <div className="flex items-center gap-2">
                                 <Input
+                                    id="new-sa-token"
                                     value={newlyCreatedToken || ""}
                                     readOnly
-                                    className="font-mono text-xs"
+                                    className="font-mono text-[12px]"
                                 />
                                 <Button
-                                    variant="outline"
-                                    size="sm"
+                                    variant="secondary"
+                                    size="icon"
                                     onClick={() => copyToClipboard(newlyCreatedToken, "Token")}
+                                    aria-label="Copy token"
                                 >
-                                    <CopyIcon className="w-4 h-4" />
+                                    <CopyIcon aria-hidden />
                                 </Button>
                             </div>
-                        </div>
-                        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
-                            <p className="text-xs text-black dark:text-black">
-                                <span className="font-semibold">Important:</span> This token will only be shown once. Make sure to copy and store it securely.
-                            </p>
-                        </div>
-                    </div>
+                        </Field>
+                        <p className="caption-style rounded-lg border border-[var(--ds-tag-amber-border)] bg-[var(--ds-tag-amber-bg)] p-3 leading-[1.4] text-[var(--ds-tag-amber-text)]">
+                            <span className="font-medium">Important:</span> This token will only be shown once. Make sure to copy and store it securely.
+                        </p>
+                    </DialogBody>
                     <DialogFooter>
                         <Button
+                            variant="primary"
                             onClick={() => {
                                 setTokenDialogOpen(false);
                                 setNewlyCreatedToken(null);
                             }}
-                            className="bg-[#FFA500] text-white hover:bg-[#FF8C00]"
                         >
                             I've Saved the Token
                         </Button>
@@ -308,76 +305,61 @@ export default function ServiceAccount() {
                 </DialogContent>
             </Dialog>
 
-            {isLoading ? (
-                <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="border rounded-lg p-4 space-y-3">
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1 space-y-3">
+            <Section title="Your service accounts">
+                {isLoading ? (
+                    <div className="divide-y divide-line-strong overflow-hidden rounded-lg bg-card shadow-card">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex items-start justify-between gap-4 p-4">
+                                <div className="flex flex-1 flex-col gap-3">
                                     <div className="flex items-center gap-2">
-                                        <Skeleton className="h-5 w-16" />
-                                        <Skeleton className="h-5 w-40" />
+                                        <Skeleton className="h-[22px] w-16 rounded-full" />
+                                        <Skeleton className="h-4 w-40" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-4 w-48" />
-                                        <Skeleton className="h-4 w-32" />
-                                    </div>
+                                    <Skeleton className="h-3 w-64" />
                                 </div>
-                                <Skeleton className="h-8 w-8" />
+                                <Skeleton className="size-[30px] rounded-full" />
                             </div>
-                        </div>
-                    ))}
-                </div>
-            ) : serviceAccounts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#aaa] border border-dashed rounded-md">
-                    <ShieldCheckIcon className="w-12 h-12 opacity-40" />
-                    <p className="text-sm">No service accounts yet</p>
-                    <p className="text-xs text-center max-w-md">
-                        Create a service account to get secure client and server tokens for authentication
-                    </p>
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {serviceAccounts.map((account) => (
-                        <div key={account.id} className="border rounded-lg p-4 space-y-3">
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${account.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                                            {account.status}
-                                        </span>
-                                        <p className="text-sm font-medium text-white">
+                        ))}
+                    </div>
+                ) : serviceAccounts.length === 0 ? (
+                    <EmptyState
+                        icon={<ShieldCheckIcon />}
+                        title="No service accounts yet"
+                        description="Create a service account to get secure client and server tokens for authentication."
+                    />
+                ) : (
+                    <ul className="divide-y divide-line-strong overflow-hidden rounded-lg bg-card shadow-card">
+                        {serviceAccounts.map((account) => (
+                            <li key={account.id} className="flex items-start justify-between gap-4 p-4">
+                                <div className="flex min-w-0 flex-1 flex-col gap-3">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <Tag tone={account.status === 'ACTIVE' ? "green" : "neutral"}>{account.status}</Tag>
+                                        {account.isAdmin && <Tag tone="purple">Admin</Tag>}
+                                        <span className="truncate text-[14px] font-medium text-foreground">
                                             {account.description || `Service Account #${account.id}`}
-                                        </p>
+                                        </span>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-xs text-[#aaa]">
-                                            Platform: {account.platform}
-                                        </p>
-                                        <p className="text-xs text-[#aaa]">
-                                            Admin: {account.isAdmin ? "Yes" : "No"}
-                                        </p>
-                                        <p className="text-xs text-[#aaa]">
-                                            User Token ID: {account.userTokenId}
-                                        </p>
-                                        <p className="text-xs text-[#aaa]">
-                                            Created: {new Date(account.createdAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
+                                    <dl className="caption-style flex flex-wrap gap-x-4 gap-y-2 text-subtle">
+                                        <div className="flex gap-1"><dt>Platform:</dt><dd className="text-soft">{account.platform}</dd></div>
+                                        <div className="flex gap-1"><dt>User Token ID:</dt><dd className="font-mono text-soft">{account.userTokenId}</dd></div>
+                                        <div className="flex gap-1"><dt>Created:</dt><dd className="text-soft">{new Date(account.createdAt).toLocaleDateString()}</dd></div>
+                                    </dl>
                                 </div>
                                 <Button
-                                    variant="link"
+                                    variant="ghost"
+                                    size="icon"
                                     onClick={() => handleDeleteAccount(account.id)}
                                     disabled={isDeleting === account.id || account.revoked}
-                                    className="p-2 text-red-500 hover:text-red-600"
+                                    aria-label="Delete service account"
+                                    className="hover:text-danger"
                                 >
-                                    <Trash2Icon className="w-4 h-4" />
+                                    <Trash2Icon aria-hidden />
                                 </Button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </Section>
+        </Page>
     );
 }

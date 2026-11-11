@@ -1,7 +1,7 @@
 //@ts-nocheck
 "use client"
 import React, {useContext, useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {useRouter} from 'nextjs-toploader/app';
 import {AuthContext} from "@/providers/AuthProvider";
 import Spinner from "@/components/Spinner";
 import {isTokenExpired} from "@/lib/session";
