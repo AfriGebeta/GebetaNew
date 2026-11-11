@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { initDownloadTables, recordClick } from "@/lib/downloads/db";
 import { META_PIXEL_NOSCRIPT_SRC, META_PIXEL_SCRIPT } from "@/lib/meta-pixel";
+import { GTM_INLINE_SCRIPT, GTM_SRC } from "@/lib/google-tag";
 
 const PLAY_STORE_LINK = "https://play.google.com/store/apps/details?id=co.gebeta.apps.android.map";
 const APP_STORE_LINK = "https://apps.apple.com/us/app/gebeta-maps/id6793868587";
@@ -59,12 +60,13 @@ function referrerHost(referrer: string) {
     }
 }
 
-// A bare 302 never reaches a browser, so the Meta Pixel can't fire on it. Real
-// visitors get a tiny page that sends the PageView, then forwards to the store.
+// A bare 302 never reaches a browser, so the Meta Pixel and Google tag can't fire
+// on it. Real visitors get a tiny page that loads both, then forwards to the store
+// once they've loaded (or after 1.5s, whichever comes first).
 function pixelRedirectPage(link: string) {
     const target = JSON.stringify(link);
-    return `<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="3;url=${link}"><title>Gebeta Maps</title><script>${META_PIXEL_SCRIPT}
-(function(){var done=false;function go(){if(done)return;done=true;location.replace(${target})}var s=document.querySelector('script[src*="fbevents.js"]');if(s)s.onload=function(){setTimeout(go,300)};setTimeout(go,1500)})();</script></head><body><noscript><img height="1" width="1" style="display:none" src="${META_PIXEL_NOSCRIPT_SRC}" alt=""></noscript><p style="font-family:sans-serif;text-align:center;margin-top:40vh">Opening the store… <a href="${link}">Continue</a></p></body></html>`;
+    return `<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="3;url=${link}"><title>Gebeta Maps</title><script>${GTM_INLINE_SCRIPT}</script><script async src="${GTM_SRC}"></script><script>${META_PIXEL_SCRIPT}
+(function(){var done=false,left=0;function go(){if(done)return;done=true;location.replace(${target})}function loaded(){if(--left===0)setTimeout(go,300)}['fbevents.js','gtm.js'].forEach(function(n){var s=document.querySelector('script[src*="'+n+'"]');if(s){left++;s.onload=s.onerror=loaded}});setTimeout(go,1500)})();</script></head><body><noscript><img height="1" width="1" style="display:none" src="${META_PIXEL_NOSCRIPT_SRC}" alt=""></noscript><p style="font-family:sans-serif;text-align:center;margin-top:40vh">Opening the store… <a href="${link}">Continue</a></p></body></html>`;
 }
 
 async function track(req: NextRequest, platform: string) {
